@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct {
 	int x_coor;
 	int y_coor;
-	int alive;
+	bool live;
 	float energy;
 } agent_feats;
 
@@ -366,15 +367,15 @@ agent_feats * removePreysOrHunters(int type) {
 	int deads = 0;
 	if(type == PREY) {
 		for(j = 0; j < numbOfPreys; j++) {
-			if(!preys[j].alive)
+			if(!preys[j].live)
 				deads++;
 		}
 		agent_feats temp[numbOfPreys-deads];
 		for(j = 0, k = 0; j < numbOfPreys; j++) {
-			if(preys[j].alive) {
+			if(preys[j].live) {
 				temp[k].x_coor = preys[j].x_coor;
 				temp[k].y_coor = preys[j].y_coor;
-				temp[k].alive = preys[j].alive;
+				temp[k].live = preys[j].live;
 				temp[k].energy = preys[j].energy;
 				k++;
 			}
@@ -389,7 +390,7 @@ agent_feats * removePreysOrHunters(int type) {
 		for(j = 0; j < numbOfPreys; j++) {
 			preys[j].x_coor = temp[j].x_coor;
 			preys[j].y_coor = temp[j].y_coor;
-			preys[j].alive = temp[j].alive;
+			preys[j].live = temp[j].live;
 			preys[j].energy = temp[j].energy;
 		}
 		return preys;
@@ -397,15 +398,15 @@ agent_feats * removePreysOrHunters(int type) {
 	}
 	else {
 		for(j = 0; j < numbOfHunters; j++)
-			if(!hunters[j].alive)
+			if(!hunters[j].live)
 				deads++;
 
 		agent_feats temp[numbOfHunters-deads];
 		for(j = 0, k = 0; j < numbOfHunters; j++) {
-			if(hunters[j].alive) {
+			if(hunters[j].live) {
 				temp[k].x_coor = hunters[j].x_coor;
 				temp[k].y_coor = hunters[j].y_coor;
-				temp[k].alive = hunters[j].alive;
+				temp[k].live = hunters[j].live;
 				temp[k].energy = hunters[j].energy;
 				k++;
 			}
@@ -421,7 +422,7 @@ agent_feats * removePreysOrHunters(int type) {
 		for(j = 0; j < numbOfHunters; j++) {
 			 hunters[j].x_coor = temp[j].x_coor;
 			 hunters[j].y_coor = temp[j].y_coor;
-			 hunters[j].alive = temp[j].alive;
+			 hunters[j].live = temp[j].live;
 			 hunters[j].energy = temp[j].energy;
 		}
 		return hunters;
@@ -470,7 +471,7 @@ agent_feats * runHunterPlan() {
 		// set the eaten prey dead
 		if(numbOfEaters > 0) {
 			printf("the prey at %d,%d has been eaten by %d number of hunters\n",preys[k].x_coor,preys[k].y_coor,numbOfEaters);
-			preys[k].alive = 0;
+			preys[k].live = false;
 			anyEaten = 1;
 		}
 
@@ -497,7 +498,7 @@ agent_feats * runHunterPlan() {
 		if(hunters[j].energy < T) {
 			printf("the hunter at %d,%d has energy below the threshold, %f, so it will be removed from the environment\n"
 																				,hunters[j].x_coor,hunters[j].y_coor,hunters[j].energy);
-			hunters[j].alive = 0;
+			hunters[j].live = false;
 			anyDead = 1;
 		}
 	}
@@ -1053,14 +1054,14 @@ int main(void) {
 			if(grid_map[j][k] == HUNTER) {
 				hunters[huntInd].x_coor = j;
 				hunters[huntInd].y_coor = k;
-				hunters[huntInd].alive = 1;
+				hunters[huntInd].live = true;
 				hunters[huntInd].energy = e;
 				huntInd++;
 			}
 			else if(grid_map[j][k] == PREY) {
 				preys[preyInd].x_coor = j;
 				preys[preyInd].y_coor = k;
-				preys[preyInd].alive = 1;
+				preys[preyInd].live = true;
 				preyInd++;
 			}
 		}

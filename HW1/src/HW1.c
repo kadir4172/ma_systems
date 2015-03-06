@@ -17,7 +17,7 @@ static int UP = 5;
 static int LEFT = 6;
 static int DOWN = 7;
 static int RIGHT = 8;
-static int STAY_STILL = 9;
+static int HOLD_STILL = 9;
 
 static int CONT = 10;
 static int DISCRETE = 11;
@@ -800,7 +800,7 @@ void runReactiveMultiAgentPlan() {
 			}
 			// decrement the energy levels accordingly
 			if(hunters[j].x_coor == decisionHunters[j].x_coor && hunters[j].y_coor == decisionHunters[j].y_coor) {
-				printf("STAY_STILL: the hunter at %d,%d moves to the position %d,%d, STAY_STILL, and "
+				printf("HOLD_STILL: the hunter at %d,%d moves to the position %d,%d, HOLD_STILL, and "
 											,hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor);
 				hunters[j].energy -= 0.2;
 				printf("its energy is decremented as 0.2, becomes %f\n",hunters[j].energy);
@@ -968,7 +968,7 @@ void runReactiveMultiAgentPlan() {
 			}
 
 			if(preys[j].x_coor == decisionPreys[j].x_coor && preys[j].y_coor == decisionPreys[j].y_coor) {
-				printf("STAY_STILL: the prey at %d,%d moves to the position %d,%d\n"
+				printf("HOLD_STILL: the prey at %d,%d moves to the position %d,%d\n"
 											,preys[j].x_coor,preys[j].y_coor,decisionPreys[j].x_coor,decisionPreys[j].y_coor);
 			}
 			else if(preys[j].x_coor-1 == decisionPreys[j].x_coor && preys[j].y_coor == decisionPreys[j].y_coor) {

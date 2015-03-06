@@ -1,6 +1,6 @@
-21:47:06 **** Incremental Build of configuration Debug for project HW1 ****
+21:48:41 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
 make: Nothing to be done for `all'.
 
-21:47:06 Build Finished (took 60ms)
+21:48:41 Build Finished (took 61ms)
 

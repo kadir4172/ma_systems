@@ -1,12 +1,48 @@
-23:39:05 **** Incremental Build of configuration Debug for project HW1 ****
+21:27:46 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
 Building file: ../src/HW1.c
 Invoking: GCC C Compiler
 gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW1.d" -MT"src/HW1.d" -o "src/HW1.o" "../src/HW1.c"
-../src/HW1.c: In function ‘main’:
-../src/HW1.c:85:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
+../src/HW1.c: In function ‘printEnv’:
+../src/HW1.c:43:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("- ",grid_map[j][k]);
+     ^
+../src/HW1.c:45:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("X ",grid_map[j][k]);
+     ^
+../src/HW1.c:47:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("P ",grid_map[j][k]);
+     ^
+../src/HW1.c:49:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("H ",grid_map[j][k]);
+     ^
+../src/HW1.c: In function ‘findNearestMove’:
+../src/HW1.c:282:8: warning: unused variable ‘k’ [-Wunused-variable]
+  int j,k;
+        ^
+../src/HW1.c:282:6: warning: unused variable ‘j’ [-Wunused-variable]
+  int j,k;
+      ^
+../src/HW1.c: In function ‘runHunterPlan’:
+../src/HW1.c:433:10: warning: unused variable ‘l’ [-Wunused-variable]
+  int j,k,l;
+          ^
+../src/HW1.c: At top level:
+../src/HW1.c:16:12: warning: ‘UP’ defined but not used [-Wunused-variable]
+ static int UP = 5;
+            ^
+../src/HW1.c:17:12: warning: ‘LEFT’ defined but not used [-Wunused-variable]
+ static int LEFT = 6;
+            ^
+../src/HW1.c:18:12: warning: ‘DOWN’ defined but not used [-Wunused-variable]
+ static int DOWN = 7;
+            ^
+../src/HW1.c:19:12: warning: ‘RIGHT’ defined but not used [-Wunused-variable]
+ static int RIGHT = 8;
+            ^
+../src/HW1.c:20:12: warning: ‘STAY_STILL’ defined but not used [-Wunused-variable]
+ static int STAY_STILL = 9;
+            ^
 Finished building: ../src/HW1.c
  
 Building target: HW1
@@ -15,5 +51,5 @@ gcc  -o "HW1"  ./src/HW1.o
 Finished building target: HW1
  
 
-23:39:06 Build Finished (took 108ms)
+21:27:46 Build Finished (took 261ms)
 

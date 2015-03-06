@@ -1007,13 +1007,12 @@ int main(void) {
 	FILE * input_file = fopen("environment.inp","r");
 	int j,k;
 
-	// read input variables
-	fscanf(input_file,"%d %d %f %f %f",&n,&d,&e,&i,&T);
 
-	// for newline "\n" char
-	fgetc(input_file);
+	fscanf(input_file,"%d %d %f %f %f",&n,&d,&e,&i,&T);  //girdileri okuyalim
 
-	// initialize environment matrix
+	fgetc(input_file);                  //yeni satiri okuyalim
+
+
 	grid_map = malloc(sizeof(int *)*n);
 	for(j = 0; j < n; j++)
 		grid_map[j] = malloc(sizeof(int)*n);
@@ -1026,13 +1025,11 @@ int main(void) {
 	char object;
 	int indx, indy;
 	while((fscanf(input_file,"%c %d %d", &object, &indx, &indy)) != EOF) {
-		// for newline "\n" char
 		if(object == '\n') {
 			fgetc(input_file);
 			continue;
 		}
 		fgetc(input_file);
-		//printf("%c %d %d\n", object, indx, indy);
 		if(object == 'h') {
 			grid_map[indx-1][indy-1] = HUNTER;
 			numbOfHunters++;

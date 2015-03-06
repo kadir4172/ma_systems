@@ -504,7 +504,7 @@ agent_feats * runHunterPlan() {
 		printf("there is no dead hunter in this time step\n");
 	printf("the number of remaining hunters is %d\n",numbOfHunters);
 
-	// main decision loop, for each hunter
+	// main decision loop, for each hunter dikkat (kadir)
 	for(j = 0; j < numbOfHunters; j++) {
 		printf("------- main decision loop for hunter %d,%d  -----------------------------------\n",hunters[j].x_coor,hunters[j].y_coor);
 		// if no energy to move, just stay still
@@ -573,25 +573,10 @@ agent_feats * runHunterPlan() {
 						}
 				}
 
-				int flipcoin = rand() % 3;
-				if(numbOfFoundHunters > 0 && numbOfFoundHunters < d && flipcoin == 0) {
-					// if there are less than d-many hunters in its observable area,
-  					// get close to the nearest one --> attractive mode.
+
+				if(numbOfFoundHunters > 0) {
+					//observable alanda 1 ya da 2 hunter varsa onlara yaklasalim
 					printf("the hunter at %d,%d sees %d many hunters in its observable area, since %d is below the threshold %d, it will try to get close to the nearest one\n",hunters[j].x_coor,hunters[j].y_coor,numbOfFoundHunters,numbOfFoundHunters,d);
-					int minDist = hunterDists[0];
-					int ind = 0;
-					for(k = 0; k < numbOfHunters; k++) {
-						if(hunterDists[k] < minDist) {
-							ind = k;
-							minDist = hunterDists[k];
-						}
-					}
-					findNearestMove(hunters[j],hunters[ind],decisions,j);
-				}
-				else if(numbOfFoundHunters > 0) {
-					// if there are greater than or equal to d-many hunters in its observable area,
-					// go further from the nearest one --> repulsive mode. Repulsive mode is further encouraged.
-					printf("the hunter at %d,%d sees %d many hunters in its observable area, since it is above the threshold %d, it will try to move way from the nearest one\n",hunters[j].x_coor,hunters[j].y_coor,numbOfFoundHunters,d);
 					int minDist = hunterDists[0];
 					int ind = 0;
 					for(k = 0; k < numbOfHunters; k++) {

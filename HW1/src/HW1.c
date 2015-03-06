@@ -16,8 +16,8 @@ typedef struct {
 
 
 
-#define CONTINUOUS  10
-#define DISCRETE    11
+#define CONTINUOUS  4
+#define DISCRETE    5
 
 int time = 1;
 int mode = 0;
@@ -56,7 +56,7 @@ void WaitForEnter()
 		;
 }
 
-int manDist(agent_feats t1, agent_feats t2) {
+int Manhattan(agent_feats t1, agent_feats t2) {
 	return abs(t1.x_coor - t2.x_coor) + abs(t1.y_coor - t2.y_coor);
 }
 
@@ -73,7 +73,7 @@ agent_feats * runPreyPlan() {
 		int minDist = 2*n+1;
 		int minDistHuntInd1 = 0;
 		for(k = 0; k < numbOfHunters; k++) {
-			int dist = manDist(preys[j],hunters[k]);
+			int dist = Manhattan(preys[j],hunters[k]);
 			if(dist < minDist) {
 				minDist = dist;
 				minDistHuntInd1 = k;
@@ -86,7 +86,7 @@ agent_feats * runPreyPlan() {
 		if(numbOfHunters > 1) {
 			minDist = 2*n+1;
 			for(k = 0; k < numbOfHunters; k++) {
-				int dist = manDist(preys[j],hunters[k]);
+				int dist = Manhattan(preys[j],hunters[k]);
 				if(k != minDistHuntInd1 && dist < minDist) {
 					minDist = dist;
 					minDistHuntInd2 = k;
@@ -105,10 +105,10 @@ agent_feats * runPreyPlan() {
 			possibleMove.x_coor = preys[j].x_coor-1;
 			possibleMove.y_coor = preys[j].y_coor;
 			if(numbOfHunters > 1)
-				distChoice1 = manDist(possibleMove,hunters[minDistHuntInd1]) +
-								manDist(possibleMove,hunters[minDistHuntInd2]);
+				distChoice1 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
+								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
-				distChoice1 = manDist(possibleMove,hunters[minDistHuntInd1]);
+				distChoice1 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
 		}
 		else // we eliminate this choice
 			distChoice1 = -1;
@@ -118,10 +118,10 @@ agent_feats * runPreyPlan() {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor-1;
 			if(numbOfHunters > 1)
-				distChoice2 = manDist(possibleMove,hunters[minDistHuntInd1]) +
-								manDist(possibleMove,hunters[minDistHuntInd2]);
+				distChoice2 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
+								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
-				distChoice2 = manDist(possibleMove,hunters[minDistHuntInd1]);
+				distChoice2 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
 		}
 		else  // we eliminate this choice
 			distChoice2 = -1;
@@ -132,10 +132,10 @@ agent_feats * runPreyPlan() {
 			possibleMove.x_coor = preys[j].x_coor+1;
 			possibleMove.y_coor = preys[j].y_coor;
 			if(numbOfHunters > 1)
-				distChoice3 = manDist(possibleMove,hunters[minDistHuntInd1]) +
-								manDist(possibleMove,hunters[minDistHuntInd2]);
+				distChoice3 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
+								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
-				distChoice3 = manDist(possibleMove,hunters[minDistHuntInd1]);
+				distChoice3 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
 		}
 		else // we eliminate this choice
 			distChoice3 = -1;
@@ -146,10 +146,10 @@ agent_feats * runPreyPlan() {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor+1;
 			if(numbOfHunters > 1)
-				distChoice4 = manDist(possibleMove,hunters[minDistHuntInd1]) +
-								manDist(possibleMove,hunters[minDistHuntInd2]);
+				distChoice4 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
+								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
-				distChoice4 = manDist(possibleMove,hunters[minDistHuntInd1]);
+				distChoice4 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
 		}
 		else // we eliminate this choice
 			distChoice4 = -1;
@@ -158,10 +158,10 @@ agent_feats * runPreyPlan() {
 		possibleMove.x_coor = preys[j].x_coor;
 		possibleMove.y_coor = preys[j].y_coor;
 		if(numbOfHunters > 1)
-			distChoice5 = manDist(possibleMove,hunters[minDistHuntInd1]) +
-							manDist(possibleMove,hunters[minDistHuntInd2]);
+			distChoice5 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
+							Manhattan(possibleMove,hunters[minDistHuntInd2]);
 		else
-			distChoice5 = manDist(possibleMove,hunters[minDistHuntInd1]);
+			distChoice5 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
 
 		if(distChoice1 >= distChoice2 && distChoice1 >= distChoice3 && distChoice1 >= distChoice4 && distChoice1 >= distChoice5) { // up
 			decisions[j].x_coor = preys[j].x_coor-1;
@@ -202,7 +202,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != PREY) {
 		possibleMove.x_coor = hunter.x_coor-1;
 		possibleMove.y_coor = hunter.y_coor;
-		distChoice1 = manDist(possibleMove,prey);
+		distChoice1 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice1 = -1;
@@ -212,7 +212,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != PREY) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor-1;
-		distChoice2 = manDist(possibleMove,prey);
+		distChoice2 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice2 = -1;
@@ -223,7 +223,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != PREY) {
 		possibleMove.x_coor = hunter.x_coor+1;
 		possibleMove.y_coor = hunter.y_coor;
-		distChoice3 = manDist(possibleMove,prey);
+		distChoice3 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice3 = -1;
@@ -233,7 +233,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != PREY) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor+1;
-		distChoice4 = manDist(possibleMove,prey);
+		distChoice4 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice4 = -1;
@@ -241,7 +241,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 	// stay still
 	possibleMove.x_coor = hunter.x_coor;
 	possibleMove.y_coor = hunter.y_coor;
-	distChoice5 = manDist(possibleMove,prey);
+	distChoice5 = Manhattan(possibleMove,prey);
 
 	if(distChoice1 >= distChoice2 && distChoice1 >= distChoice3 && distChoice1 >= distChoice4 && distChoice1 >= distChoice5) { // up
 		//printf("---- decision is up\n");
@@ -286,7 +286,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != PREY) {
 		possibleMove.x_coor = hunter.x_coor-1;
 		possibleMove.y_coor = hunter.y_coor;
-		distChoice1 = manDist(possibleMove,prey);
+		distChoice1 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice1 = 2*n+1;
@@ -296,7 +296,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != PREY) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor-1;
-		distChoice2 = manDist(possibleMove,prey);
+		distChoice2 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice2 = 2*n+1;
@@ -307,7 +307,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != PREY) {
 		possibleMove.x_coor = hunter.x_coor+1;
 		possibleMove.y_coor = hunter.y_coor;
-		distChoice3 = manDist(possibleMove,prey);
+		distChoice3 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice3 = 2*n+1;
@@ -317,7 +317,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != PREY) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor+1;
-		distChoice4 = manDist(possibleMove,prey);
+		distChoice4 = Manhattan(possibleMove,prey);
 	}
 	else // we eliminate this choice
 		distChoice4 = 2*n+1;
@@ -325,7 +325,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 	// stay still
 	possibleMove.x_coor = hunter.x_coor;
 	possibleMove.y_coor = hunter.y_coor;
-	distChoice5 = manDist(possibleMove,prey);
+	distChoice5 = Manhattan(possibleMove,prey);
 
 	if(distChoice1 <= distChoice2 && distChoice1 <= distChoice3 && distChoice1 <= distChoice4 && distChoice1 <= distChoice5) { // up
 		//printf("---- decision is up\n");
@@ -446,7 +446,7 @@ agent_feats * runHunterPlan() {
 
 	for(j = 0; j < numbOfHunters; j++) {
 		for(k = 0; k < numbOfPreys; k++) {
-			int dist = manDist(hunters[j],preys[k]);
+			int dist = Manhattan(hunters[j],preys[k]);
 			if(dist <= 1) {
 				eaters[j] = k;
 				break;
@@ -525,7 +525,7 @@ agent_feats * runHunterPlan() {
 		for(k = 0; k < numbOfPreys; k++) {
 			if(preys[k].x_coor <= hunters[j].x_coor+d && preys[k].x_coor >= hunters[j].x_coor-d &&
 							preys[k].y_coor <= hunters[j].y_coor+d && preys[k].y_coor >= hunters[j].y_coor-d) {
-				preyDists[k] = manDist(preys[k],hunters[j]);
+				preyDists[k] = Manhattan(preys[k],hunters[j]);
 				numbOfFoundPreys++;
 			}
 		}
@@ -568,7 +568,7 @@ agent_feats * runHunterPlan() {
 					if(k != j)
 						if(hunters[k].x_coor <= hunters[j].x_coor+d && hunters[k].x_coor >= hunters[j].x_coor-d &&
 										hunters[k].y_coor <= hunters[j].y_coor+d && hunters[k].y_coor >= hunters[j].y_coor-d) {
-							hunterDists[k] = manDist(hunters[k],hunters[j]);
+							hunterDists[k] = Manhattan(hunters[k],hunters[j]);
 							numbOfFoundHunters++;
 						}
 				}
@@ -1001,7 +1001,7 @@ void runReactiveMultiAgentPlan() {
 }
 
 int main(void) {
-	FILE * input_file = fopen("environment.inp","r");
+	FILE * input_file = fopen("/home/kadir/workspace/ma_systems/HW1/environment.inp","r");
 	int j,k;
 
 

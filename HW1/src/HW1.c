@@ -7,6 +7,8 @@ typedef struct {
 	int y_coor;
 	bool live;
 	float energy;
+	bool close_to_prey;
+	int agent_index;
 } agent_feats;
 
 #define EMPTY      0
@@ -39,7 +41,7 @@ void printEnv() {
 			if(grid_map[j][k] == EMPTY)
 				printf("- ",grid_map[j][k]);
 			else if(grid_map[j][k] == OBSTACLE)
-				printf("X ",grid_map[j][k]);
+				printf("O ",grid_map[j][k]);
 			else if(grid_map[j][k] == PREY)
 				printf("P ",grid_map[j][k]);
 			else if(grid_map[j][k] == HUNTER)
@@ -507,7 +509,9 @@ agent_feats * runHunterPlan() {
 	// main decision loop, for each hunter dikkat (kadir)
 	for(j = 0; j < numbOfHunters; j++) {
 		printf("------- main decision loop for hunter %d,%d  -----------------------------------\n",hunters[j].x_coor,hunters[j].y_coor);
-		// if no energy to move, just stay still
+		hunters[j].close_to_prey = false;   // once etrafinda prey var bilgisini silelim
+
+		// if no energy to move, just stay still, vision da prey varsa bile raporlamasin, close to prey false kalsin basklari gelmesin
 		if(hunters[j].energy <= T+1) {
 			decisions[j].x_coor = hunters[j].x_coor;
 			decisions[j].y_coor = hunters[j].y_coor;
@@ -522,11 +526,13 @@ agent_feats * runHunterPlan() {
 			preyDists[k] = 2*n+1;
 
 		int numbOfFoundPreys = 0;
+
 		for(k = 0; k < numbOfPreys; k++) {
 			if(preys[k].x_coor <= hunters[j].x_coor+d && preys[k].x_coor >= hunters[j].x_coor-d &&
 							preys[k].y_coor <= hunters[j].y_coor+d && preys[k].y_coor >= hunters[j].y_coor-d) {
 				preyDists[k] = Manhattan(preys[k],hunters[j]);
 				numbOfFoundPreys++;
+				hunters[j].close_to_prey = true;
 			}
 		}
 
@@ -575,7 +581,7 @@ agent_feats * runHunterPlan() {
 
 
 				if(numbOfFoundHunters > 0) {
-					//observable alanda 1 ya da 2 hunter varsa onlara yaklasalim
+					//observable alanda hunter varsa uzaklasalim
 					printf("the hunter at %d,%d sees %d many hunters in its observable area, since %d is below the threshold %d, it will try to get close to the nearest one\n",hunters[j].x_coor,hunters[j].y_coor,numbOfFoundHunters,numbOfFoundHunters,d);
 					int minDist = hunterDists[0];
 					int ind = 0;
@@ -585,7 +591,11 @@ agent_feats * runHunterPlan() {
 							minDist = hunterDists[k];
 						}
 					}
-					findFarestMove(hunters[j],hunters[ind],decisions,j);
+
+					if(hunters[ind].close_to_prey)
+					  findNearestMove(hunters[j],hunters[ind],decisions,j);
+					else
+					  findFarestMove(hunters[j],hunters[ind],decisions,j);
 				}
 				else {
 					// if there isn't any hunter in the observable area for hunters[j] (and energy is already above T+2),
@@ -627,9 +637,6 @@ agent_feats * runHunterPlan() {
 						decisions[j].y_coor = hunters[j].y_coor;
 					}
 				}
-				// NOTE: for the above if-else statement
-				// d is chosen as a threshold, it seems a reasonable number not to get catch up
-				// complete accumulation or complete dispersion
 			}
 		}
 	}

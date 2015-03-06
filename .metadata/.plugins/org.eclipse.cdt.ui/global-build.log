@@ -1,48 +1,32 @@
-21:57:46 **** Incremental Build of configuration Debug for project HW1 ****
+22:01:57 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
 Building file: ../src/HW1.c
 Invoking: GCC C Compiler
 gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW1.d" -MT"src/HW1.d" -o "src/HW1.o" "../src/HW1.c"
 ../src/HW1.c: In function ‘printEnv’:
-../src/HW1.c:44:5: warning: too many arguments for format [-Wformat-extra-args]
+../src/HW1.c:40:5: warning: too many arguments for format [-Wformat-extra-args]
      printf("- ",grid_map[j][k]);
      ^
-../src/HW1.c:46:5: warning: too many arguments for format [-Wformat-extra-args]
+../src/HW1.c:42:5: warning: too many arguments for format [-Wformat-extra-args]
      printf("X ",grid_map[j][k]);
      ^
-../src/HW1.c:48:5: warning: too many arguments for format [-Wformat-extra-args]
+../src/HW1.c:44:5: warning: too many arguments for format [-Wformat-extra-args]
      printf("P ",grid_map[j][k]);
      ^
-../src/HW1.c:50:5: warning: too many arguments for format [-Wformat-extra-args]
+../src/HW1.c:46:5: warning: too many arguments for format [-Wformat-extra-args]
      printf("H ",grid_map[j][k]);
      ^
 ../src/HW1.c: In function ‘findNearestMove’:
-../src/HW1.c:283:8: warning: unused variable ‘k’ [-Wunused-variable]
+../src/HW1.c:279:8: warning: unused variable ‘k’ [-Wunused-variable]
   int j,k;
         ^
-../src/HW1.c:283:6: warning: unused variable ‘j’ [-Wunused-variable]
+../src/HW1.c:279:6: warning: unused variable ‘j’ [-Wunused-variable]
   int j,k;
       ^
 ../src/HW1.c: In function ‘runHunterPlan’:
-../src/HW1.c:434:10: warning: unused variable ‘l’ [-Wunused-variable]
+../src/HW1.c:430:10: warning: unused variable ‘l’ [-Wunused-variable]
   int j,k,l;
           ^
-../src/HW1.c: At top level:
-../src/HW1.c:17:12: warning: ‘UP’ defined but not used [-Wunused-variable]
- static int UP = 5;
-            ^
-../src/HW1.c:18:12: warning: ‘LEFT’ defined but not used [-Wunused-variable]
- static int LEFT = 6;
-            ^
-../src/HW1.c:19:12: warning: ‘DOWN’ defined but not used [-Wunused-variable]
- static int DOWN = 7;
-            ^
-../src/HW1.c:20:12: warning: ‘RIGHT’ defined but not used [-Wunused-variable]
- static int RIGHT = 8;
-            ^
-../src/HW1.c:21:12: warning: ‘HOLD_STILL’ defined but not used [-Wunused-variable]
- static int HOLD_STILL = 9;
-            ^
 Finished building: ../src/HW1.c
  
 Building target: HW1
@@ -50,6 +34,6 @@ Invoking: GCC C Linker
 gcc  -o "HW1"  ./src/HW1.o   
 Finished building target: HW1
  
-21:57:48 **** Incremental Build of configuration Debug for project HW1 ****
+22:01:58 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
 make: Nothing to be done for `all'.

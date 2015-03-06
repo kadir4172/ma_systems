@@ -9,19 +9,15 @@ typedef struct {
 	float energy;
 } agent_feats;
 
-static int EMPTY = 0;
-static int HUNTER = 1;
-static int PREY = 2;
-static int OBSTACLE = 3;
+#define EMPTY      0
+#define HUNTER     1
+#define PREY       2
+#define OBSTACLE   3
 
-static int UP = 5;
-static int LEFT = 6;
-static int DOWN = 7;
-static int RIGHT = 8;
-static int HOLD_STILL = 9;
 
-static int CONT = 10;
-static int DISCRETE = 11;
+
+#define CONTINUOUS  10
+#define DISCRETE    11
 
 int time = 1;
 int mode = 0;
@@ -1083,7 +1079,7 @@ int main(void) {
 	if(c == '1')
 		mode = DISCRETE;
 	else
-		mode = CONT;
+		mode = CONTINUOUS;
 
 	printf("The first form of the environment is as below,\n");
 	printf("'-' means empty cell,\n'X' means an obstacle,\n'H' means a hunter,\n'P' means a prey:\n");

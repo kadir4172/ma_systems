@@ -24,7 +24,7 @@ int mode = 0;
 
 // by input
 int n,d;
-float e,i,T;
+float e,R,T;
 int ** grid_map;
 agent_feats * hunters;
 agent_feats * preys;
@@ -449,7 +449,7 @@ agent_feats * runHunterPlan() {
 			int dist = Manhattan(hunters[j],preys[k]);
 			if(dist <= 1) {
 				eaters[j] = k;
-				break;
+				break;                        //her hunter ayni anda bir prey yiyebilir
 			}
 		}
 	}
@@ -474,9 +474,9 @@ agent_feats * runHunterPlan() {
 		// increment the energy
 		for(j = 0; j < numbOfHunters; j++) {
 			if(eaters[j] == k) {
-				hunters[j].energy += (i/numbOfEaters);
+				hunters[j].energy += (R/numbOfEaters);
 				printf("the hunter at %d,%d has eaten the prey at %d,%d and its energy is incremented by %f, becomes %f\n"
-										,hunters[j].x_coor,hunters[j].y_coor,preys[k].x_coor,preys[k].y_coor,i/numbOfEaters,hunters[j].energy);
+										,hunters[j].x_coor,hunters[j].y_coor,preys[k].x_coor,preys[k].y_coor,R/numbOfEaters,hunters[j].energy);
 			}
 		}
 	}
@@ -1005,7 +1005,7 @@ int main(void) {
 	int j,k;
 
 
-	fscanf(input_file,"%d %d %f %f %f",&n,&d,&e,&i,&T);  //girdileri okuyalim
+	fscanf(input_file,"%d %d %f %f %f",&n,&d,&e,&R,&T);  //girdileri okuyalim
 
 	fgetc(input_file);                  //yeni satiri okuyalim
 

@@ -6,7 +6,7 @@ typedef struct {
 	int indy;
 	int alive;
 	float energy;
-} intTuple;
+} agent_feats;
 
 static int EMPTY = 0;
 static int HUNTER = 1;
@@ -29,8 +29,8 @@ int mode = 0;
 int n,d;
 float e,i,T;
 int ** grid_map;
-intTuple * hunters;
-intTuple * preys;
+agent_feats * hunters;
+agent_feats * preys;
 
 int numbOfHunters = 0;
 int numbOfPreys = 0;
@@ -59,14 +59,14 @@ void WaitForEnter()
 		;
 }
 
-int manDist(intTuple t1, intTuple t2) {
+int manDist(agent_feats t1, agent_feats t2) {
 	return abs(t1.indx - t2.indx) + abs(t1.indy - t2.indy);
 }
 
-intTuple * runPreyPlan() {
+agent_feats * runPreyPlan() {
 	int j,k;
-	intTuple * decisions;
-	decisions = malloc(sizeof(intTuple)*numbOfPreys);
+	agent_feats * decisions;
+	decisions = malloc(sizeof(agent_feats)*numbOfPreys);
 
 	// main decision loop for each prey agent
 	for(j = 0; j < numbOfPreys; j++) {
@@ -99,7 +99,7 @@ intTuple * runPreyPlan() {
 		printf("2. nearest hunter: %d %d\n",hunters[minDistHuntInd2].indx,hunters[minDistHuntInd2].indy);
 
 		// for 4 possible moves, check the maximazing the displacement
-		intTuple possibleMove;
+		agent_feats possibleMove;
 		int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 		// up
@@ -194,10 +194,10 @@ intTuple * runPreyPlan() {
 }
 
 // for a hunter and a prey finds farest move for hunter to move away from the prey and applies the decision
-void findFarestMove(intTuple hunter, intTuple prey, intTuple * decisions, int ind) {
+void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decisions, int ind) {
 
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
-	intTuple possibleMove;
+	agent_feats possibleMove;
 	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 	// up
@@ -278,10 +278,10 @@ void findFarestMove(intTuple hunter, intTuple prey, intTuple * decisions, int in
 }
 
 // for a hunter and a prey finds nearest move for hunter to get closer to the prey and applies the decision
-void findNearestMove(intTuple hunter, intTuple prey, intTuple * decisions, int ind) {
+void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisions, int ind) {
 	int j,k;
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
-	intTuple possibleMove;
+	agent_feats possibleMove;
 	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 	// up
@@ -361,7 +361,7 @@ void findNearestMove(intTuple hunter, intTuple prey, intTuple * decisions, int i
 	return;
 }
 
-intTuple * removePreysOrHunters(int type) {
+agent_feats * removePreysOrHunters(int type) {
 	int j,k;
 	int deads = 0;
 	if(type == PREY) {
@@ -369,7 +369,7 @@ intTuple * removePreysOrHunters(int type) {
 			if(!preys[j].alive)
 				deads++;
 		}
-		intTuple temp[numbOfPreys-deads];
+		agent_feats temp[numbOfPreys-deads];
 		for(j = 0, k = 0; j < numbOfPreys; j++) {
 			if(preys[j].alive) {
 				temp[k].indx = preys[j].indx;
@@ -384,7 +384,7 @@ intTuple * removePreysOrHunters(int type) {
 		free(preys);
 		numbOfPreys -= deads;
 
-		preys = malloc(sizeof(intTuple)*numbOfPreys);
+		preys = malloc(sizeof(agent_feats)*numbOfPreys);
 
 		for(j = 0; j < numbOfPreys; j++) {
 			preys[j].indx = temp[j].indx;
@@ -400,7 +400,7 @@ intTuple * removePreysOrHunters(int type) {
 			if(!hunters[j].alive)
 				deads++;
 
-		intTuple temp[numbOfHunters-deads];
+		agent_feats temp[numbOfHunters-deads];
 		for(j = 0, k = 0; j < numbOfHunters; j++) {
 			if(hunters[j].alive) {
 				temp[k].indx = hunters[j].indx;
@@ -416,7 +416,7 @@ intTuple * removePreysOrHunters(int type) {
 		free(hunters);
 		numbOfHunters -= deads;
 
-		hunters = malloc(sizeof(intTuple)*numbOfHunters);
+		hunters = malloc(sizeof(agent_feats)*numbOfHunters);
 
 		for(j = 0; j < numbOfHunters; j++) {
 			 hunters[j].indx = temp[j].indx;
@@ -429,13 +429,13 @@ intTuple * removePreysOrHunters(int type) {
 
 }
 
-intTuple * runHunterPlan() {
+agent_feats * runHunterPlan() {
 	int j,k,l;
-	intTuple * decisions = malloc(sizeof(intTuple)*numbOfHunters);
+	agent_feats * decisions = malloc(sizeof(agent_feats)*numbOfHunters);
 
 	/* the second best decisions are removed due to memoryless constraint in reactive planning
 	// second best decision is the 2nd best action decision that will be used in collision detection
-	// intTuple * secondBestDecisions = malloc(sizeof(intTuple)*numbOfHunters);
+	// agent_feats * secondBestDecisions = malloc(sizeof(agent_feats)*numbOfHunters);
 	for(j = 0; j < numbOfHunters; j++)
 		secondBestDecisions[j].indx = -1;	// -1 means this agent has decided its action certainly and does not have second decision
 	*/
@@ -660,9 +660,9 @@ void runReactiveMultiAgentPlan() {
 	while(numbOfHunters > 0 && numbOfPreys > 0) {
 		// each decides what to do first, then it is applied together.
 		// as a special condition eating a prey will be done instantenously.
-		intTuple * decisionHunters = runHunterPlan(); // hunters decisions changes
+		agent_feats * decisionHunters = runHunterPlan(); // hunters decisions changes
 																	   			// the environment by removing preys.
-		intTuple * decisionPreys = runPreyPlan();
+		agent_feats * decisionPreys = runPreyPlan();
 
 		// apply decisions for hunters
 
@@ -1044,8 +1044,8 @@ int main(void) {
 			printf("ERROR while reading objects from input, obstacle: ----%c----\n",object);
 	}
 	// save hunters and preys in a separate array
-	hunters = malloc(sizeof(intTuple)*numbOfHunters);
-	preys = malloc(sizeof(intTuple)*numbOfPreys);
+	hunters = malloc(sizeof(agent_feats)*numbOfHunters);
+	preys = malloc(sizeof(agent_feats)*numbOfPreys);
 	int huntInd = 0;
 	int preyInd = 0;
 	for(j = 0; j < n; j++) {

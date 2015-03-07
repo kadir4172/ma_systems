@@ -11,9 +11,9 @@ typedef struct {
 	int agent_index;
 } agent_feats;
 
-#define EMPTY      0
-#define HUNTER     1
-#define PREY       2
+#define BOS      0
+#define AVCI     1
+#define AV       2
 #define OBSTACLE   3
 
 
@@ -42,11 +42,11 @@ void printEnv() {
 
 	for(j = 0; j < n; j++) {
 		for(k = 0; k < n; k++) {
-			if(grid_map[j][k] == EMPTY)
+			if(grid_map[j][k] == BOS)
 				printf("- ");
 			else if(grid_map[j][k] == OBSTACLE)
 				printf("O ");
-			else if(grid_map[j][k] == PREY){
+			else if(grid_map[j][k] == AV){
 			    for (l = 0; l<prey_number; l++){
 			    	if(preys[l].x_coor == j && preys[l].y_coor == k)
 			    		printf("P%d",l);
@@ -123,8 +123,8 @@ agent_feats * runPreyPlan() {
 		int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 		// up
-		if(preys[j].x_coor-1 >= 0 && grid_map[preys[j].x_coor-1][preys[j].y_coor] != OBSTACLE && grid_map[preys[j].x_coor-1][preys[j].y_coor] != HUNTER
-													&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != PREY) {
+		if(preys[j].x_coor-1 >= 0 && grid_map[preys[j].x_coor-1][preys[j].y_coor] != OBSTACLE && grid_map[preys[j].x_coor-1][preys[j].y_coor] != AVCI
+													&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != AV) {
 			possibleMove.x_coor = preys[j].x_coor-1;
 			possibleMove.y_coor = preys[j].y_coor;
 			if(hunter_number > 1)
@@ -136,8 +136,8 @@ agent_feats * runPreyPlan() {
 		else // we eliminate this choice
 			distChoice1 = -1;
 		// left
-		if(preys[j].y_coor-1 >= 0 && grid_map[preys[j].x_coor][preys[j].y_coor-1] != OBSTACLE && grid_map[preys[j].x_coor][preys[j].y_coor-1] != HUNTER
-													&& grid_map[preys[j].x_coor][preys[j].y_coor-1] != PREY) {
+		if(preys[j].y_coor-1 >= 0 && grid_map[preys[j].x_coor][preys[j].y_coor-1] != OBSTACLE && grid_map[preys[j].x_coor][preys[j].y_coor-1] != AVCI
+													&& grid_map[preys[j].x_coor][preys[j].y_coor-1] != AV) {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor-1;
 			if(hunter_number > 1)
@@ -150,8 +150,8 @@ agent_feats * runPreyPlan() {
 			distChoice2 = -1;
 
 		// down
-		if(preys[j].x_coor+1 < n && grid_map[preys[j].x_coor+1][preys[j].y_coor] != OBSTACLE && grid_map[preys[j].x_coor+1][preys[j].y_coor] != HUNTER
-													&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != PREY) {
+		if(preys[j].x_coor+1 < n && grid_map[preys[j].x_coor+1][preys[j].y_coor] != OBSTACLE && grid_map[preys[j].x_coor+1][preys[j].y_coor] != AVCI
+													&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != AV) {
 			possibleMove.x_coor = preys[j].x_coor+1;
 			possibleMove.y_coor = preys[j].y_coor;
 			if(hunter_number > 1)
@@ -164,8 +164,8 @@ agent_feats * runPreyPlan() {
 			distChoice3 = -1;
 
 		// right
-		if(preys[j].y_coor+1 < n && grid_map[preys[j].x_coor][preys[j].y_coor+1] != OBSTACLE && grid_map[preys[j].x_coor][preys[j].y_coor+1] != HUNTER
-													&& grid_map[preys[j].x_coor][preys[j].y_coor+1] != PREY) {
+		if(preys[j].y_coor+1 < n && grid_map[preys[j].x_coor][preys[j].y_coor+1] != OBSTACLE && grid_map[preys[j].x_coor][preys[j].y_coor+1] != AVCI
+													&& grid_map[preys[j].x_coor][preys[j].y_coor+1] != AV) {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor+1;
 			if(hunter_number > 1)
@@ -221,8 +221,8 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 	// up
-	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor-1][hunter.y_coor] != HUNTER
-													&& grid_map[hunter.x_coor-1][hunter.y_coor] != PREY) {
+	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
+													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor-1;
 		possibleMove.y_coor = hunter.y_coor;
 		distChoice1 = Manhattan(possibleMove,prey);
@@ -231,8 +231,8 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 		distChoice1 = -1;
 
 	// left
-	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor-1] != HUNTER
-													&& grid_map[hunter.x_coor][hunter.y_coor-1] != PREY) {
+	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
+													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor-1;
 		distChoice2 = Manhattan(possibleMove,prey);
@@ -242,8 +242,8 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 
 
 	// down
-	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor+1][hunter.y_coor] != HUNTER
-													&& grid_map[hunter.x_coor+1][hunter.y_coor] != PREY) {
+	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
+													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor+1;
 		possibleMove.y_coor = hunter.y_coor;
 		distChoice3 = Manhattan(possibleMove,prey);
@@ -252,8 +252,8 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 		distChoice3 = -1;
 
 	// right
-	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor+1] != HUNTER
-													&& grid_map[hunter.x_coor][hunter.y_coor+1] != PREY) {
+	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
+													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor+1;
 		distChoice4 = Manhattan(possibleMove,prey);
@@ -305,8 +305,8 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 	// up
-	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor-1][hunter.y_coor] != HUNTER
-													&& grid_map[hunter.x_coor-1][hunter.y_coor] != PREY) {
+	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
+													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor-1;
 		possibleMove.y_coor = hunter.y_coor;
 		distChoice1 = Manhattan(possibleMove,prey);
@@ -315,8 +315,8 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 		distChoice1 = 2*n+1;
 
 	// left
-	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor-1] != HUNTER
-													&& grid_map[hunter.x_coor][hunter.y_coor-1] != PREY) {
+	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
+													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor-1;
 		distChoice2 = Manhattan(possibleMove,prey);
@@ -326,8 +326,8 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 
 
 	// down
-	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor+1][hunter.y_coor] != HUNTER
-													&& grid_map[hunter.x_coor+1][hunter.y_coor] != PREY) {
+	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
+													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor+1;
 		possibleMove.y_coor = hunter.y_coor;
 		distChoice3 = Manhattan(possibleMove,prey);
@@ -336,8 +336,8 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 		distChoice3 = 2*n+1;
 
 	// right
-	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor+1] != HUNTER
-													&& grid_map[hunter.x_coor][hunter.y_coor+1] != PREY) {
+	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
+													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor+1;
 		distChoice4 = Manhattan(possibleMove,prey);
@@ -384,7 +384,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 agent_feats * removePreysOrHunters(int type) {
 	int j,k;
 	int deads = 0;
-	if(type == PREY) {
+	if(type == AV) {
 		for(j = 0; j < prey_number; j++) {
 			if(!preys[j].live)
 				deads++;
@@ -400,7 +400,7 @@ agent_feats * removePreysOrHunters(int type) {
 				k++;
 			}
 			else
-				grid_map[preys[j].x_coor][preys[j].y_coor] = EMPTY;
+				grid_map[preys[j].x_coor][preys[j].y_coor] = BOS;
 		}
 		free(preys);
 		prey_number -= deads;
@@ -433,7 +433,7 @@ agent_feats * removePreysOrHunters(int type) {
 				k++;
 			}
 			else
-				grid_map[hunters[j].x_coor][hunters[j].y_coor] = EMPTY;
+				grid_map[hunters[j].x_coor][hunters[j].y_coor] = BOS;
 		}
 
 		free(hunters);
@@ -509,7 +509,7 @@ agent_feats * runHunterPlan() {
 	}
 	// remove the eaten preys from the space
 	if(anyEaten)
-		preys = removePreysOrHunters(PREY);
+		preys = removePreysOrHunters(AV);
 	else
 		printf("there is no eaten prey in this time step\n");
 	printf("the number of remaining preys is %d\n",prey_number);
@@ -526,7 +526,7 @@ agent_feats * runHunterPlan() {
 		}
 	}
 	if(anyDead)
-		hunters = removePreysOrHunters(HUNTER);
+		hunters = removePreysOrHunters(AVCI);
 	else
 		printf("there is no dead hunter in this time step\n");
 	printf("the number of remaining hunters is %d\n",hunter_number);
@@ -833,8 +833,8 @@ void runReactiveMultiAgentPlan() {
 				printf("RIGHT: the prey at %d,%d moves to the position %d,%d\n"
 											,preys[j].x_coor,preys[j].y_coor,decisionPreys[j].x_coor,decisionPreys[j].y_coor);
 			}
-			grid_map[preys[j].x_coor][preys[j].y_coor] = EMPTY;
-			grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] = PREY;
+			grid_map[preys[j].x_coor][preys[j].y_coor] = BOS;
+			grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] = AV;
 			//grid_map_index[decisionPreys[j].x_coor][decisionPreys[j].y_coor] = j;
 			preys[j].x_coor = decisionPreys[j].x_coor;
 			preys[j].y_coor = decisionPreys[j].y_coor;
@@ -1006,8 +1006,8 @@ void runReactiveMultiAgentPlan() {
 				hunters[j].energy -= 1.0;
 				printf("its energy is decremented as 1.0, becomes %f\n",hunters[j].energy);
 			}
-			grid_map[hunters[j].x_coor][hunters[j].y_coor] = EMPTY;
-			grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] = HUNTER;
+			grid_map[hunters[j].x_coor][hunters[j].y_coor] = BOS;
+			grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] = AVCI;
 			//grid_map_index[decisionHunters[j].x_coor][decisionHunters[j].y_coor] = j;
 			hunters[j].x_coor = decisionHunters[j].x_coor;
 			hunters[j].y_coor = decisionHunters[j].y_coor;
@@ -1041,7 +1041,7 @@ int main(void) {
 
 	for(j = 0; j < n; j++)
 		for(k = 0; k < n; k++)
-			grid_map[j][k] = EMPTY;
+			grid_map[j][k] = BOS;
 
 
 
@@ -1055,11 +1055,11 @@ int main(void) {
 		}
 		fgetc(input_file);
 		if(object == 'h') {
-			grid_map[x_coor-1][y_coor-1] = HUNTER;
+			grid_map[x_coor-1][y_coor-1] = AVCI;
 			hunter_number++;
 		}
 		else if(object == 'p') {
-			grid_map[x_coor-1][y_coor-1] = PREY;
+			grid_map[x_coor-1][y_coor-1] = AV;
 			prey_number++;
 		}
 		else if(object == 'o')
@@ -1074,7 +1074,7 @@ int main(void) {
 	int preyInd = 0;
 	for(j = 0; j < n; j++) {
 		for(k = 0; k < n; k++) {
-			if(grid_map[j][k] == HUNTER) {
+			if(grid_map[j][k] == AVCI) {
 				//grid_map_index[j][k] = huntInd;
 				hunters[huntInd].x_coor = j;
 				hunters[huntInd].y_coor = k;
@@ -1083,7 +1083,7 @@ int main(void) {
 				hunters[huntInd].agent_index = huntInd;
 				huntInd++;
 			}
-			else if(grid_map[j][k] == PREY) {
+			else if(grid_map[j][k] == AV) {
 				//grid_map_index[j][k] = preyInd;
 				preys[preyInd].x_coor = j;
 				preys[preyInd].y_coor = k;

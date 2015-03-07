@@ -440,16 +440,13 @@ agent_feats * Olenleri_Kaldir(int type) {
 		}
 		return hunters;
 	}
-
 }
 
 agent_feats * runHunterPlan() {
 	int j,k;
-	agent_feats * decisions = malloc(sizeof(agent_feats)*hunter_number);
+	agent_feats * decision_to_move = malloc(sizeof(agent_feats)*hunter_number);
 
-	// first, if there are adj/same cell preys eat them
-	// keep the eater hunters and eaten preys, -1 means hunter j eat nothing
-	printf("check for eaten preys\n");
+
 	int eaters[hunter_number];
 	for(j = 0; j < hunter_number; j++)
 		eaters[j] = -1;
@@ -464,41 +461,42 @@ agent_feats * runHunterPlan() {
 		}
 	}
 
-	// for each eaten kth prey, increment the eaters energy accordingly
-	int anyEaten = 0;
+
+	int yem_oldu = 0;
 	for(k = 0; k < prey_number; k++) {
-		int numbOfEaters = 0;
+		int yiyici_sayisi = 0;
 		for(j = 0; j < hunter_number; j++) {
 			if(eaters[j] == k) {
-				numbOfEaters++;
+				yiyici_sayisi++;
 			}
 		}
 
-		// set the eaten prey dead
-		if(numbOfEaters > 0) {
-			printf("the prey at %d,%d has been eaten by %d number of hunters\n",preys[k].x_coor,preys[k].y_coor,numbOfEaters);
+		//yem olan avi oldu olarak isaretleyelim
+		if(yiyici_sayisi > 0) {
+
 			preys[k].live = false;
-			anyEaten = 1;
+			yem_oldu = 1;
 		}
 
-		// increment the energy
-		for(j = 0; j < hunter_number; j++) {
+		//yiyenlerin enerjilerini arttiralim
+		int total_energy_of_eaters = 0;
+		for(j = 0; j < hunter_number; j++){
 			if(eaters[j] == k) {
-				hunters[j].energy += (R/numbOfEaters);
-				printf("the hunter at %d,%d has eaten the prey at %d,%d and its energy is incremented by %f, becomes %f\n"
-										,hunters[j].x_coor,hunters[j].y_coor,preys[k].x_coor,preys[k].y_coor,R/numbOfEaters,hunters[j].energy);
+				total_energy_of_eaters += hunters[j].energy;
+		    }
+		}
+		for(j = 0; j < hunter_number; j++){
+			if(eaters[j] == k) {
+				hunters[j].energy += (R * hunters[j].energy) / total_energy_of_eaters;
 			}
 		}
 	}
-	// remove the eaten preys from the space
-	if(anyEaten)
+	//olenleri kaldiralim
+	if(yem_oldu)
 		preys = Olenleri_Kaldir(AV);
-	else
-		printf("there is no eaten prey in this time step\n");
-	printf("the number of remaining preys is %d\n",prey_number);
 
-	// check for no energy hunters
-	printf("check for dead hunters\n");
+
+	// enerjisi biten hunter lari bulalim
 	int anyDead = 0;
 	for(j = 0; j < hunter_number; j++) {
 		if(hunters[j].energy < T) {
@@ -521,8 +519,8 @@ agent_feats * runHunterPlan() {
 
 		// if no energy to move, just stay still, vision da prey varsa bile raporlamasin, close to prey false kalsin basklari gelmesin
 		if(hunters[j].energy <= T+1) {
-			decisions[j].x_coor = hunters[j].x_coor;
-			decisions[j].y_coor = hunters[j].y_coor;
+			decision_to_move[j].x_coor = hunters[j].x_coor;
+			decision_to_move[j].y_coor = hunters[j].y_coor;
 			printf("the hunter at %d,%d does not have enough energy to move, %f, so stays still\n"
 														,hunters[j].x_coor,hunters[j].y_coor,hunters[j].energy);
 			continue;
@@ -560,14 +558,14 @@ agent_feats * runHunterPlan() {
 																	,preys[ind].x_coor,preys[ind].y_coor,hunters[j].x_coor,hunters[j].y_coor);
 			// find the action that make the hunter closer to the prey,
 			// same as the prey displacement maximization strategy, but minimization.
-			Yakina_Gel(hunters[j],preys[ind],decisions,j);
+			Yakina_Gel(hunters[j],preys[ind],decision_to_move,j);
 		}
 		else {
 			// if there is no prey in the observable area, and energy is above T+2, move to nearest hunter in the observable area
 			// if energy is less than or equal to T+2, stay still
 			if(hunters[j].energy <= T+2) {
-				decisions[j].x_coor = hunters[j].x_coor;
-				decisions[j].y_coor = hunters[j].y_coor;
+				decision_to_move[j].x_coor = hunters[j].x_coor;
+				decision_to_move[j].y_coor = hunters[j].y_coor;
 				printf("the hunter at %d,%d does not see any preys in its observable area and does not have enough energy to move, %f, so stays still\n",hunters[j].x_coor,hunters[j].y_coor,hunters[j].energy);
 			}
 			else {
@@ -601,9 +599,9 @@ agent_feats * runHunterPlan() {
 					}
 
 					if(hunters[ind].close_to_prey)
-					  Yakina_Gel(hunters[j],hunters[ind],decisions,j);
+					  Yakina_Gel(hunters[j],hunters[ind],decision_to_move,j);
 					else
-					  Uzaga_Git(hunters[j],hunters[ind],decisions,j);
+					  Uzaga_Git(hunters[j],hunters[ind],decision_to_move,j);
 				}
 				else {
 					// if there isn't any hunter in the observable area for hunters[j] (and energy is already above T+2),
@@ -614,42 +612,42 @@ agent_feats * runHunterPlan() {
 					int act = rand() % 5;
 					if(act == 0) {	// up
 						if(hunters[j].x_coor-1 >= 0)
-							decisions[j].x_coor = hunters[j].x_coor-1;
+							decision_to_move[j].x_coor = hunters[j].x_coor-1;
 						else
-							decisions[j].x_coor = hunters[j].x_coor+1;
-						decisions[j].y_coor = hunters[j].y_coor;
+							decision_to_move[j].x_coor = hunters[j].x_coor+1;
+						decision_to_move[j].y_coor = hunters[j].y_coor;
 					}
 					else if(act == 1) { // left
-						decisions[j].x_coor = hunters[j].x_coor;
+						decision_to_move[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
-							decisions[j].y_coor = hunters[j].y_coor-1;
+							decision_to_move[j].y_coor = hunters[j].y_coor-1;
 						else
-							decisions[j].y_coor = hunters[j].y_coor+1;
+							decision_to_move[j].y_coor = hunters[j].y_coor+1;
 					}
 					else if(act == 2) {	// down
 						if(hunters[j].x_coor+1 < n)
-							decisions[j].x_coor = hunters[j].x_coor+1;
+							decision_to_move[j].x_coor = hunters[j].x_coor+1;
 						else
-							decisions[j].x_coor = hunters[j].x_coor-1;
-						decisions[j].y_coor = hunters[j].y_coor;
+							decision_to_move[j].x_coor = hunters[j].x_coor-1;
+						decision_to_move[j].y_coor = hunters[j].y_coor;
 					}
 					else if(act == 3) {	// right
-						decisions[j].x_coor = hunters[j].x_coor;
+						decision_to_move[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
-							decisions[j].y_coor = hunters[j].y_coor+1;
+							decision_to_move[j].y_coor = hunters[j].y_coor+1;
 						else
-							decisions[j].y_coor = hunters[j].y_coor-1;
+							decision_to_move[j].y_coor = hunters[j].y_coor-1;
 					}
 					else if(act == 4) {	// stay still
-						decisions[j].x_coor = hunters[j].x_coor;
-						decisions[j].y_coor = hunters[j].y_coor;
+						decision_to_move[j].x_coor = hunters[j].x_coor;
+						decision_to_move[j].y_coor = hunters[j].y_coor;
 					}
 				}
 			}
 		}
 	}
 
-	return decisions;
+	return decision_to_move;
 }
 
 void runReactiveMultiAgentPlan() {

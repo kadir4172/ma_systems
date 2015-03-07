@@ -87,7 +87,7 @@ int Manhattan(agent_feats t1, agent_feats t2) {
 }
 
 
-agent_feats * runPreyPlan() {
+agent_feats * Av_Kararlari() {
 	int j,k;
 	agent_feats * secilen_hamle;
 	secilen_hamle = malloc(sizeof(agent_feats)*prey_number);
@@ -442,7 +442,7 @@ agent_feats * Olenleri_Kaldir(int type) {
 	}
 }
 
-agent_feats * runHunterPlan() {
+agent_feats * Avci_Kararlari() {
 	int j,k;
 	agent_feats * decision_to_move = malloc(sizeof(agent_feats)*hunter_number);
 
@@ -633,21 +633,18 @@ agent_feats * runHunterPlan() {
 void runReactiveMultiAgentPlan() {
 	int j,k;
 	while(hunter_number > 0 && prey_number > 0) {
-		// each decides what to do first, then it is applied together.
-		// as a special condition eating a prey will be done instantenously.
-		agent_feats * decisionHunters = runHunterPlan(); // hunters decisions changes
-																	   			// the environment by removing preys.
-		agent_feats * decisionPreys = runPreyPlan();
+
+		agent_feats * decisionHunters = Avci_Kararlari(); //o anki duruma gore avcilarin kararlarini belirleyelim
+
+		agent_feats * decisionPreys = Av_Kararlari();     // o anki duruma gore avlarin kararlarini belirleyelim
 
 
 
 
-		// apply decisions for preys
 
-		printf("PREY DECISIONS\n");
-		// collision cases
+		//Tum kararlar ayni anda alinda, carpisma durumlarini burada handle edelim
 		if(prey_number <= 0)
-			printf("There is no remaining prey so the plan will end at the next time step\n");
+			printf("Ortamda av kalmadi bu adimda simulasyon sonlandirilacaktir.\n");
 		for(j = 0; j < prey_number; j++) {
 			for(k = 0; k < prey_number; k++) {
 				if(j != k && decisionPreys[j].x_coor == decisionPreys[k].x_coor && decisionPreys[j].y_coor == decisionPreys[k].y_coor) {

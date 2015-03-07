@@ -38,7 +38,7 @@ int prey_number = 0;
 
 
 //Grid map uzerindeki tum agentlari ve engelleri basan fonksiyon
-void printEnv() {
+void Ortami_Bas() {
 	int j,k,l;
 
 	for(j = 0; j < n; j++) {
@@ -631,7 +631,7 @@ agent_feats * Avci_Kararlari() {
 }
 
 void runReactiveMultiAgentPlan() {
-	int j,k;
+	int j,k,l;
 	while(hunter_number > 0 && prey_number > 0) {
 
 		agent_feats * decisionHunters = Avci_Kararlari(); //o anki duruma gore avcilarin kararlarini belirleyelim
@@ -729,9 +729,11 @@ void runReactiveMultiAgentPlan() {
 					}
 			}
 
-			for(k = 0; k < prey_number; k++) {
-				if(j != k && decisionPreys[j].x_coor == decisionPreys[k].x_coor && decisionPreys[j].y_coor == decisionPreys[k].y_coor)
+			for(l = 0; l < prey_number; l++) {
+				if(j != l && decisionPreys[j].x_coor == decisionPreys[l].x_coor && decisionPreys[j].y_coor == decisionPreys[l].y_coor){
+					k = l;
 					goto TRY_PREY; //herhangi bir prey ile cakisma var tekrar split edelim
+				}
 			}
 
 			grid_map[preys[j].x_coor][preys[j].y_coor] = BOS;
@@ -742,182 +744,127 @@ void runReactiveMultiAgentPlan() {
 
 
 
-		// apply decisions for hunters
-
-
+		// hunterlarin kararlarindan sonra carpisma durumuna bakalim
 		if(hunter_number <= 0)
-			printf("There is no remaining hunter so the plan will end at the next time step\n");
+			printf("Ortamda avci kalmadi, simulasyon bir sonraki adimda sonlandirilacaktir.\n");
 
-		// collision cases
+
 		for(j = 0; j < hunter_number; j++) {
 			for(k = 0; k < hunter_number; k++) {
 				if(j != k && decisionHunters[j].x_coor == decisionHunters[k].x_coor && decisionHunters[j].y_coor == decisionHunters[k].y_coor) {
-					printf("COLLISION: the hunter at %d,%d has collided with the hunter at %d,%d while moving to %d,%d. their energy is decremented by 1, becomes %f and they will spill out randomly\n",hunters[j].x_coor,hunters[j].y_coor,hunters[k].x_coor,hunters[k].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor,hunters[j].energy);
-					// after a collision it moves randomly, note that it looses energy both for collision and random move
+					TRY_HUNTER:printf("Hunter carpismasi var,enerjileri dusuruluyor ve random split ediliyorlar\n");
 					int random_action = rand() % 5;
-					if(random_action == 0) {	// up
+					if(random_action == 0) {
 						if(hunters[j].x_coor-1 >= 0)
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(random_action == 1) { // left
+					else if(random_action == 1) {
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 					}
-					else if(random_action == 2) {	// down
+					else if(random_action == 2) {
 						if(hunters[j].x_coor+1 < n)
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(random_action == 3) {	// right
+					else if(random_action == 3) {
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 					}
-					else if(random_action == 4) {	// stay still
+					else if(random_action == 4) {
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					// not to collide again
-					int prevact = random_action;
-					random_action = rand() % 5;
-					if(random_action == prevact && random_action < 4)
-						random_action += 1;
-					else if(random_action == prevact && random_action == 4)
-						random_action -= 1;
-
-					if(random_action == 0) {	// up
-						if(hunters[k].x_coor-1 >= 0)
-							decisionHunters[k].x_coor = hunters[k].x_coor-1;
-						else
-							decisionHunters[k].x_coor = hunters[k].x_coor+1;
-						decisionHunters[k].y_coor = hunters[k].y_coor;
-					}
-					else if(random_action == 1) { // left
-						decisionHunters[k].x_coor = hunters[k].x_coor;
-						if(hunters[k].y_coor-1 >= 0)
-							decisionHunters[k].y_coor = hunters[k].y_coor-1;
-						else
-							decisionHunters[k].y_coor = hunters[k].y_coor+1;
-					}
-					else if(random_action == 2) {	// down
-						if(hunters[k].x_coor+1 < n)
-							decisionHunters[k].x_coor = hunters[k].x_coor+1;
-						else
-							decisionHunters[k].x_coor = hunters[k].x_coor-1;
-						decisionHunters[k].y_coor = hunters[k].y_coor;
-					}
-					else if(random_action == 3) {	// right
-						decisionHunters[k].x_coor = hunters[k].x_coor;
-						if(hunters[k].y_coor+1 < n)
-							decisionHunters[k].y_coor = hunters[k].y_coor+1;
-						else
-							decisionHunters[k].y_coor = hunters[k].y_coor-1;
-					}
-					else if(random_action == 4) {	// stay still
-						decisionHunters[k].x_coor = hunters[k].x_coor;
-						decisionHunters[k].y_coor = hunters[k].y_coor;
-					}
-
 					hunters[j].energy -= 1;
 					hunters[k].energy -= 1;
 					break;
 				}
 			}
 			if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) {
-				printf("COLLISION: the hunter at %d,%d has collided with the obstacle at %d,%d. their energy is decremented by 1, becomes %f, and it will spill out randomly\n",hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor,hunters[j].energy);
+				TRY_OBSTACLE_HUNTER: printf("Hunter engele carpti enerjisi dusurulup split ediliyor\n");
 					int random_action = rand() % 5;
-					if(random_action == 0) {	// up
+					if(random_action == 0) {
 						if(hunters[j].x_coor-1 >= 0)
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(random_action == 1) { // left
+					else if(random_action == 1) {
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 					}
-					else if(random_action == 2) {	// down
+					else if(random_action == 2) {
 						if(hunters[j].x_coor+1 < n)
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(random_action == 3) {	// right
+					else if(random_action == 3) {
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 					}
-					else if(random_action == 4) {	// stay still
+					else if(random_action == 4) {
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
 
-					if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) { // if still an obstacle just stay still
-							decisionHunters[j].x_coor = hunters[j].x_coor;
-							decisionHunters[j].y_coor = hunters[j].y_coor;
+					if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) { // yine engel denk geliyorsa tekrar split edelim
+						goto TRY_OBSTACLE_HUNTER;
 					}
 
-					hunters[j].energy -= 1;	// in collision case, they do not move to anywhere, just looses energy
+					hunters[j].energy -= 1;	// engele carptigi icin enerjisini bir dusurelim
 			}
-			// decrement the energy levels accordingly
+
+			for(l = 0; l < hunter_number; l++) {
+						if(j != l && decisionHunters[j].x_coor == decisionHunters[l].x_coor && decisionHunters[j].y_coor == decisionHunters[l].y_coor){
+							k = l;
+							goto TRY_HUNTER; //herhangi bir hunter ile cakisma var tekrar split edelim
+						}
+			}
+
 			if(hunters[j].x_coor == decisionHunters[j].x_coor && hunters[j].y_coor == decisionHunters[j].y_coor) {
-				printf("HOLD_STILL: the hunter at %d,%d moves to the position %d,%d, HOLD_STILL, and "
-											,hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor);
 				hunters[j].energy -= 0.2;
-				printf("its energy is decremented as 0.2, becomes %f\n",hunters[j].energy);
 			}
 			else if(hunters[j].x_coor-1 == decisionHunters[j].x_coor && hunters[j].y_coor == decisionHunters[j].y_coor) {
-				printf("UP: the hunter at %d,%d moves to the position %d,%d, and "
-											,hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor);
-				hunters[j].energy -= 1.0;
-				printf("its energy is decremented as 1.0, becomes %f\n",hunters[j].energy);
+			    hunters[j].energy -= 1.0;
 			}
 			else if(hunters[j].x_coor+1 == decisionHunters[j].x_coor && hunters[j].y_coor == decisionHunters[j].y_coor) {
-				printf("DOWN: the hunter at %d,%d moves to the position %d,%d, and "
-											,hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor);
 				hunters[j].energy -= 1.0;
-				printf("its energy is decremented as 1.0, becomes %f\n",hunters[j].energy);
 			}
 			else if(hunters[j].x_coor == decisionHunters[j].x_coor && hunters[j].y_coor-1 == decisionHunters[j].y_coor) {
-				printf("LEFT: the hunter at %d,%d moves to the position %d,%d, and "
-											,hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor);
 				hunters[j].energy -= 1.0;
-				printf("its energy is decremented as 1.0, becomes %f\n",hunters[j].energy);
 			}
 			else if(hunters[j].x_coor == decisionHunters[j].x_coor && hunters[j].y_coor+1 == decisionHunters[j].y_coor) {
-				printf("RIGHT: the hunter at %d,%d moves to the position %d,%d, and "
-											,hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor);
 				hunters[j].energy -= 1.0;
-				printf("its energy is decremented as 1.0, becomes %f\n",hunters[j].energy);
 			}
 			grid_map[hunters[j].x_coor][hunters[j].y_coor] = BOS;
 			grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] = AVCI;
-			//grid_map_index[decisionHunters[j].x_coor][decisionHunters[j].y_coor] = j;
 			hunters[j].x_coor = decisionHunters[j].x_coor;
 			hunters[j].y_coor = decisionHunters[j].y_coor;
 		}
 
 
-
-		printEnv();
-		printf("%d. time step is finished, press enter to continue...\n",time);
+		Ortami_Bas();
+		printf("%d no lu adim tamamlandi, devam etmek icin 'Enter' a basiniz.\n",time);
 		time++;
 		Bekle();
 	}
@@ -1008,7 +955,7 @@ int main(void) {
 
 	printf("The first form of the environment is as below,\n");
 	printf("'-' means empty cell,\n'X' means an obstacle,\n'H' means a hunter,\n'P' means a prey:\n");
-	printEnv();
+	Ortami_Bas();
 	printf("Simulasyonu baslatmak icin Enter a basiniz\n");
 
 	Bekle();  // this for starting the plan

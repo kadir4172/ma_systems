@@ -89,8 +89,8 @@ int Manhattan(agent_feats t1, agent_feats t2) {
 
 agent_feats * runPreyPlan() {
 	int j,k;
-	agent_feats * decisions;
-	decisions = malloc(sizeof(agent_feats)*prey_number);
+	agent_feats * secilen_hamle;
+	secilen_hamle = malloc(sizeof(agent_feats)*prey_number);
 
 	agent_feats hamle;
 	int left_move,down_move,right_move,up_move,hold_nomove;
@@ -192,35 +192,34 @@ agent_feats * runPreyPlan() {
 					right_move = -1;
 
 
-		if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // up
-			decisions[j].x_coor = preys[j].x_coor-1;
-			decisions[j].y_coor = preys[j].y_coor;
+		if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // sola hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor-1;
+			secilen_hamle[j].y_coor = preys[j].y_coor;
 		}
-		else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) { // left
-			decisions[j].x_coor = preys[j].x_coor;
-			decisions[j].y_coor = preys[j].y_coor-1;
+		else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) {// asagi hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor;
+			secilen_hamle[j].y_coor = preys[j].y_coor-1;
 		}
-		else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { // down
-			decisions[j].x_coor = preys[j].x_coor+1;
-			decisions[j].y_coor = preys[j].y_coor;
+		else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { //saga hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor+1;
+			secilen_hamle[j].y_coor = preys[j].y_coor;
 		}
-		else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // right
-			decisions[j].x_coor = preys[j].x_coor;
-			decisions[j].y_coor = preys[j].y_coor+1;
+		else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // yukari hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor;
+			secilen_hamle[j].y_coor = preys[j].y_coor+1;
 		}
-		else if(hold_nomove >= left_move && hold_nomove >= down_move && hold_nomove >= right_move && hold_nomove >= up_move) { // stay still
-			decisions[j].x_coor = preys[j].x_coor;
-			decisions[j].y_coor = preys[j].y_coor;
+		else if(hold_nomove >= left_move && hold_nomove >= down_move && hold_nomove >= right_move && hold_nomove >= up_move) { // durmak en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor;
+			secilen_hamle[j].y_coor = preys[j].y_coor;
 		}
-		else
-				printf("ERROR in possible move selection of PREYs !!");
+
 	}
 
-	return decisions;
+	return secilen_hamle;
 }
 
 // for a hunter and a prey finds farest move for hunter to move away from the prey and applies the decision
-void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decisions, int ind) {
+void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle, int ind) {
 
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
 	agent_feats hamle;
@@ -274,28 +273,28 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 
 	if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // up
 		//printf("---- decision is up\n");
-		decisions[ind].x_coor = hunter.x_coor-1;
-		decisions[ind].y_coor = hunter.y_coor;
+		secilen_hamle[ind].x_coor = hunter.x_coor-1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) { // left
 		//printf("---- decision is left\n");
-		decisions[ind].x_coor = hunter.x_coor;
-		decisions[ind].y_coor = hunter.y_coor-1;
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor-1;
 	}
 	else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { // down
 		//printf("---- decision is down\n");
-		decisions[ind].x_coor = hunter.x_coor+1;
-		decisions[ind].y_coor = hunter.y_coor;
+		secilen_hamle[ind].x_coor = hunter.x_coor+1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // right
 		//printf("---- decision is right\n");
-		decisions[ind].x_coor = hunter.x_coor;
-		decisions[ind].y_coor = hunter.y_coor+1;
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor+1;
 	}
 	else if(hold_nomove >= left_move && hold_nomove >= down_move && hold_nomove >= right_move && hold_nomove >= up_move) { // stay still
 		//printf("---- decision is right\n");
-		decisions[ind].x_coor = hunter.x_coor;
-		decisions[ind].y_coor = hunter.y_coor;
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else
 			printf("ERROR1 in possible move selection of HUNTERs !!");
@@ -304,7 +303,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 }
 
 // for a hunter and a prey finds nearest move for hunter to get closer to the prey and applies the decision
-void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisions, int ind) {
+void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle, int ind) {
 	//int j,k;
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
 	agent_feats hamle;
@@ -358,28 +357,28 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 
 	if(left_move <= down_move && left_move <= right_move && left_move <= up_move && left_move <= hold_nomove) { // up
 		//printf("---- decision is up\n");
-		decisions[ind].x_coor = hunter.x_coor-1;
-		decisions[ind].y_coor = hunter.y_coor;
+		secilen_hamle[ind].x_coor = hunter.x_coor-1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else if(down_move <= left_move && down_move <= right_move && down_move <= up_move && down_move <= hold_nomove) { // left
 		//printf("---- decision is left\n");
-		decisions[ind].x_coor = hunter.x_coor;
-		decisions[ind].y_coor = hunter.y_coor-1;
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor-1;
 	}
 	else if(right_move <= left_move && right_move <= down_move && right_move <= up_move && right_move <= hold_nomove) { // down
 		//printf("---- decision is down\n");
-		decisions[ind].x_coor = hunter.x_coor+1;
-		decisions[ind].y_coor = hunter.y_coor;
+		secilen_hamle[ind].x_coor = hunter.x_coor+1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else if(up_move <= left_move && up_move <= down_move && up_move <= right_move && up_move <= hold_nomove) { // right
 		//printf("---- decision is right\n");
-		decisions[ind].x_coor = hunter.x_coor;
-		decisions[ind].y_coor = hunter.y_coor+1;
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor+1;
 	}
 	else if(hold_nomove <= left_move && hold_nomove <= down_move && hold_nomove <= hold_nomove && hold_nomove <= up_move) { // stay still
 		//printf("---- decision is right\n");
-		decisions[ind].x_coor = hunter.x_coor;
-		decisions[ind].y_coor = hunter.y_coor;
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else
 			printf("ERROR1 in possible move selection of HUNTERs !!");

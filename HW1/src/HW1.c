@@ -92,11 +92,11 @@ agent_feats * runPreyPlan() {
 	agent_feats * decisions;
 	decisions = malloc(sizeof(agent_feats)*prey_number);
 
-	// main decision loop for each prey agent
+	agent_feats hamle;
+	int left_move,down_move,right_move,up_move,hold_nomove;
+
+	//en yakin hunter i bulalim
 	for(j = 0; j < prey_number; j++) {
-		//printf("------- main decision loop for prey %d,%d --------------------------------------\n",preys[j].x_coor,preys[j].y_coor);
-		// find nearest two hunters
-		// find first nearest
 		//olabilecek maksimum uzaklik
 		int min_dist = 2*n+1;
 		int nearest_hunt1 = 0;
@@ -107,107 +107,108 @@ agent_feats * runPreyPlan() {
 				nearest_hunt1 = k;
 			}
 		}
-		printf("1. nearest hunter: %d %d\n",hunters[nearest_hunt1].x_coor,hunters[nearest_hunt1].y_coor);
 
-		// find second nearest
+
+		// varsa en yakin ikinci hunter i bulalim
 		int nearest_hunt2 = 0;
 		if(hunter_number > 1) {
 			min_dist = 2*n+1;
 			for(k = 0; k < hunter_number; k++) {
 				int dist = Manhattan(preys[j],hunters[k]);
 				if(k != nearest_hunt1 && dist < min_dist) {
-					min_dist = dist;
-					nearest_hunt2 = k;
+				  min_dist = dist;
+				  nearest_hunt2 = k;
 				}
 			}
 		}
-		printf("2. nearest hunter: %d %d\n",hunters[nearest_hunt2].x_coor,hunters[nearest_hunt2].y_coor);
 
-		// for 4 possible moves, check the maximazing the displacement
-		agent_feats possibleMove;
-		int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
-		// up
-		if(preys[j].x_coor-1 >= 0 && grid_map[preys[j].x_coor-1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor-1][preys[j].y_coor] != AVCI
-													&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != AV) {
-			possibleMove.x_coor = preys[j].x_coor-1;
-			possibleMove.y_coor = preys[j].y_coor;
-			if(hunter_number > 1)
-				distChoice1 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
-								Manhattan(possibleMove,hunters[nearest_hunt2]);
-			else
-				distChoice1 = Manhattan(possibleMove,hunters[nearest_hunt1]);
-		}
-		else // we eliminate this choice
-			distChoice1 = -1;
-		// left
+		// Hamle yapmazsak en yakin iki hunter dan uzakligimiz ne olur
+				hamle.x_coor = preys[j].x_coor;
+				hamle.y_coor = preys[j].y_coor;
+				if(hunter_number > 1)
+					hold_nomove = Manhattan(hamle,hunters[nearest_hunt1]) +
+									Manhattan(hamle,hunters[nearest_hunt2]);
+				else
+					hold_nomove = Manhattan(hamle,hunters[nearest_hunt1]);
+
+		// asagi hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
 		if(preys[j].y_coor-1 >= 0 && grid_map[preys[j].x_coor][preys[j].y_coor-1] != ENGEL && grid_map[preys[j].x_coor][preys[j].y_coor-1] != AVCI
 													&& grid_map[preys[j].x_coor][preys[j].y_coor-1] != AV) {
-			possibleMove.x_coor = preys[j].x_coor;
-			possibleMove.y_coor = preys[j].y_coor-1;
+			hamle.x_coor = preys[j].x_coor;
+			hamle.y_coor = preys[j].y_coor-1;
 			if(hunter_number > 1)
-				distChoice2 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
-								Manhattan(possibleMove,hunters[nearest_hunt2]);
+				down_move = Manhattan(hamle,hunters[nearest_hunt1]) +
+								Manhattan(hamle,hunters[nearest_hunt2]);
 			else
-				distChoice2 = Manhattan(possibleMove,hunters[nearest_hunt1]);
+				down_move = Manhattan(hamle,hunters[nearest_hunt1]);
 		}
-		else  // we eliminate this choice
-			distChoice2 = -1;
+		else  //Sinir, engel, av ya da avci var
+			down_move = -1;
 
-		// down
-		if(preys[j].x_coor+1 < n && grid_map[preys[j].x_coor+1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor+1][preys[j].y_coor] != AVCI
-													&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != AV) {
-			possibleMove.x_coor = preys[j].x_coor+1;
-			possibleMove.y_coor = preys[j].y_coor;
+
+		// sola hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
+		if(preys[j].x_coor-1 >= 0 && grid_map[preys[j].x_coor-1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor-1][preys[j].y_coor] != AVCI
+													&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != AV) {
+			hamle.x_coor = preys[j].x_coor-1;
+			hamle.y_coor = preys[j].y_coor;
 			if(hunter_number > 1)
-				distChoice3 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
-								Manhattan(possibleMove,hunters[nearest_hunt2]);
+				left_move = Manhattan(hamle,hunters[nearest_hunt1]) +
+								Manhattan(hamle,hunters[nearest_hunt2]);
 			else
-				distChoice3 = Manhattan(possibleMove,hunters[nearest_hunt1]);
+				left_move = Manhattan(hamle,hunters[nearest_hunt1]);
 		}
-		else // we eliminate this choice
-			distChoice3 = -1;
+		else //Sinir, engel, av ya da avci var
+			left_move = -1;
 
-		// right
+
+
+		// yukari hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
 		if(preys[j].y_coor+1 < n && grid_map[preys[j].x_coor][preys[j].y_coor+1] != ENGEL && grid_map[preys[j].x_coor][preys[j].y_coor+1] != AVCI
 													&& grid_map[preys[j].x_coor][preys[j].y_coor+1] != AV) {
-			possibleMove.x_coor = preys[j].x_coor;
-			possibleMove.y_coor = preys[j].y_coor+1;
+			hamle.x_coor = preys[j].x_coor;
+			hamle.y_coor = preys[j].y_coor+1;
 			if(hunter_number > 1)
-				distChoice4 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
-								Manhattan(possibleMove,hunters[nearest_hunt2]);
+				up_move = Manhattan(hamle,hunters[nearest_hunt1]) +
+								Manhattan(hamle,hunters[nearest_hunt2]);
 			else
-				distChoice4 = Manhattan(possibleMove,hunters[nearest_hunt1]);
+				up_move = Manhattan(hamle,hunters[nearest_hunt1]);
 		}
-		else // we eliminate this choice
-			distChoice4 = -1;
+		else //Sinir, engel, av ya da avci var
+			up_move = -1;
 
-		// stay still
-		possibleMove.x_coor = preys[j].x_coor;
-		possibleMove.y_coor = preys[j].y_coor;
-		if(hunter_number > 1)
-			distChoice5 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
-							Manhattan(possibleMove,hunters[nearest_hunt2]);
-		else
-			distChoice5 = Manhattan(possibleMove,hunters[nearest_hunt1]);
+		// saga hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
+				if(preys[j].x_coor+1 < n && grid_map[preys[j].x_coor+1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor+1][preys[j].y_coor] != AVCI
+															&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != AV) {
+					hamle.x_coor = preys[j].x_coor+1;
+					hamle.y_coor = preys[j].y_coor;
+					if(hunter_number > 1)
+						right_move = Manhattan(hamle,hunters[nearest_hunt1]) +
+										Manhattan(hamle,hunters[nearest_hunt2]);
+					else
+						right_move = Manhattan(hamle,hunters[nearest_hunt1]);
+				}
+				else //Sinir, engel, av ya da avci var
+					right_move = -1;
 
-		if(distChoice1 >= distChoice2 && distChoice1 >= distChoice3 && distChoice1 >= distChoice4 && distChoice1 >= distChoice5) { // up
+
+		if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // up
 			decisions[j].x_coor = preys[j].x_coor-1;
 			decisions[j].y_coor = preys[j].y_coor;
 		}
-		else if(distChoice2 >= distChoice1 && distChoice2 >= distChoice3 && distChoice2 >= distChoice4 && distChoice2 >= distChoice5) { // left
+		else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) { // left
 			decisions[j].x_coor = preys[j].x_coor;
 			decisions[j].y_coor = preys[j].y_coor-1;
 		}
-		else if(distChoice3 >= distChoice1 && distChoice3 >= distChoice2 && distChoice3 >= distChoice4 && distChoice3 >= distChoice5) { // down
+		else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { // down
 			decisions[j].x_coor = preys[j].x_coor+1;
 			decisions[j].y_coor = preys[j].y_coor;
 		}
-		else if(distChoice4 >= distChoice1 && distChoice4 >= distChoice2 && distChoice4 >= distChoice3 && distChoice4 >= distChoice5) { // right
+		else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // right
 			decisions[j].x_coor = preys[j].x_coor;
 			decisions[j].y_coor = preys[j].y_coor+1;
 		}
-		else if(distChoice5 >= distChoice1 && distChoice5 >= distChoice2 && distChoice5 >= distChoice3 && distChoice5 >= distChoice4) { // stay still
+		else if(hold_nomove >= left_move && hold_nomove >= down_move && hold_nomove >= right_move && hold_nomove >= up_move) { // stay still
 			decisions[j].x_coor = preys[j].x_coor;
 			decisions[j].y_coor = preys[j].y_coor;
 		}
@@ -222,76 +223,76 @@ agent_feats * runPreyPlan() {
 void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decisions, int ind) {
 
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
-	agent_feats possibleMove;
-	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
+	agent_feats hamle;
+	int left_move,down_move,right_move,up_move,hold_nomove;
 
 	// up
 	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
-		possibleMove.x_coor = hunter.x_coor-1;
-		possibleMove.y_coor = hunter.y_coor;
-		distChoice1 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor-1;
+		hamle.y_coor = hunter.y_coor;
+		left_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice1 = -1;
+		left_move = -1;
 
 	// left
 	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
-		possibleMove.x_coor = hunter.x_coor;
-		possibleMove.y_coor = hunter.y_coor-1;
-		distChoice2 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor-1;
+		down_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice2 = -1;
+		down_move = -1;
 
 
 	// down
 	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
-		possibleMove.x_coor = hunter.x_coor+1;
-		possibleMove.y_coor = hunter.y_coor;
-		distChoice3 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor+1;
+		hamle.y_coor = hunter.y_coor;
+		right_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice3 = -1;
+		right_move = -1;
 
 	// right
 	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
-		possibleMove.x_coor = hunter.x_coor;
-		possibleMove.y_coor = hunter.y_coor+1;
-		distChoice4 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor+1;
+		up_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice4 = -1;
+		up_move = -1;
 
 	// stay still
-	possibleMove.x_coor = hunter.x_coor;
-	possibleMove.y_coor = hunter.y_coor;
-	distChoice5 = Manhattan(possibleMove,prey);
+	hamle.x_coor = hunter.x_coor;
+	hamle.y_coor = hunter.y_coor;
+	hold_nomove = Manhattan(hamle,prey);
 
-	if(distChoice1 >= distChoice2 && distChoice1 >= distChoice3 && distChoice1 >= distChoice4 && distChoice1 >= distChoice5) { // up
+	if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // up
 		//printf("---- decision is up\n");
 		decisions[ind].x_coor = hunter.x_coor-1;
 		decisions[ind].y_coor = hunter.y_coor;
 	}
-	else if(distChoice2 >= distChoice1 && distChoice2 >= distChoice3 && distChoice2 >= distChoice4 && distChoice2 >= distChoice5) { // left
+	else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) { // left
 		//printf("---- decision is left\n");
 		decisions[ind].x_coor = hunter.x_coor;
 		decisions[ind].y_coor = hunter.y_coor-1;
 	}
-	else if(distChoice3 >= distChoice1 && distChoice3 >= distChoice2 && distChoice3 >= distChoice4 && distChoice3 >= distChoice5) { // down
+	else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { // down
 		//printf("---- decision is down\n");
 		decisions[ind].x_coor = hunter.x_coor+1;
 		decisions[ind].y_coor = hunter.y_coor;
 	}
-	else if(distChoice4 >= distChoice1 && distChoice4 >= distChoice2 && distChoice4 >= distChoice3 && distChoice4 >= distChoice5) { // right
+	else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // right
 		//printf("---- decision is right\n");
 		decisions[ind].x_coor = hunter.x_coor;
 		decisions[ind].y_coor = hunter.y_coor+1;
 	}
-	else if(distChoice5 >= distChoice1 && distChoice5 >= distChoice2 && distChoice5 >= distChoice3 && distChoice5 >= distChoice4) { // stay still
+	else if(hold_nomove >= left_move && hold_nomove >= down_move && hold_nomove >= right_move && hold_nomove >= up_move) { // stay still
 		//printf("---- decision is right\n");
 		decisions[ind].x_coor = hunter.x_coor;
 		decisions[ind].y_coor = hunter.y_coor;
@@ -306,76 +307,76 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisions, int ind) {
 	//int j,k;
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
-	agent_feats possibleMove;
-	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
+	agent_feats hamle;
+	int left_move,down_move,right_move,up_move,hold_nomove;
 
 	// up
 	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
-		possibleMove.x_coor = hunter.x_coor-1;
-		possibleMove.y_coor = hunter.y_coor;
-		distChoice1 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor-1;
+		hamle.y_coor = hunter.y_coor;
+		left_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice1 = 2*n+1;
+		left_move = 2*n+1;
 
 	// left
 	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
-		possibleMove.x_coor = hunter.x_coor;
-		possibleMove.y_coor = hunter.y_coor-1;
-		distChoice2 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor-1;
+		down_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice2 = 2*n+1;
+		down_move = 2*n+1;
 
 
 	// down
 	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
-		possibleMove.x_coor = hunter.x_coor+1;
-		possibleMove.y_coor = hunter.y_coor;
-		distChoice3 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor+1;
+		hamle.y_coor = hunter.y_coor;
+		right_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice3 = 2*n+1;
+		right_move = 2*n+1;
 
 	// right
 	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
-		possibleMove.x_coor = hunter.x_coor;
-		possibleMove.y_coor = hunter.y_coor+1;
-		distChoice4 = Manhattan(possibleMove,prey);
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor+1;
+		up_move = Manhattan(hamle,prey);
 	}
 	else // we eliminate this choice
-		distChoice4 = 2*n+1;
+		up_move = 2*n+1;
 
 	// stay still
-	possibleMove.x_coor = hunter.x_coor;
-	possibleMove.y_coor = hunter.y_coor;
-	distChoice5 = Manhattan(possibleMove,prey);
+	hamle.x_coor = hunter.x_coor;
+	hamle.y_coor = hunter.y_coor;
+	hold_nomove = Manhattan(hamle,prey);
 
-	if(distChoice1 <= distChoice2 && distChoice1 <= distChoice3 && distChoice1 <= distChoice4 && distChoice1 <= distChoice5) { // up
+	if(left_move <= down_move && left_move <= right_move && left_move <= up_move && left_move <= hold_nomove) { // up
 		//printf("---- decision is up\n");
 		decisions[ind].x_coor = hunter.x_coor-1;
 		decisions[ind].y_coor = hunter.y_coor;
 	}
-	else if(distChoice2 <= distChoice1 && distChoice2 <= distChoice3 && distChoice2 <= distChoice4 && distChoice2 <= distChoice5) { // left
+	else if(down_move <= left_move && down_move <= right_move && down_move <= up_move && down_move <= hold_nomove) { // left
 		//printf("---- decision is left\n");
 		decisions[ind].x_coor = hunter.x_coor;
 		decisions[ind].y_coor = hunter.y_coor-1;
 	}
-	else if(distChoice3 <= distChoice1 && distChoice3 <= distChoice2 && distChoice3 <= distChoice4 && distChoice3 <= distChoice5) { // down
+	else if(right_move <= left_move && right_move <= down_move && right_move <= up_move && right_move <= hold_nomove) { // down
 		//printf("---- decision is down\n");
 		decisions[ind].x_coor = hunter.x_coor+1;
 		decisions[ind].y_coor = hunter.y_coor;
 	}
-	else if(distChoice4 <= distChoice1 && distChoice4 <= distChoice2 && distChoice4 <= distChoice3 && distChoice4 <= distChoice5) { // right
+	else if(up_move <= left_move && up_move <= down_move && up_move <= right_move && up_move <= hold_nomove) { // right
 		//printf("---- decision is right\n");
 		decisions[ind].x_coor = hunter.x_coor;
 		decisions[ind].y_coor = hunter.y_coor+1;
 	}
-	else if(distChoice5 <= distChoice1 && distChoice5 <= distChoice2 && distChoice5 <= distChoice5 && distChoice5 <= distChoice4) { // stay still
+	else if(hold_nomove <= left_move && hold_nomove <= down_move && hold_nomove <= hold_nomove && hold_nomove <= up_move) { // stay still
 		//printf("---- decision is right\n");
 		decisions[ind].x_coor = hunter.x_coor;
 		decisions[ind].y_coor = hunter.y_coor;

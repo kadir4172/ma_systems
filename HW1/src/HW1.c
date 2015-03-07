@@ -588,8 +588,10 @@ agent_feats * Avci_Kararlari() {
 					  Uzaga_Git(hunters[j],hunters[ind],decision_to_move,j); //eger en yakindaki avcinin da hedefinde prey yoksa ondan uzaklasalim
 				}
 				else {
-					//gorunurde avci da yok, rastgele dolasalim , rastgele dolasirken boundarylere carpmadan random gezinelim
-					int random_action = rand() % 5;
+					//gorunurde avci da yok, rastgele dolasalim , boundarylere ve engellere carpmadan random gezinelim
+					int random_action;
+					TRY_RANDOM_AGAIN:
+					random_action = rand() % 5;
 					if(random_action == 0) {
 						if(hunters[j].x_coor-1 >= 0)
 							decision_to_move[j].x_coor = hunters[j].x_coor-1;
@@ -622,6 +624,10 @@ agent_feats * Avci_Kararlari() {
 						decision_to_move[j].x_coor = hunters[j].x_coor;
 						decision_to_move[j].y_coor = hunters[j].y_coor;
 					}
+
+					if(grid_map[decision_to_move[j].x_coor][decision_to_move[j].y_coor] == ENGEL){
+						goto TRY_RANDOM_AGAIN;
+					}
 				}
 			}
 		}
@@ -630,13 +636,13 @@ agent_feats * Avci_Kararlari() {
 	return decision_to_move;
 }
 
-void runReactiveMultiAgentPlan() {
+void Reaktif_Davranislar() {
 	int j,k,l;
 	while(hunter_number > 0 && prey_number > 0) {
 
-		agent_feats * decisionHunters = Avci_Kararlari(); //o anki duruma gore avcilarin kararlarini belirleyelim
+		agent_feats * decision_hunters = Avci_Kararlari(); //o anki duruma gore avcilarin kararlarini belirleyelim
 
-		agent_feats * decisionPreys = Av_Kararlari();     // o anki duruma gore avlarin kararlarini belirleyelim
+		agent_feats * decision_preys = Av_Kararlari();     //o anki duruma gore avlarin kararlarini belirleyelim
 
 
 
@@ -649,97 +655,97 @@ void runReactiveMultiAgentPlan() {
 			for(k = 0; k < prey_number; k++) {
 
 				//preyler arasinda carpisma varsa
-				if(j != k && decisionPreys[j].x_coor == decisionPreys[k].x_coor && decisionPreys[j].y_coor == decisionPreys[k].y_coor) {
+				if(j != k && decision_preys[j].x_coor == decision_preys[k].x_coor && decision_preys[j].y_coor == decision_preys[k].y_coor) {
 					TRY_PREY:printf("Prey carpismasi var,split ediliyorlar\n");
 					int random_action = rand() % 5;
 					if(random_action == 0) {
 						if(preys[j].x_coor-1 >= 0)
-							decisionPreys[j].x_coor = preys[j].x_coor-1;
+							decision_preys[j].x_coor = preys[j].x_coor-1;
 						else
-							decisionPreys[j].x_coor = preys[j].x_coor+1;
-							decisionPreys[j].y_coor = preys[j].y_coor;
+							decision_preys[j].x_coor = preys[j].x_coor+1;
+							decision_preys[j].y_coor = preys[j].y_coor;
 					}
 					else if(random_action == 1) {
-						decisionPreys[j].x_coor = preys[j].x_coor;
+						decision_preys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor-1 >= 0)
-							decisionPreys[j].y_coor = preys[j].y_coor-1;
+							decision_preys[j].y_coor = preys[j].y_coor-1;
 						else
-							decisionPreys[j].y_coor = preys[j].y_coor+1;
+							decision_preys[j].y_coor = preys[j].y_coor+1;
 					}
 					else if(random_action == 2) {
 						if(preys[j].x_coor+1 < n)
-							decisionPreys[j].x_coor = preys[j].x_coor+1;
+							decision_preys[j].x_coor = preys[j].x_coor+1;
 						else
-							decisionPreys[j].x_coor = preys[j].x_coor-1;
-							decisionPreys[j].y_coor = preys[j].y_coor;
+							decision_preys[j].x_coor = preys[j].x_coor-1;
+							decision_preys[j].y_coor = preys[j].y_coor;
 					}
 					else if(random_action == 3) {
-						decisionPreys[j].x_coor = preys[j].x_coor;
+						decision_preys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor+1 < n)
-							decisionPreys[j].y_coor = preys[j].y_coor+1;
+							decision_preys[j].y_coor = preys[j].y_coor+1;
 						else
-							decisionPreys[j].y_coor = preys[j].y_coor-1;
+							decision_preys[j].y_coor = preys[j].y_coor-1;
 					}
 					else if(random_action == 4) {
-						decisionPreys[j].x_coor = preys[j].x_coor;
-						decisionPreys[j].y_coor = preys[j].y_coor;
+						decision_preys[j].x_coor = preys[j].x_coor;
+						decision_preys[j].y_coor = preys[j].y_coor;
 					}
 
 					break;
 				}
 			}
-			if(grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] == ENGEL) {
+			if(grid_map[decision_preys[j].x_coor][decision_preys[j].y_coor] == ENGEL) {
      				TRY_OBSTACLE_PREY: printf("Prey engele carpti split ediliyor\n");
 					int random_action = rand() % 5;
 					if(random_action == 0) {
 						if(preys[j].x_coor-1 >= 0)
-							decisionPreys[j].x_coor = preys[j].x_coor-1;
+							decision_preys[j].x_coor = preys[j].x_coor-1;
 						else
-							decisionPreys[j].x_coor = preys[j].x_coor+1;
-						decisionPreys[j].y_coor = preys[j].y_coor;
+							decision_preys[j].x_coor = preys[j].x_coor+1;
+						decision_preys[j].y_coor = preys[j].y_coor;
 					}
 					else if(random_action == 1) {
-						decisionPreys[j].x_coor = preys[j].x_coor;
+						decision_preys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor-1 >= 0)
-							decisionPreys[j].y_coor = preys[j].y_coor-1;
+							decision_preys[j].y_coor = preys[j].y_coor-1;
 						else
-							decisionPreys[j].y_coor = preys[j].y_coor+1;
+							decision_preys[j].y_coor = preys[j].y_coor+1;
 					}
 					else if(random_action == 2) {
 						if(preys[j].x_coor+1 < n)
-							decisionPreys[j].x_coor = preys[j].x_coor+1;
+							decision_preys[j].x_coor = preys[j].x_coor+1;
 						else
-							decisionPreys[j].x_coor = preys[j].x_coor-1;
-						decisionPreys[j].y_coor = preys[j].y_coor;
+							decision_preys[j].x_coor = preys[j].x_coor-1;
+						decision_preys[j].y_coor = preys[j].y_coor;
 					}
 					else if(random_action == 3) {
-						decisionPreys[j].x_coor = preys[j].x_coor;
+						decision_preys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor+1 < n)
-							decisionPreys[j].y_coor = preys[j].y_coor+1;
+							decision_preys[j].y_coor = preys[j].y_coor+1;
 						else
-							decisionPreys[j].y_coor = preys[j].y_coor-1;
+							decision_preys[j].y_coor = preys[j].y_coor-1;
 					}
 					else if(random_action == 4) {
-						decisionPreys[j].x_coor = preys[j].x_coor;
-						decisionPreys[j].y_coor = preys[j].y_coor;
+						decision_preys[j].x_coor = preys[j].x_coor;
+						decision_preys[j].y_coor = preys[j].y_coor;
 					}
 
-					if(grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] == ENGEL) { //yine obstacle denk geliyorsa tekrar dene
+					if(grid_map[decision_preys[j].x_coor][decision_preys[j].y_coor] == ENGEL) { //yine obstacle denk geliyorsa tekrar dene
 							goto TRY_OBSTACLE_PREY;
 					}
 			}
 
 			for(l = 0; l < prey_number; l++) {
-				if(j != l && decisionPreys[j].x_coor == decisionPreys[l].x_coor && decisionPreys[j].y_coor == decisionPreys[l].y_coor){
+				if(j != l && decision_preys[j].x_coor == decision_preys[l].x_coor && decision_preys[j].y_coor == decision_preys[l].y_coor){
 					k = l;
 					goto TRY_PREY; //herhangi bir prey ile cakisma var tekrar split edelim
 				}
 			}
 
 			grid_map[preys[j].x_coor][preys[j].y_coor] = BOS;
-			grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] = AV;
-			preys[j].x_coor = decisionPreys[j].x_coor;
-			preys[j].y_coor = decisionPreys[j].y_coor;
+			grid_map[decision_preys[j].x_coor][decision_preys[j].y_coor] = AV;
+			preys[j].x_coor = decision_preys[j].x_coor;
+			preys[j].y_coor = decision_preys[j].y_coor;
 		}
 
 
@@ -751,115 +757,113 @@ void runReactiveMultiAgentPlan() {
 
 		for(j = 0; j < hunter_number; j++) {
 			for(k = 0; k < hunter_number; k++) {
-				if(j != k && decisionHunters[j].x_coor == decisionHunters[k].x_coor && decisionHunters[j].y_coor == decisionHunters[k].y_coor) {
+				if(j != k && decision_hunters[j].x_coor == decision_hunters[k].x_coor && decision_hunters[j].y_coor == decision_hunters[k].y_coor) {
 					TRY_HUNTER:printf("Hunter carpismasi var,enerjileri dusuruluyor ve random split ediliyorlar\n");
 					int random_action = rand() % 5;
 					if(random_action == 0) {
 						if(hunters[j].x_coor-1 >= 0)
-							decisionHunters[j].x_coor = hunters[j].x_coor-1;
+							decision_hunters[j].x_coor = hunters[j].x_coor-1;
 						else
-							decisionHunters[j].x_coor = hunters[j].x_coor+1;
-						decisionHunters[j].y_coor = hunters[j].y_coor;
+							decision_hunters[j].x_coor = hunters[j].x_coor+1;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
 					}
 					else if(random_action == 1) {
-						decisionHunters[j].x_coor = hunters[j].x_coor;
+						decision_hunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
-							decisionHunters[j].y_coor = hunters[j].y_coor-1;
+							decision_hunters[j].y_coor = hunters[j].y_coor-1;
 						else
-							decisionHunters[j].y_coor = hunters[j].y_coor+1;
+							decision_hunters[j].y_coor = hunters[j].y_coor+1;
 					}
 					else if(random_action == 2) {
 						if(hunters[j].x_coor+1 < n)
-							decisionHunters[j].x_coor = hunters[j].x_coor+1;
+							decision_hunters[j].x_coor = hunters[j].x_coor+1;
 						else
-							decisionHunters[j].x_coor = hunters[j].x_coor-1;
-						decisionHunters[j].y_coor = hunters[j].y_coor;
+							decision_hunters[j].x_coor = hunters[j].x_coor-1;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
 					}
 					else if(random_action == 3) {
-						decisionHunters[j].x_coor = hunters[j].x_coor;
+						decision_hunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
-							decisionHunters[j].y_coor = hunters[j].y_coor+1;
+							decision_hunters[j].y_coor = hunters[j].y_coor+1;
 						else
-							decisionHunters[j].y_coor = hunters[j].y_coor-1;
+							decision_hunters[j].y_coor = hunters[j].y_coor-1;
 					}
 					else if(random_action == 4) {
-						decisionHunters[j].x_coor = hunters[j].x_coor;
-						decisionHunters[j].y_coor = hunters[j].y_coor;
+						decision_hunters[j].x_coor = hunters[j].x_coor;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
 					}
 					hunters[j].energy -= 1;
 					hunters[k].energy -= 1;
 					break;
 				}
 			}
-			if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) {
-				TRY_OBSTACLE_HUNTER: printf("Hunter engele carpti enerjisi dusurulup split ediliyor\n");
+			if(grid_map[decision_hunters[j].x_coor][decision_hunters[j].y_coor] == ENGEL) {
+				TRY_OBSTACLE_HUNTER: printf("Hunter%d engele carpti split ediliyor\n",j);
 					int random_action = rand() % 5;
 					if(random_action == 0) {
 						if(hunters[j].x_coor-1 >= 0)
-							decisionHunters[j].x_coor = hunters[j].x_coor-1;
+							decision_hunters[j].x_coor = hunters[j].x_coor-1;
 						else
-							decisionHunters[j].x_coor = hunters[j].x_coor+1;
-						decisionHunters[j].y_coor = hunters[j].y_coor;
+							decision_hunters[j].x_coor = hunters[j].x_coor+1;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
 					}
 					else if(random_action == 1) {
-						decisionHunters[j].x_coor = hunters[j].x_coor;
+						decision_hunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
-							decisionHunters[j].y_coor = hunters[j].y_coor-1;
+							decision_hunters[j].y_coor = hunters[j].y_coor-1;
 						else
-							decisionHunters[j].y_coor = hunters[j].y_coor+1;
+							decision_hunters[j].y_coor = hunters[j].y_coor+1;
 					}
 					else if(random_action == 2) {
 						if(hunters[j].x_coor+1 < n)
-							decisionHunters[j].x_coor = hunters[j].x_coor+1;
+							decision_hunters[j].x_coor = hunters[j].x_coor+1;
 						else
-							decisionHunters[j].x_coor = hunters[j].x_coor-1;
-						decisionHunters[j].y_coor = hunters[j].y_coor;
+							decision_hunters[j].x_coor = hunters[j].x_coor-1;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
 					}
 					else if(random_action == 3) {
-						decisionHunters[j].x_coor = hunters[j].x_coor;
+						decision_hunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
-							decisionHunters[j].y_coor = hunters[j].y_coor+1;
+							decision_hunters[j].y_coor = hunters[j].y_coor+1;
 						else
-							decisionHunters[j].y_coor = hunters[j].y_coor-1;
+							decision_hunters[j].y_coor = hunters[j].y_coor-1;
 					}
 					else if(random_action == 4) {
-						decisionHunters[j].x_coor = hunters[j].x_coor;
-						decisionHunters[j].y_coor = hunters[j].y_coor;
+						decision_hunters[j].x_coor = hunters[j].x_coor;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
 					}
 
-					if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) { // yine engel denk geliyorsa tekrar split edelim
+					if(grid_map[decision_hunters[j].x_coor][decision_hunters[j].y_coor] == ENGEL) { // yine engel denk geliyorsa tekrar split edelim
 						goto TRY_OBSTACLE_HUNTER;
 					}
-
-					hunters[j].energy -= 1;	// engele carptigi icin enerjisini bir dusurelim
 			}
 
 			for(l = 0; l < hunter_number; l++) {
-						if(j != l && decisionHunters[j].x_coor == decisionHunters[l].x_coor && decisionHunters[j].y_coor == decisionHunters[l].y_coor){
+						if(j != l && decision_hunters[j].x_coor == decision_hunters[l].x_coor && decision_hunters[j].y_coor == decision_hunters[l].y_coor){
 							k = l;
 							goto TRY_HUNTER; //herhangi bir hunter ile cakisma var tekrar split edelim
 						}
 			}
 
-			if(hunters[j].x_coor == decisionHunters[j].x_coor && hunters[j].y_coor == decisionHunters[j].y_coor) {
+			if(hunters[j].x_coor == decision_hunters[j].x_coor && hunters[j].y_coor == decision_hunters[j].y_coor) {
 				hunters[j].energy -= 0.2;
 			}
-			else if(hunters[j].x_coor-1 == decisionHunters[j].x_coor && hunters[j].y_coor == decisionHunters[j].y_coor) {
+			else if(hunters[j].x_coor-1 == decision_hunters[j].x_coor && hunters[j].y_coor == decision_hunters[j].y_coor) {
 			    hunters[j].energy -= 1.0;
 			}
-			else if(hunters[j].x_coor+1 == decisionHunters[j].x_coor && hunters[j].y_coor == decisionHunters[j].y_coor) {
+			else if(hunters[j].x_coor+1 == decision_hunters[j].x_coor && hunters[j].y_coor == decision_hunters[j].y_coor) {
 				hunters[j].energy -= 1.0;
 			}
-			else if(hunters[j].x_coor == decisionHunters[j].x_coor && hunters[j].y_coor-1 == decisionHunters[j].y_coor) {
+			else if(hunters[j].x_coor == decision_hunters[j].x_coor && hunters[j].y_coor-1 == decision_hunters[j].y_coor) {
 				hunters[j].energy -= 1.0;
 			}
-			else if(hunters[j].x_coor == decisionHunters[j].x_coor && hunters[j].y_coor+1 == decisionHunters[j].y_coor) {
+			else if(hunters[j].x_coor == decision_hunters[j].x_coor && hunters[j].y_coor+1 == decision_hunters[j].y_coor) {
 				hunters[j].energy -= 1.0;
 			}
 			grid_map[hunters[j].x_coor][hunters[j].y_coor] = BOS;
-			grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] = AVCI;
-			hunters[j].x_coor = decisionHunters[j].x_coor;
-			hunters[j].y_coor = decisionHunters[j].y_coor;
+			grid_map[decision_hunters[j].x_coor][decision_hunters[j].y_coor] = AVCI;
+			hunters[j].x_coor = decision_hunters[j].x_coor;
+			hunters[j].y_coor = decision_hunters[j].y_coor;
 		}
 
 
@@ -878,8 +882,7 @@ int main(void) {
 
 
 	fscanf(input_file,"%d %d %f %f %f",&n,&d,&e,&R,&T);  //girdileri okuyalim
-
-	fgetc(input_file);                  //yeni satiri okuyalim
+	fgetc(input_file);   				               //yeni satiri okuyalim
 
 
 	grid_map = malloc(sizeof(int *)*n);
@@ -893,80 +896,61 @@ int main(void) {
 
 
 
-	// place hunter, prey and obstacles from input variables
-	char object;
+	// girdilere bakarak ilk ortami olusturalim
+	char nesne;
 	int x_coor, y_coor;
-	while((fscanf(input_file,"%c %d %d", &object, &x_coor, &y_coor)) != EOF) {
-		if(object == '\n') {
+	while((fscanf(input_file,"%c %d %d", &nesne, &x_coor, &y_coor)) != EOF) {
+		if(nesne == '\n') {
 			fgetc(input_file);
 			continue;
 		}
 		fgetc(input_file);
-		if(object == 'h') {
+		if(nesne == 'h') {
 			grid_map[x_coor-1][y_coor-1] = AVCI;
 			hunter_number++;
 		}
-		else if(object == 'p') {
+		else if(nesne == 'p') {
 			grid_map[x_coor-1][y_coor-1] = AV;
 			prey_number++;
 		}
-		else if(object == 'o')
+		else if(nesne == 'o')
 			grid_map[x_coor-1][y_coor-1] = ENGEL;
 		else
-			printf("ERROR while reading objects from input, obstacle: ----%c----\n",object);
+			printf("Girdi dosyasinda bilinmeyen karakterle (%c) karsilasildi!\n",nesne);
 	}
-	// save hunters and preys in a separate array
+
+
 	hunters = malloc(sizeof(agent_feats)*hunter_number);
 	preys = malloc(sizeof(agent_feats)*prey_number);
-	int huntInd = 0;
-	int preyInd = 0;
+	int avci_ind = 0;
+	int av_ind = 0;
+
 	for(j = 0; j < n; j++) {
 		for(k = 0; k < n; k++) {
 			if(grid_map[j][k] == AVCI) {
-				//grid_map_index[j][k] = huntInd;
-				hunters[huntInd].x_coor = j;
-				hunters[huntInd].y_coor = k;
-				hunters[huntInd].live = true;
-				hunters[huntInd].energy = e;
-				hunters[huntInd].agent_index = huntInd;
-				huntInd++;
+				hunters[avci_ind].x_coor = j;
+				hunters[avci_ind].y_coor = k;
+				hunters[avci_ind].live = true;
+				hunters[avci_ind].energy = e;
+				hunters[avci_ind].agent_index = avci_ind;
+				avci_ind++;
 			}
 			else if(grid_map[j][k] == AV) {
-				//grid_map_index[j][k] = preyInd;
-				preys[preyInd].x_coor = j;
-				preys[preyInd].y_coor = k;
-				preys[preyInd].live = true;
-				preys[preyInd].agent_index = preyInd;
-				preyInd++;
+				preys[av_ind].x_coor = j;
+				preys[av_ind].y_coor = k;
+				preys[av_ind].live = true;
+				preys[av_ind].agent_index = av_ind;
+				av_ind++;
 			}
 		}
 	}
-	printf("The system is loaded.\n");
-	printf("\n******************************************* Explanation *****************************************************\n");
-	printf("Firstly the hunters and preys run their planning algorithms and decides on some moves.\n");
-	printf("These intuitions and decisions are logged to the shell screen.\n");
-	printf("Then they apply their decisions to the environment together, so that any collision can be handled correctly.\n");
-	printf("At the end of each time step, the simulated form of environment matrix is drawn also. This matrix shows the\n");
-	printf("environment after applying all changes at that time step.\n\n");
-	printf("The name of the input file is always 'environment.inp'. To change this, just go to line #1007.\n");
-	printf("*************************************************************************************************************\n\n");
 
-
-
-	printf("The first form of the environment is as below,\n");
-	printf("'-' means empty cell,\n'X' means an obstacle,\n'H' means a hunter,\n'P' means a prey:\n");
+	printf("Girdi dosyasindan okunan cevre asagidaki gibidir,\n");
 	Ortami_Bas();
+
 	printf("Simulasyonu baslatmak icin Enter a basiniz\n");
-
-	Bekle();  // this for starting the plan
-
-	printf("****************************************************************************************\n");
-	printf("************************** Reactive planning started.  *********************************\n");
-	printf("****************************************************************************************\n\n");
-	runReactiveMultiAgentPlan();
-	printf("****************************************************************************************\n");
-	printf("************************** Reactive planning finished. *********************************\n");
-	printf("****************************************************************************************\n");
+	Bekle();  // Simulasyonu baslatmak icin 'Enter' i bekle
+	Reaktif_Davranislar();
 
 	return 0;
 }

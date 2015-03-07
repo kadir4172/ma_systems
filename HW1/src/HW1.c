@@ -571,10 +571,8 @@ agent_feats * runHunterPlan() {
 						}
 				}
 
-
+				//observable alanda hunter varsa
 				if(bulunan_avci_sayisi > 0) {
-					//observable alanda hunter varsa uzaklasalim
-					printf("the hunter at %d,%d sees %d many hunters in its observable area, since %d is below the threshold %d, it will try to get close to the nearest one\n",hunters[j].x_coor,hunters[j].y_coor,bulunan_avci_sayisi,bulunan_avci_sayisi,d);
 					int en_yakin_mesafe = avci_mesafeleri[0];
 					int ind = 0;
 					for(k = 0; k < hunter_number; k++) {
@@ -585,46 +583,42 @@ agent_feats * runHunterPlan() {
 					}
 
 					if(hunters[ind].close_to_prey)
-					  Yakina_Gel(hunters[j],hunters[ind],decision_to_move,j);
+					  Yakina_Gel(hunters[j],hunters[ind],decision_to_move,j); //eger en yakindaki avcinin hedefinde bir prey varsa ona yaklasalim
 					else
-					  Uzaga_Git(hunters[j],hunters[ind],decision_to_move,j);
+					  Uzaga_Git(hunters[j],hunters[ind],decision_to_move,j); //eger en yakindaki avcinin da hedefinde prey yoksa ondan uzaklasalim
 				}
 				else {
-					// if there isn't any hunter in the observable area for hunters[j] (and energy is already above T+2),
-					// random move.
-					printf("the hunter at %d,%d does not see any hunters also in it observable area, so it will move randomly\n"
-																								,hunters[j].x_coor,hunters[j].y_coor);
-
-					int act = rand() % 5;
-					if(act == 0) {	// up
+					//gorunurde avci da yok, rastgele dolasalim , rastgele dolasirken boundarylere carpmadan random gezinelim
+					int random_action = rand() % 5;
+					if(random_action == 0) {
 						if(hunters[j].x_coor-1 >= 0)
 							decision_to_move[j].x_coor = hunters[j].x_coor-1;
 						else
 							decision_to_move[j].x_coor = hunters[j].x_coor+1;
-						decision_to_move[j].y_coor = hunters[j].y_coor;
+						    decision_to_move[j].y_coor = hunters[j].y_coor;
 					}
-					else if(act == 1) { // left
+					else if(random_action == 1) {
 						decision_to_move[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
 							decision_to_move[j].y_coor = hunters[j].y_coor-1;
 						else
 							decision_to_move[j].y_coor = hunters[j].y_coor+1;
 					}
-					else if(act == 2) {	// down
+					else if(random_action == 2) {
 						if(hunters[j].x_coor+1 < n)
 							decision_to_move[j].x_coor = hunters[j].x_coor+1;
 						else
 							decision_to_move[j].x_coor = hunters[j].x_coor-1;
 						decision_to_move[j].y_coor = hunters[j].y_coor;
 					}
-					else if(act == 3) {	// right
+					else if(random_action == 3) {
 						decision_to_move[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
 							decision_to_move[j].y_coor = hunters[j].y_coor+1;
 						else
 							decision_to_move[j].y_coor = hunters[j].y_coor-1;
 					}
-					else if(act == 4) {	// stay still
+					else if(random_action == 4) {
 						decision_to_move[j].x_coor = hunters[j].x_coor;
 						decision_to_move[j].y_coor = hunters[j].y_coor;
 					}
@@ -660,77 +654,77 @@ void runReactiveMultiAgentPlan() {
 					printf("COLLISION: the prey at %d,%d has collided with the prey at %d,%d while moving to %d,%d and they will spill out randomly\n"
 									,preys[j].x_coor,preys[j].y_coor,preys[k].x_coor,preys[k].y_coor,decisionPreys[j].x_coor,decisionPreys[j].y_coor);
 					// after a collision it moves randomly, note that it looses energy both for collision and random move
-					int act = rand() % 5;
-					if(act == 0) {	// up
+					int random_action = rand() % 5;
+					if(random_action == 0) {	// up
 						if(preys[j].x_coor-1 >= 0)
 							decisionPreys[j].x_coor = preys[j].x_coor-1;
 						else
 							decisionPreys[j].x_coor = preys[j].x_coor+1;
 						decisionPreys[j].y_coor = preys[j].y_coor;
 					}
-					else if(act == 1) { // left
+					else if(random_action == 1) { // left
 						decisionPreys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor-1 >= 0)
 							decisionPreys[j].y_coor = preys[j].y_coor-1;
 						else
 							decisionPreys[j].y_coor = preys[j].y_coor+1;
 					}
-					else if(act == 2) {	// down
+					else if(random_action == 2) {	// down
 						if(preys[j].x_coor+1 < n)
 							decisionPreys[j].x_coor = preys[j].x_coor+1;
 						else
 							decisionPreys[j].x_coor = preys[j].x_coor-1;
 						decisionPreys[j].y_coor = preys[j].y_coor;
 					}
-					else if(act == 3) {	// right
+					else if(random_action == 3) {	// right
 						decisionPreys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor+1 < n)
 							decisionPreys[j].y_coor = preys[j].y_coor+1;
 						else
 							decisionPreys[j].y_coor = preys[j].y_coor-1;
 					}
-					else if(act == 4) {	// stay still
+					else if(random_action == 4) {	// stay still
 						decisionPreys[j].x_coor = preys[j].x_coor;
 						decisionPreys[j].y_coor = preys[j].y_coor;
 					}
 
 					// not to collide again
-					int prevact = act;
-					act = rand() % 5;
-					if(act == prevact && act < 4)
-						act += 1;
-					else if(act == prevact && act == 4)
-						act -= 1;
+					int prevact = random_action;
+					random_action = rand() % 5;
+					if(random_action == prevact && random_action < 4)
+						random_action += 1;
+					else if(random_action == prevact && random_action == 4)
+						random_action -= 1;
 
-					if(act == 0) {	// up
+					if(random_action == 0) {	// up
 						if(preys[k].x_coor-1 >= 0)
 							decisionPreys[k].x_coor = preys[k].x_coor-1;
 						else
 							decisionPreys[k].x_coor = preys[k].x_coor+1;
 						decisionPreys[k].y_coor = preys[k].y_coor;
 					}
-					else if(act == 1) { // left
+					else if(random_action == 1) { // left
 						decisionPreys[k].x_coor = preys[k].x_coor;
 						if(preys[k].y_coor-1 >= 0)
 							decisionPreys[k].y_coor = preys[k].y_coor-1;
 						else
 							decisionPreys[k].y_coor = preys[k].y_coor+1;
 					}
-					else if(act == 2) {	// down
+					else if(random_action == 2) {	// down
 						if(preys[k].x_coor+1 < n)
 							decisionPreys[k].x_coor = preys[k].x_coor+1;
 						else
 							decisionPreys[k].x_coor = preys[k].x_coor-1;
 						decisionPreys[k].y_coor = preys[k].y_coor;
 					}
-					else if(act == 3) {	// right
+					else if(random_action == 3) {	// right
 						decisionPreys[k].x_coor = preys[k].x_coor;
 						if(preys[k].y_coor+1 < n)
 							decisionPreys[k].y_coor = preys[k].y_coor+1;
 						else
 							decisionPreys[k].y_coor = preys[k].y_coor-1;
 					}
-					else if(act == 4) {	// stay still
+					else if(random_action == 4) {	// stay still
 						decisionPreys[k].x_coor = preys[k].x_coor;
 						decisionPreys[k].y_coor = preys[k].y_coor;
 					}
@@ -740,36 +734,36 @@ void runReactiveMultiAgentPlan() {
 			if(grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] == ENGEL) {
 				printf("COLLISION: the prey at %d,%d has collided with the obstacle at %d,%d and it will spill out randomly\n"
 											,preys[j].x_coor,preys[j].y_coor,decisionPreys[j].x_coor,decisionPreys[j].y_coor);
-					int act = rand() % 5;
-					if(act == 0) {	// up
+					int random_action = rand() % 5;
+					if(random_action == 0) {	// up
 						if(preys[j].x_coor-1 >= 0)
 							decisionPreys[j].x_coor = preys[j].x_coor-1;
 						else
 							decisionPreys[j].x_coor = preys[j].x_coor+1;
 						decisionPreys[j].y_coor = preys[j].y_coor;
 					}
-					else if(act == 1) { // left
+					else if(random_action == 1) { // left
 						decisionPreys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor-1 >= 0)
 							decisionPreys[j].y_coor = preys[j].y_coor-1;
 						else
 							decisionPreys[j].y_coor = preys[j].y_coor+1;
 					}
-					else if(act == 2) {	// down
+					else if(random_action == 2) {	// down
 						if(preys[j].x_coor+1 < n)
 							decisionPreys[j].x_coor = preys[j].x_coor+1;
 						else
 							decisionPreys[j].x_coor = preys[j].x_coor-1;
 						decisionPreys[j].y_coor = preys[j].y_coor;
 					}
-					else if(act == 3) {	// right
+					else if(random_action == 3) {	// right
 						decisionPreys[j].x_coor = preys[j].x_coor;
 						if(preys[j].y_coor+1 < n)
 							decisionPreys[j].y_coor = preys[j].y_coor+1;
 						else
 							decisionPreys[j].y_coor = preys[j].y_coor-1;
 					}
-					else if(act == 4) {	// stay still
+					else if(random_action == 4) {	// stay still
 						decisionPreys[j].x_coor = preys[j].x_coor;
 						decisionPreys[j].y_coor = preys[j].y_coor;
 					}
@@ -820,76 +814,76 @@ void runReactiveMultiAgentPlan() {
 				if(j != k && decisionHunters[j].x_coor == decisionHunters[k].x_coor && decisionHunters[j].y_coor == decisionHunters[k].y_coor) {
 					printf("COLLISION: the hunter at %d,%d has collided with the hunter at %d,%d while moving to %d,%d. their energy is decremented by 1, becomes %f and they will spill out randomly\n",hunters[j].x_coor,hunters[j].y_coor,hunters[k].x_coor,hunters[k].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor,hunters[j].energy);
 					// after a collision it moves randomly, note that it looses energy both for collision and random move
-					int act = rand() % 5;
-					if(act == 0) {	// up
+					int random_action = rand() % 5;
+					if(random_action == 0) {	// up
 						if(hunters[j].x_coor-1 >= 0)
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(act == 1) { // left
+					else if(random_action == 1) { // left
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 					}
-					else if(act == 2) {	// down
+					else if(random_action == 2) {	// down
 						if(hunters[j].x_coor+1 < n)
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(act == 3) {	// right
+					else if(random_action == 3) {	// right
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 					}
-					else if(act == 4) {	// stay still
+					else if(random_action == 4) {	// stay still
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
 					// not to collide again
-					int prevact = act;
-					act = rand() % 5;
-					if(act == prevact && act < 4)
-						act += 1;
-					else if(act == prevact && act == 4)
-						act -= 1;
+					int prevact = random_action;
+					random_action = rand() % 5;
+					if(random_action == prevact && random_action < 4)
+						random_action += 1;
+					else if(random_action == prevact && random_action == 4)
+						random_action -= 1;
 
-					if(act == 0) {	// up
+					if(random_action == 0) {	// up
 						if(hunters[k].x_coor-1 >= 0)
 							decisionHunters[k].x_coor = hunters[k].x_coor-1;
 						else
 							decisionHunters[k].x_coor = hunters[k].x_coor+1;
 						decisionHunters[k].y_coor = hunters[k].y_coor;
 					}
-					else if(act == 1) { // left
+					else if(random_action == 1) { // left
 						decisionHunters[k].x_coor = hunters[k].x_coor;
 						if(hunters[k].y_coor-1 >= 0)
 							decisionHunters[k].y_coor = hunters[k].y_coor-1;
 						else
 							decisionHunters[k].y_coor = hunters[k].y_coor+1;
 					}
-					else if(act == 2) {	// down
+					else if(random_action == 2) {	// down
 						if(hunters[k].x_coor+1 < n)
 							decisionHunters[k].x_coor = hunters[k].x_coor+1;
 						else
 							decisionHunters[k].x_coor = hunters[k].x_coor-1;
 						decisionHunters[k].y_coor = hunters[k].y_coor;
 					}
-					else if(act == 3) {	// right
+					else if(random_action == 3) {	// right
 						decisionHunters[k].x_coor = hunters[k].x_coor;
 						if(hunters[k].y_coor+1 < n)
 							decisionHunters[k].y_coor = hunters[k].y_coor+1;
 						else
 							decisionHunters[k].y_coor = hunters[k].y_coor-1;
 					}
-					else if(act == 4) {	// stay still
+					else if(random_action == 4) {	// stay still
 						decisionHunters[k].x_coor = hunters[k].x_coor;
 						decisionHunters[k].y_coor = hunters[k].y_coor;
 					}
@@ -901,36 +895,36 @@ void runReactiveMultiAgentPlan() {
 			}
 			if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) {
 				printf("COLLISION: the hunter at %d,%d has collided with the obstacle at %d,%d. their energy is decremented by 1, becomes %f, and it will spill out randomly\n",hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor,hunters[j].energy);
-					int act = rand() % 5;
-					if(act == 0) {	// up
+					int random_action = rand() % 5;
+					if(random_action == 0) {	// up
 						if(hunters[j].x_coor-1 >= 0)
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(act == 1) { // left
+					else if(random_action == 1) { // left
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor-1 >= 0)
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 					}
-					else if(act == 2) {	// down
+					else if(random_action == 2) {	// down
 						if(hunters[j].x_coor+1 < n)
 							decisionHunters[j].x_coor = hunters[j].x_coor+1;
 						else
 							decisionHunters[j].x_coor = hunters[j].x_coor-1;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
-					else if(act == 3) {	// right
+					else if(random_action == 3) {	// right
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						if(hunters[j].y_coor+1 < n)
 							decisionHunters[j].y_coor = hunters[j].y_coor+1;
 						else
 							decisionHunters[j].y_coor = hunters[j].y_coor-1;
 					}
-					else if(act == 4) {	// stay still
+					else if(random_action == 4) {	// stay still
 						decisionHunters[j].x_coor = hunters[j].x_coor;
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}

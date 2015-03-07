@@ -524,70 +524,63 @@ agent_feats * runHunterPlan() {
 		for(k = 0; k < prey_number; k++)
 			av_mesafesi[k] = 2*n+1;
 
-		int numbOfFoundPreys = 0;
+		int yakin_av_sayisi = 0;
 
 		for(k = 0; k < prey_number; k++) {
 			if(preys[k].x_coor <= hunters[j].x_coor+d && preys[k].x_coor >= hunters[j].x_coor-d &&
 							preys[k].y_coor <= hunters[j].y_coor+d && preys[k].y_coor >= hunters[j].y_coor-d) {
 				av_mesafesi[k] = Manhattan(preys[k],hunters[j]);
-				numbOfFoundPreys++;
+				yakin_av_sayisi++;
 				hunters[j].close_to_prey = true;
 			}
 		}
 
-		if(numbOfFoundPreys > 0) {
-			printf("the hunter at %d,%d sees %d many preys in its observable area, and will try to get close to the nearest one\n"
-																				,hunters[j].x_coor,hunters[j].y_coor,numbOfFoundPreys);
-			// find the nearest prey in the observable area
-			int minDist = av_mesafesi[0];
+		if(yakin_av_sayisi > 0) {
+
+			// birden fazla yakin av varsa en yakini bul
+			int en_yakin_mesafe = av_mesafesi[0];
 			int ind = 0;
 			for(k = 0; k < prey_number; k++) {
-				if(av_mesafesi[k] < minDist) {
+				if(av_mesafesi[k] < en_yakin_mesafe) {
 					ind = k;
-					minDist = av_mesafesi[k];
+					en_yakin_mesafe = av_mesafesi[k];
 				}
 			}
-			printf("the closest prey is at %d,%d, the hunter at %d,%d will try to get close to it\n"
-																	,preys[ind].x_coor,preys[ind].y_coor,hunters[j].x_coor,hunters[j].y_coor);
-			// find the action that make the hunter closer to the prey,
-			// same as the prey displacement maximization strategy, but minimization.
-			Yakina_Gel(hunters[j],preys[ind],decision_to_move,j);
+			Yakina_Gel(hunters[j],preys[ind],decision_to_move,j);  // j hunter i icin en yakin av a en yakin hamleyi bulalim
 		}
 		else {
-			// if there is no prey in the observable area, and energy is above T+2, move to nearest hunter in the observable area
-			// if energy is less than or equal to T+2, stay still
+			//gorunurde av yok, az enerjin varsa bekle birsey yapma
 			if(hunters[j].energy <= T+2) {
 				decision_to_move[j].x_coor = hunters[j].x_coor;
 				decision_to_move[j].y_coor = hunters[j].y_coor;
-				printf("the hunter at %d,%d does not see any preys in its observable area and does not have enough energy to move, %f, so stays still\n",hunters[j].x_coor,hunters[j].y_coor,hunters[j].energy);
 			}
+			//gorunurde av yok ama hunterin enerjisi var
 			else {
-				printf("the hunter at %d,%d does not see any preys in its observable area, it will check the number of hunters in its observable area\n",hunters[j].x_coor,hunters[j].y_coor);
-				// find the nearest hunter in the observable area.
-				int hunterDists[hunter_number];
+				//en yakin avciyi bulalim
+				int avci_mesafeleri[hunter_number];
 				for(k = 0; k < hunter_number; k++)
-					hunterDists[k] = 2*n+1;
+					avci_mesafeleri[k] = 2*n+1;
 
-				int numbOfFoundHunters = 0;
+				int bulunan_avci_sayisi = 0;
 				for(k = 0; k < hunter_number; k++) {
 					if(k != j)
 						if(hunters[k].x_coor <= hunters[j].x_coor+d && hunters[k].x_coor >= hunters[j].x_coor-d &&
 										hunters[k].y_coor <= hunters[j].y_coor+d && hunters[k].y_coor >= hunters[j].y_coor-d) {
-							hunterDists[k] = Manhattan(hunters[k],hunters[j]);
-							numbOfFoundHunters++;
+							avci_mesafeleri[k] = Manhattan(hunters[k],hunters[j]);
+							bulunan_avci_sayisi++;
 						}
 				}
 
 
-				if(numbOfFoundHunters > 0) {
+				if(bulunan_avci_sayisi > 0) {
 					//observable alanda hunter varsa uzaklasalim
-					printf("the hunter at %d,%d sees %d many hunters in its observable area, since %d is below the threshold %d, it will try to get close to the nearest one\n",hunters[j].x_coor,hunters[j].y_coor,numbOfFoundHunters,numbOfFoundHunters,d);
-					int minDist = hunterDists[0];
+					printf("the hunter at %d,%d sees %d many hunters in its observable area, since %d is below the threshold %d, it will try to get close to the nearest one\n",hunters[j].x_coor,hunters[j].y_coor,bulunan_avci_sayisi,bulunan_avci_sayisi,d);
+					int en_yakin_mesafe = avci_mesafeleri[0];
 					int ind = 0;
 					for(k = 0; k < hunter_number; k++) {
-						if(hunterDists[k] < minDist) {
+						if(avci_mesafeleri[k] < en_yakin_mesafe) {
 							ind = k;
-							minDist = hunterDists[k];
+							en_yakin_mesafe = avci_mesafeleri[k];
 						}
 					}
 

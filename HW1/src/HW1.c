@@ -14,7 +14,7 @@ typedef struct {
 #define BOS      0
 #define AVCI     1
 #define AV       2
-#define OBSTACLE   3
+#define ENGEL    3
 
 
 
@@ -37,6 +37,7 @@ int hunter_number = 0;
 int prey_number = 0;
 
 
+//Grid map uzerindeki tum agentlari ve engelleri basan fonksiyon
 void printEnv() {
 	int j,k,l;
 
@@ -44,7 +45,7 @@ void printEnv() {
 		for(k = 0; k < n; k++) {
 			if(grid_map[j][k] == BOS)
 				printf("- ");
-			else if(grid_map[j][k] == OBSTACLE)
+			else if(grid_map[j][k] == ENGEL)
 				printf("O ");
 			else if(grid_map[j][k] == AV){
 			    for (l = 0; l<prey_number; l++){
@@ -72,16 +73,19 @@ void printEnv() {
 	printf("\n");
 }
 
-void WaitForEnter()
+void Bekle()
 {
 	int c;
-	while((c = getchar()) != '\n' && c != EOF)
+	while(c != EOF && (c = getchar()) != '\n')
 		;
 }
 
+
+//iki agent ya da nokta arasi manhattan uzakligi hesaplayan fonksiyon
 int Manhattan(agent_feats t1, agent_feats t2) {
 	return abs(t1.x_coor - t2.x_coor) + abs(t1.y_coor - t2.y_coor);
 }
+
 
 agent_feats * runPreyPlan() {
 	int j,k;
@@ -90,89 +94,90 @@ agent_feats * runPreyPlan() {
 
 	// main decision loop for each prey agent
 	for(j = 0; j < prey_number; j++) {
-		printf("------- main decision loop for prey %d,%d --------------------------------------\n",preys[j].x_coor,preys[j].y_coor);
+		//printf("------- main decision loop for prey %d,%d --------------------------------------\n",preys[j].x_coor,preys[j].y_coor);
 		// find nearest two hunters
 		// find first nearest
-		int minDist = 2*n+1;
-		int minDistHuntInd1 = 0;
+		//olabilecek maksimum uzaklik
+		int min_dist = 2*n+1;
+		int nearest_hunt1 = 0;
 		for(k = 0; k < hunter_number; k++) {
 			int dist = Manhattan(preys[j],hunters[k]);
-			if(dist < minDist) {
-				minDist = dist;
-				minDistHuntInd1 = k;
+			if(dist < min_dist) {
+				min_dist = dist;
+				nearest_hunt1 = k;
 			}
 		}
-		printf("1. nearest hunter: %d %d\n",hunters[minDistHuntInd1].x_coor,hunters[minDistHuntInd1].y_coor);
+		printf("1. nearest hunter: %d %d\n",hunters[nearest_hunt1].x_coor,hunters[nearest_hunt1].y_coor);
 
 		// find second nearest
-		int minDistHuntInd2 = 0;
+		int nearest_hunt2 = 0;
 		if(hunter_number > 1) {
-			minDist = 2*n+1;
+			min_dist = 2*n+1;
 			for(k = 0; k < hunter_number; k++) {
 				int dist = Manhattan(preys[j],hunters[k]);
-				if(k != minDistHuntInd1 && dist < minDist) {
-					minDist = dist;
-					minDistHuntInd2 = k;
+				if(k != nearest_hunt1 && dist < min_dist) {
+					min_dist = dist;
+					nearest_hunt2 = k;
 				}
 			}
 		}
-		printf("2. nearest hunter: %d %d\n",hunters[minDistHuntInd2].x_coor,hunters[minDistHuntInd2].y_coor);
+		printf("2. nearest hunter: %d %d\n",hunters[nearest_hunt2].x_coor,hunters[nearest_hunt2].y_coor);
 
 		// for 4 possible moves, check the maximazing the displacement
 		agent_feats possibleMove;
 		int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 		// up
-		if(preys[j].x_coor-1 >= 0 && grid_map[preys[j].x_coor-1][preys[j].y_coor] != OBSTACLE && grid_map[preys[j].x_coor-1][preys[j].y_coor] != AVCI
+		if(preys[j].x_coor-1 >= 0 && grid_map[preys[j].x_coor-1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor-1][preys[j].y_coor] != AVCI
 													&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != AV) {
 			possibleMove.x_coor = preys[j].x_coor-1;
 			possibleMove.y_coor = preys[j].y_coor;
 			if(hunter_number > 1)
-				distChoice1 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
-								Manhattan(possibleMove,hunters[minDistHuntInd2]);
+				distChoice1 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
+								Manhattan(possibleMove,hunters[nearest_hunt2]);
 			else
-				distChoice1 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
+				distChoice1 = Manhattan(possibleMove,hunters[nearest_hunt1]);
 		}
 		else // we eliminate this choice
 			distChoice1 = -1;
 		// left
-		if(preys[j].y_coor-1 >= 0 && grid_map[preys[j].x_coor][preys[j].y_coor-1] != OBSTACLE && grid_map[preys[j].x_coor][preys[j].y_coor-1] != AVCI
+		if(preys[j].y_coor-1 >= 0 && grid_map[preys[j].x_coor][preys[j].y_coor-1] != ENGEL && grid_map[preys[j].x_coor][preys[j].y_coor-1] != AVCI
 													&& grid_map[preys[j].x_coor][preys[j].y_coor-1] != AV) {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor-1;
 			if(hunter_number > 1)
-				distChoice2 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
-								Manhattan(possibleMove,hunters[minDistHuntInd2]);
+				distChoice2 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
+								Manhattan(possibleMove,hunters[nearest_hunt2]);
 			else
-				distChoice2 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
+				distChoice2 = Manhattan(possibleMove,hunters[nearest_hunt1]);
 		}
 		else  // we eliminate this choice
 			distChoice2 = -1;
 
 		// down
-		if(preys[j].x_coor+1 < n && grid_map[preys[j].x_coor+1][preys[j].y_coor] != OBSTACLE && grid_map[preys[j].x_coor+1][preys[j].y_coor] != AVCI
+		if(preys[j].x_coor+1 < n && grid_map[preys[j].x_coor+1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor+1][preys[j].y_coor] != AVCI
 													&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != AV) {
 			possibleMove.x_coor = preys[j].x_coor+1;
 			possibleMove.y_coor = preys[j].y_coor;
 			if(hunter_number > 1)
-				distChoice3 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
-								Manhattan(possibleMove,hunters[minDistHuntInd2]);
+				distChoice3 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
+								Manhattan(possibleMove,hunters[nearest_hunt2]);
 			else
-				distChoice3 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
+				distChoice3 = Manhattan(possibleMove,hunters[nearest_hunt1]);
 		}
 		else // we eliminate this choice
 			distChoice3 = -1;
 
 		// right
-		if(preys[j].y_coor+1 < n && grid_map[preys[j].x_coor][preys[j].y_coor+1] != OBSTACLE && grid_map[preys[j].x_coor][preys[j].y_coor+1] != AVCI
+		if(preys[j].y_coor+1 < n && grid_map[preys[j].x_coor][preys[j].y_coor+1] != ENGEL && grid_map[preys[j].x_coor][preys[j].y_coor+1] != AVCI
 													&& grid_map[preys[j].x_coor][preys[j].y_coor+1] != AV) {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor+1;
 			if(hunter_number > 1)
-				distChoice4 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
-								Manhattan(possibleMove,hunters[minDistHuntInd2]);
+				distChoice4 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
+								Manhattan(possibleMove,hunters[nearest_hunt2]);
 			else
-				distChoice4 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
+				distChoice4 = Manhattan(possibleMove,hunters[nearest_hunt1]);
 		}
 		else // we eliminate this choice
 			distChoice4 = -1;
@@ -181,10 +186,10 @@ agent_feats * runPreyPlan() {
 		possibleMove.x_coor = preys[j].x_coor;
 		possibleMove.y_coor = preys[j].y_coor;
 		if(hunter_number > 1)
-			distChoice5 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
-							Manhattan(possibleMove,hunters[minDistHuntInd2]);
+			distChoice5 = Manhattan(possibleMove,hunters[nearest_hunt1]) +
+							Manhattan(possibleMove,hunters[nearest_hunt2]);
 		else
-			distChoice5 = Manhattan(possibleMove,hunters[minDistHuntInd1]);
+			distChoice5 = Manhattan(possibleMove,hunters[nearest_hunt1]);
 
 		if(distChoice1 >= distChoice2 && distChoice1 >= distChoice3 && distChoice1 >= distChoice4 && distChoice1 >= distChoice5) { // up
 			decisions[j].x_coor = preys[j].x_coor-1;
@@ -221,7 +226,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 	// up
-	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
+	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor-1;
 		possibleMove.y_coor = hunter.y_coor;
@@ -231,7 +236,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 		distChoice1 = -1;
 
 	// left
-	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
+	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor-1;
@@ -242,7 +247,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 
 
 	// down
-	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
+	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor+1;
 		possibleMove.y_coor = hunter.y_coor;
@@ -252,7 +257,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 		distChoice3 = -1;
 
 	// right
-	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
+	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor+1;
@@ -305,7 +310,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
 
 	// up
-	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
+	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor-1;
 		possibleMove.y_coor = hunter.y_coor;
@@ -315,7 +320,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 		distChoice1 = 2*n+1;
 
 	// left
-	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
+	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor-1;
@@ -326,7 +331,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 
 
 	// down
-	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != OBSTACLE && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
+	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
 		possibleMove.x_coor = hunter.x_coor+1;
 		possibleMove.y_coor = hunter.y_coor;
@@ -336,7 +341,7 @@ void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisio
 		distChoice3 = 2*n+1;
 
 	// right
-	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != OBSTACLE && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
+	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
 		possibleMove.x_coor = hunter.x_coor;
 		possibleMove.y_coor = hunter.y_coor+1;
@@ -770,7 +775,7 @@ void runReactiveMultiAgentPlan() {
 					break;
 				}
 			}
-			if(grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] == OBSTACLE) {
+			if(grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] == ENGEL) {
 				printf("COLLISION: the prey at %d,%d has collided with the obstacle at %d,%d and it will spill out randomly\n"
 											,preys[j].x_coor,preys[j].y_coor,decisionPreys[j].x_coor,decisionPreys[j].y_coor);
 					int act = rand() % 5;
@@ -807,7 +812,7 @@ void runReactiveMultiAgentPlan() {
 						decisionPreys[j].y_coor = preys[j].y_coor;
 					}
 
-					if(grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] == OBSTACLE) { // if still an obstacle just stay still
+					if(grid_map[decisionPreys[j].x_coor][decisionPreys[j].y_coor] == ENGEL) { // if still an obstacle just stay still
 							decisionPreys[j].x_coor = preys[j].x_coor;
 							decisionPreys[j].y_coor = preys[j].y_coor;
 					}
@@ -932,7 +937,7 @@ void runReactiveMultiAgentPlan() {
 					break;
 				}
 			}
-			if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == OBSTACLE) {
+			if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) {
 				printf("COLLISION: the hunter at %d,%d has collided with the obstacle at %d,%d. their energy is decremented by 1, becomes %f, and it will spill out randomly\n",hunters[j].x_coor,hunters[j].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor,hunters[j].energy);
 					int act = rand() % 5;
 					if(act == 0) {	// up
@@ -968,7 +973,7 @@ void runReactiveMultiAgentPlan() {
 						decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
 
-					if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == OBSTACLE) { // if still an obstacle just stay still
+					if(grid_map[decisionHunters[j].x_coor][decisionHunters[j].y_coor] == ENGEL) { // if still an obstacle just stay still
 							decisionHunters[j].x_coor = hunters[j].x_coor;
 							decisionHunters[j].y_coor = hunters[j].y_coor;
 					}
@@ -1018,7 +1023,7 @@ void runReactiveMultiAgentPlan() {
 		printEnv();
 		printf("%d. time step is finished, press enter to continue...\n",time);
 		time++;
-		WaitForEnter();
+		Bekle();
 	}
 
 	return;
@@ -1063,7 +1068,7 @@ int main(void) {
 			prey_number++;
 		}
 		else if(object == 'o')
-			grid_map[x_coor-1][y_coor-1] = OBSTACLE;
+			grid_map[x_coor-1][y_coor-1] = ENGEL;
 		else
 			printf("ERROR while reading objects from input, obstacle: ----%c----\n",object);
 	}
@@ -1110,7 +1115,7 @@ int main(void) {
 	printEnv();
 	printf("Simulasyonu baslatmak icin Enter a basiniz\n");
 
-	WaitForEnter();  // this for starting the plan
+	Bekle();  // this for starting the plan
 
 	printf("****************************************************************************************\n");
 	printf("************************** Reactive planning started.  *********************************\n");

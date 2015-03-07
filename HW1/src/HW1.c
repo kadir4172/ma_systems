@@ -218,92 +218,84 @@ agent_feats * runPreyPlan() {
 	return secilen_hamle;
 }
 
-// for a hunter and a prey finds farest move for hunter to move away from the prey and applies the decision
-void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle, int ind) {
 
-	// for 4 possible moves, check the move that make the hunter nearest to the prey
+void Uzaga_Git(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle, int ind) {
+
+
 	agent_feats hamle;
 	int left_move,down_move,right_move,up_move,hold_nomove;
 
-	// up
+	// left
 	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
 		hamle.x_coor = hunter.x_coor-1;
 		hamle.y_coor = hunter.y_coor;
 		left_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		left_move = -1;
 
-	// left
+	// down
 	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
 		hamle.x_coor = hunter.x_coor;
 		hamle.y_coor = hunter.y_coor-1;
 		down_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		down_move = -1;
 
 
-	// down
+	// right
 	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
 		hamle.x_coor = hunter.x_coor+1;
 		hamle.y_coor = hunter.y_coor;
 		right_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		right_move = -1;
 
-	// right
+	// up
 	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
 		hamle.x_coor = hunter.x_coor;
 		hamle.y_coor = hunter.y_coor+1;
 		up_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		up_move = -1;
 
-	// stay still
+	// yerimizde durursak ne olur
 	hamle.x_coor = hunter.x_coor;
 	hamle.y_coor = hunter.y_coor;
 	hold_nomove = Manhattan(hamle,prey);
 
 	if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // up
-		//printf("---- decision is up\n");
 		secilen_hamle[ind].x_coor = hunter.x_coor-1;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) { // left
-		//printf("---- decision is left\n");
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor-1;
 	}
 	else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { // down
-		//printf("---- decision is down\n");
 		secilen_hamle[ind].x_coor = hunter.x_coor+1;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
 	else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // right
-		//printf("---- decision is right\n");
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor+1;
 	}
 	else if(hold_nomove >= left_move && hold_nomove >= down_move && hold_nomove >= right_move && hold_nomove >= up_move) { // stay still
-		//printf("---- decision is right\n");
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
-	else
-			printf("ERROR1 in possible move selection of HUNTERs !!");
-
 	return;
 }
 
-// for a hunter and a prey finds nearest move for hunter to get closer to the prey and applies the decision
-void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle, int ind) {
+
+void Yakina_Gel(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle, int ind) {
 	//int j,k;
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
 	agent_feats hamle;
@@ -582,7 +574,7 @@ agent_feats * runHunterPlan() {
 																	,preys[ind].x_coor,preys[ind].y_coor,hunters[j].x_coor,hunters[j].y_coor);
 			// find the action that make the hunter closer to the prey,
 			// same as the prey displacement maximization strategy, but minimization.
-			findNearestMove(hunters[j],preys[ind],decisions,j);
+			Yakina_Gel(hunters[j],preys[ind],decisions,j);
 		}
 		else {
 			// if there is no prey in the observable area, and energy is above T+2, move to nearest hunter in the observable area
@@ -623,9 +615,9 @@ agent_feats * runHunterPlan() {
 					}
 
 					if(hunters[ind].close_to_prey)
-					  findNearestMove(hunters[j],hunters[ind],decisions,j);
+					  Yakina_Gel(hunters[j],hunters[ind],decisions,j);
 					else
-					  findFarestMove(hunters[j],hunters[ind],decisions,j);
+					  Uzaga_Git(hunters[j],hunters[ind],decisions,j);
 				}
 				else {
 					// if there isn't any hunter in the observable area for hunters[j] (and energy is already above T+2),

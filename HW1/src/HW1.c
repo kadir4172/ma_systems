@@ -271,19 +271,19 @@ void Uzaga_Git(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle
 	hamle.y_coor = hunter.y_coor;
 	hold_nomove = Manhattan(hamle,prey);
 
-	if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // up
+	if(left_move >= down_move && left_move >= right_move && left_move >= up_move && left_move >= hold_nomove) { // left
 		secilen_hamle[ind].x_coor = hunter.x_coor-1;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
-	else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) { // left
+	else if(down_move >= left_move && down_move >= right_move && down_move >= up_move && down_move >= hold_nomove) { // down
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor-1;
 	}
-	else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { // down
+	else if(right_move >= left_move && right_move >= down_move && right_move >= up_move && right_move >= hold_nomove) { // right
 		secilen_hamle[ind].x_coor = hunter.x_coor+1;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
-	else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // right
+	else if(up_move >= left_move && up_move >= down_move && up_move >= right_move && up_move >= hold_nomove) { // up
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor+1;
 	}
@@ -296,113 +296,106 @@ void Uzaga_Git(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle
 
 
 void Yakina_Gel(agent_feats hunter, agent_feats prey, agent_feats * secilen_hamle, int ind) {
-	//int j,k;
-	// for 4 possible moves, check the move that make the hunter nearest to the prey
+
 	agent_feats hamle;
 	int left_move,down_move,right_move,up_move,hold_nomove;
 
-	// up
+	// left
 	if(hunter.x_coor-1 >= 0 && grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
 		hamle.x_coor = hunter.x_coor-1;
 		hamle.y_coor = hunter.y_coor;
 		left_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		left_move = 2*n+1;
 
-	// left
+	// down
 	if(hunter.y_coor-1 >= 0 && grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
 		hamle.x_coor = hunter.x_coor;
 		hamle.y_coor = hunter.y_coor-1;
 		down_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		down_move = 2*n+1;
 
 
-	// down
+	// right
 	if(hunter.x_coor+1 < n && grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
 													&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
 		hamle.x_coor = hunter.x_coor+1;
 		hamle.y_coor = hunter.y_coor;
 		right_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		right_move = 2*n+1;
 
-	// right
+	// up
 	if(hunter.y_coor+1 < n && grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
 													&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
 		hamle.x_coor = hunter.x_coor;
 		hamle.y_coor = hunter.y_coor+1;
 		up_move = Manhattan(hamle,prey);
 	}
-	else // we eliminate this choice
+	else // engel,sinir,av ya da avci var
 		up_move = 2*n+1;
 
-	// stay still
+	// yerimizde durursak ne olur
 	hamle.x_coor = hunter.x_coor;
 	hamle.y_coor = hunter.y_coor;
 	hold_nomove = Manhattan(hamle,prey);
 
-	if(left_move <= down_move && left_move <= right_move && left_move <= up_move && left_move <= hold_nomove) { // up
-		//printf("---- decision is up\n");
+	if(left_move <= down_move && left_move <= right_move && left_move <= up_move && left_move <= hold_nomove) { // left
 		secilen_hamle[ind].x_coor = hunter.x_coor-1;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
-	else if(down_move <= left_move && down_move <= right_move && down_move <= up_move && down_move <= hold_nomove) { // left
-		//printf("---- decision is left\n");
+	else if(down_move <= left_move && down_move <= right_move && down_move <= up_move && down_move <= hold_nomove) { // down
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor-1;
 	}
-	else if(right_move <= left_move && right_move <= down_move && right_move <= up_move && right_move <= hold_nomove) { // down
-		//printf("---- decision is down\n");
+	else if(right_move <= left_move && right_move <= down_move && right_move <= up_move && right_move <= hold_nomove) { // right
 		secilen_hamle[ind].x_coor = hunter.x_coor+1;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
-	else if(up_move <= left_move && up_move <= down_move && up_move <= right_move && up_move <= hold_nomove) { // right
-		//printf("---- decision is right\n");
+	else if(up_move <= left_move && up_move <= down_move && up_move <= right_move && up_move <= hold_nomove) { // up
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor+1;
 	}
-	else if(hold_nomove <= left_move && hold_nomove <= down_move && hold_nomove <= hold_nomove && hold_nomove <= up_move) { // stay still
-		//printf("---- decision is right\n");
+	else if(hold_nomove <= left_move && hold_nomove <= down_move && hold_nomove <= hold_nomove && hold_nomove <= up_move) { // dur
 		secilen_hamle[ind].x_coor = hunter.x_coor;
 		secilen_hamle[ind].y_coor = hunter.y_coor;
 	}
-	else
-			printf("ERROR1 in possible move selection of HUNTERs !!");
-
 	return;
 }
 
-agent_feats * removePreysOrHunters(int type) {
+agent_feats * Olenleri_Kaldir(int type) {
 	int j,k;
-	int deads = 0;
+	int olu_counter = 0;
+
+
 	if(type == AV) {
 		for(j = 0; j < prey_number; j++) {
 			if(!preys[j].live)
-				deads++;
+				olu_counter++;
 		}
-		agent_feats temp[prey_number-deads];
+		agent_feats temp[prey_number-olu_counter]; // kalan prey sayisi kadar gecici bellek acalim
 		for(j = 0, k = 0; j < prey_number; j++) {
-			if(preys[j].live) {
-				temp[k].x_coor = preys[j].x_coor;
-				temp[k].y_coor = preys[j].y_coor;
+			if(preys[j].live) { // canlilari gecici bellege alalim
 				temp[k].live = preys[j].live;
 				temp[k].energy = preys[j].energy;
+				temp[k].x_coor = preys[j].x_coor;
+				temp[k].y_coor = preys[j].y_coor;
 				temp[k].agent_index = preys[j].agent_index;
 				k++;
 			}
 			else
 				grid_map[preys[j].x_coor][preys[j].y_coor] = BOS;
 		}
-		free(preys);
-		prey_number -= deads;
+		free(preys);   //butun preyleri kaldiralim
+		prey_number -= olu_counter;  // yeni prey sayisini hesaplayalim
 
-		preys = malloc(sizeof(agent_feats)*prey_number);
+		preys = malloc(sizeof(agent_feats)*prey_number); // yeni prey sayisi kadar memory acalim
 
 		for(j = 0; j < prey_number; j++) {
 			preys[j].x_coor = temp[j].x_coor;
@@ -415,17 +408,17 @@ agent_feats * removePreysOrHunters(int type) {
 
 	}
 	else {
-		for(j = 0; j < hunter_number; j++)
+		for(j = 0; j < hunter_number; j++){
 			if(!hunters[j].live)
-				deads++;
-
-		agent_feats temp[hunter_number-deads];
+				olu_counter++;
+		}
+		agent_feats temp[hunter_number-olu_counter]; //yeni hunter sayisi kadar gecici bellek
 		for(j = 0, k = 0; j < hunter_number; j++) {
 			if(hunters[j].live) {
-				temp[k].x_coor = hunters[j].x_coor;
-				temp[k].y_coor = hunters[j].y_coor;
 				temp[k].live = hunters[j].live;
 				temp[k].energy = hunters[j].energy;
+				temp[k].x_coor = hunters[j].x_coor;
+				temp[k].y_coor = hunters[j].y_coor;
 				temp[k].agent_index = hunters[j].agent_index;
 				k++;
 			}
@@ -433,10 +426,10 @@ agent_feats * removePreysOrHunters(int type) {
 				grid_map[hunters[j].x_coor][hunters[j].y_coor] = BOS;
 		}
 
-		free(hunters);
-		hunter_number -= deads;
+		free(hunters);  //tum hunterlari temizle
+		hunter_number -= olu_counter;  // yeni hunter sayisini hesapla
 
-		hunters = malloc(sizeof(agent_feats)*hunter_number);
+		hunters = malloc(sizeof(agent_feats)*hunter_number);  //yeni hunter sayisi kadar bellek acalim
 
 		for(j = 0; j < hunter_number; j++) {
 			 hunters[j].x_coor = temp[j].x_coor;
@@ -453,13 +446,6 @@ agent_feats * removePreysOrHunters(int type) {
 agent_feats * runHunterPlan() {
 	int j,k;
 	agent_feats * decisions = malloc(sizeof(agent_feats)*hunter_number);
-
-	/* the second best decisions are removed due to memoryless constraint in reactive planning
-	// second best decision is the 2nd best action decision that will be used in collision detection
-	// agent_feats * secondBestDecisions = malloc(sizeof(agent_feats)*hunter_number);
-	for(j = 0; j < hunter_number; j++)
-		secondBestDecisions[j].x_coor = -1;	// -1 means this agent has decided its action certainly and does not have second decision
-	*/
 
 	// first, if there are adj/same cell preys eat them
 	// keep the eater hunters and eaten preys, -1 means hunter j eat nothing
@@ -506,7 +492,7 @@ agent_feats * runHunterPlan() {
 	}
 	// remove the eaten preys from the space
 	if(anyEaten)
-		preys = removePreysOrHunters(AV);
+		preys = Olenleri_Kaldir(AV);
 	else
 		printf("there is no eaten prey in this time step\n");
 	printf("the number of remaining preys is %d\n",prey_number);
@@ -523,7 +509,7 @@ agent_feats * runHunterPlan() {
 		}
 	}
 	if(anyDead)
-		hunters = removePreysOrHunters(AVCI);
+		hunters = Olenleri_Kaldir(AVCI);
 	else
 		printf("there is no dead hunter in this time step\n");
 	printf("the number of remaining hunters is %d\n",hunter_number);

@@ -497,46 +497,39 @@ agent_feats * runHunterPlan() {
 
 
 	// enerjisi biten hunter lari bulalim
-	int anyDead = 0;
+	int olen_var = 0;
 	for(j = 0; j < hunter_number; j++) {
 		if(hunters[j].energy < T) {
-			printf("the hunter at %d,%d has energy below the threshold, %f, so it will be removed from the environment\n"
-																				,hunters[j].x_coor,hunters[j].y_coor,hunters[j].energy);
 			hunters[j].live = false;
-			anyDead = 1;
+			olen_var = 1;
 		}
 	}
-	if(anyDead)
+	if(olen_var)
 		hunters = Olenleri_Kaldir(AVCI);
-	else
-		printf("there is no dead hunter in this time step\n");
-	printf("the number of remaining hunters is %d\n",hunter_number);
 
-	// main decision loop, for each hunter dikkat (kadir)
+
+	// eger yiyebilcekleri bir prey yoksa ve olmedilerse hunterlar asagidaki rutinlere gore hareket ederler
 	for(j = 0; j < hunter_number; j++) {
-		printf("------- main decision loop for hunter %d,%d  -----------------------------------\n",hunters[j].x_coor,hunters[j].y_coor);
 		hunters[j].close_to_prey = false;   // once etrafinda prey var bilgisini silelim
 
-		// if no energy to move, just stay still, vision da prey varsa bile raporlamasin, close to prey false kalsin basklari gelmesin
+		//yeteri kadar enerjin yoksa, vision da prey varsa bile raporlama, close to prey false kalsin basklari gelmesin
 		if(hunters[j].energy <= T+1) {
 			decision_to_move[j].x_coor = hunters[j].x_coor;
 			decision_to_move[j].y_coor = hunters[j].y_coor;
-			printf("the hunter at %d,%d does not have enough energy to move, %f, so stays still\n"
-														,hunters[j].x_coor,hunters[j].y_coor,hunters[j].energy);
 			continue;
 		}
 
-		// check the preys in the observable area
-		int preyDists[prey_number];
+		// yeteri kadar enerjin varsa hareketini belirlemek icin etrafindak avlari gozlemle
+		int av_mesafesi[prey_number];
 		for(k = 0; k < prey_number; k++)
-			preyDists[k] = 2*n+1;
+			av_mesafesi[k] = 2*n+1;
 
 		int numbOfFoundPreys = 0;
 
 		for(k = 0; k < prey_number; k++) {
 			if(preys[k].x_coor <= hunters[j].x_coor+d && preys[k].x_coor >= hunters[j].x_coor-d &&
 							preys[k].y_coor <= hunters[j].y_coor+d && preys[k].y_coor >= hunters[j].y_coor-d) {
-				preyDists[k] = Manhattan(preys[k],hunters[j]);
+				av_mesafesi[k] = Manhattan(preys[k],hunters[j]);
 				numbOfFoundPreys++;
 				hunters[j].close_to_prey = true;
 			}
@@ -546,12 +539,12 @@ agent_feats * runHunterPlan() {
 			printf("the hunter at %d,%d sees %d many preys in its observable area, and will try to get close to the nearest one\n"
 																				,hunters[j].x_coor,hunters[j].y_coor,numbOfFoundPreys);
 			// find the nearest prey in the observable area
-			int minDist = preyDists[0];
+			int minDist = av_mesafesi[0];
 			int ind = 0;
 			for(k = 0; k < prey_number; k++) {
-				if(preyDists[k] < minDist) {
+				if(av_mesafesi[k] < minDist) {
 					ind = k;
-					minDist = preyDists[k];
+					minDist = av_mesafesi[k];
 				}
 			}
 			printf("the closest prey is at %d,%d, the hunter at %d,%d will try to get close to it\n"

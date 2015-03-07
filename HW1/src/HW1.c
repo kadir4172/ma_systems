@@ -18,17 +18,14 @@ typedef struct {
 
 
 
-#define CONTINUOUS  4
-#define DISCRETE    5
-
 int time = 1;
-int mode = 0;
+
 
 // by input
 int n,d;
 float e,R,T;
 int ** grid_map;
-//int ** grid_map_index;
+
 agent_feats * hunters;
 agent_feats * preys;
 int * energy_array_prey;
@@ -301,7 +298,7 @@ void findFarestMove(agent_feats hunter, agent_feats prey, agent_feats * decision
 
 // for a hunter and a prey finds nearest move for hunter to get closer to the prey and applies the decision
 void findNearestMove(agent_feats hunter, agent_feats prey, agent_feats * decisions, int ind) {
-	int j,k;
+	//int j,k;
 	// for 4 possible moves, check the move that make the hunter nearest to the prey
 	agent_feats possibleMove;
 	int distChoice1,distChoice2,distChoice3,distChoice4,distChoice5;
@@ -456,7 +453,7 @@ agent_feats * removePreysOrHunters(int type) {
 }
 
 agent_feats * runHunterPlan() {
-	int j,k,l;
+	int j,k;
 	agent_feats * decisions = malloc(sizeof(agent_feats)*numbOfHunters);
 
 	/* the second best decisions are removed due to memoryless constraint in reactive planning
@@ -1020,8 +1017,7 @@ void runReactiveMultiAgentPlan() {
 		printEnv();
 		printf("%d. time step is finished, press enter to continue...\n",time);
 		time++;
-		if(mode == DISCRETE)
-			WaitForEnter();
+		WaitForEnter();
 	}
 
 	return;
@@ -1105,21 +1101,14 @@ int main(void) {
 	printf("environment after applying all changes at that time step.\n\n");
 	printf("The name of the input file is always 'environment.inp'. To change this, just go to line #1007.\n");
 	printf("*************************************************************************************************************\n\n");
-	printf("If you want to use discrete time mode please press 1(suggested)\n");
-	printf("If you want to use continuous time mode please press 2\n");
 
-	char c;
-	scanf("%c",&c);
-	if(c == '1')
-		mode = DISCRETE;
-	else
-		mode = CONTINUOUS;
+
 
 	printf("The first form of the environment is as below,\n");
 	printf("'-' means empty cell,\n'X' means an obstacle,\n'H' means a hunter,\n'P' means a prey:\n");
 	printEnv();
-	printf("Press enter to start the plan\n");
-	WaitForEnter();	 // first enter corresponds to the scanf
+	printf("Simulasyonu baslatmak icin Enter a basiniz\n");
+
 	WaitForEnter();  // this for starting the plan
 
 	printf("****************************************************************************************\n");

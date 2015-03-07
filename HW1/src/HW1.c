@@ -21,24 +21,25 @@ typedef struct {
 int time = 1;
 
 
-// by input
+// Simulasyon Girdileri
 int n,d;
 float e,R,T;
+// Simulasyon Girdileri
+
+//Harita
 int ** grid_map;
 
+//Avcilar, avlar ve sayilari
 agent_feats * hunters;
 agent_feats * preys;
-int * energy_array_prey;
-int * energy_array_hunter;
 
-int numbOfHunters = 0;
-int numbOfPreys = 0;
+int hunter_number = 0;
+int prey_number = 0;
+
 
 void printEnv() {
 	int j,k,l;
 
-	energy_array_prey = malloc(sizeof(int)*(numbOfPreys));
-	energy_array_hunter = malloc(sizeof(int)*(numbOfHunters));
 	for(j = 0; j < n; j++) {
 		for(k = 0; k < n; k++) {
 			if(grid_map[j][k] == EMPTY)
@@ -46,13 +47,13 @@ void printEnv() {
 			else if(grid_map[j][k] == OBSTACLE)
 				printf("O ");
 			else if(grid_map[j][k] == PREY){
-			    for (l = 0; l<numbOfPreys; l++){
+			    for (l = 0; l<prey_number; l++){
 			    	if(preys[l].x_coor == j && preys[l].y_coor == k)
 			    		printf("P%d",l);
 			    }
 			}
 		    else{
-		    	for (l = 0; l<numbOfHunters; l++){
+		    	for (l = 0; l<hunter_number; l++){
 		    	   	if(hunters[l].x_coor == j && hunters[l].y_coor == k)
 		    	  		printf("H%d",l);
 		    	}
@@ -60,12 +61,12 @@ void printEnv() {
 		}
 		printf("\n");
 	}
-	for(j = 0; j < (numbOfPreys); j++){
+	for(j = 0; j < (prey_number); j++){
 		printf("P%d ",preys[j].agent_index);
 
 	}
 
-	for(j = 0; j < (numbOfHunters); j++){
+	for(j = 0; j < (hunter_number); j++){
 		printf("H%d=%.2f ",hunters[j].agent_index,hunters[j].energy);
 	}
 	printf("\n");
@@ -85,16 +86,16 @@ int Manhattan(agent_feats t1, agent_feats t2) {
 agent_feats * runPreyPlan() {
 	int j,k;
 	agent_feats * decisions;
-	decisions = malloc(sizeof(agent_feats)*numbOfPreys);
+	decisions = malloc(sizeof(agent_feats)*prey_number);
 
 	// main decision loop for each prey agent
-	for(j = 0; j < numbOfPreys; j++) {
+	for(j = 0; j < prey_number; j++) {
 		printf("------- main decision loop for prey %d,%d --------------------------------------\n",preys[j].x_coor,preys[j].y_coor);
 		// find nearest two hunters
 		// find first nearest
 		int minDist = 2*n+1;
 		int minDistHuntInd1 = 0;
-		for(k = 0; k < numbOfHunters; k++) {
+		for(k = 0; k < hunter_number; k++) {
 			int dist = Manhattan(preys[j],hunters[k]);
 			if(dist < minDist) {
 				minDist = dist;
@@ -105,9 +106,9 @@ agent_feats * runPreyPlan() {
 
 		// find second nearest
 		int minDistHuntInd2 = 0;
-		if(numbOfHunters > 1) {
+		if(hunter_number > 1) {
 			minDist = 2*n+1;
-			for(k = 0; k < numbOfHunters; k++) {
+			for(k = 0; k < hunter_number; k++) {
 				int dist = Manhattan(preys[j],hunters[k]);
 				if(k != minDistHuntInd1 && dist < minDist) {
 					minDist = dist;
@@ -126,7 +127,7 @@ agent_feats * runPreyPlan() {
 													&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != PREY) {
 			possibleMove.x_coor = preys[j].x_coor-1;
 			possibleMove.y_coor = preys[j].y_coor;
-			if(numbOfHunters > 1)
+			if(hunter_number > 1)
 				distChoice1 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
 								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
@@ -139,7 +140,7 @@ agent_feats * runPreyPlan() {
 													&& grid_map[preys[j].x_coor][preys[j].y_coor-1] != PREY) {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor-1;
-			if(numbOfHunters > 1)
+			if(hunter_number > 1)
 				distChoice2 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
 								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
@@ -153,7 +154,7 @@ agent_feats * runPreyPlan() {
 													&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != PREY) {
 			possibleMove.x_coor = preys[j].x_coor+1;
 			possibleMove.y_coor = preys[j].y_coor;
-			if(numbOfHunters > 1)
+			if(hunter_number > 1)
 				distChoice3 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
 								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
@@ -167,7 +168,7 @@ agent_feats * runPreyPlan() {
 													&& grid_map[preys[j].x_coor][preys[j].y_coor+1] != PREY) {
 			possibleMove.x_coor = preys[j].x_coor;
 			possibleMove.y_coor = preys[j].y_coor+1;
-			if(numbOfHunters > 1)
+			if(hunter_number > 1)
 				distChoice4 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
 								Manhattan(possibleMove,hunters[minDistHuntInd2]);
 			else
@@ -179,7 +180,7 @@ agent_feats * runPreyPlan() {
 		// stay still
 		possibleMove.x_coor = preys[j].x_coor;
 		possibleMove.y_coor = preys[j].y_coor;
-		if(numbOfHunters > 1)
+		if(hunter_number > 1)
 			distChoice5 = Manhattan(possibleMove,hunters[minDistHuntInd1]) +
 							Manhattan(possibleMove,hunters[minDistHuntInd2]);
 		else
@@ -384,12 +385,12 @@ agent_feats * removePreysOrHunters(int type) {
 	int j,k;
 	int deads = 0;
 	if(type == PREY) {
-		for(j = 0; j < numbOfPreys; j++) {
+		for(j = 0; j < prey_number; j++) {
 			if(!preys[j].live)
 				deads++;
 		}
-		agent_feats temp[numbOfPreys-deads];
-		for(j = 0, k = 0; j < numbOfPreys; j++) {
+		agent_feats temp[prey_number-deads];
+		for(j = 0, k = 0; j < prey_number; j++) {
 			if(preys[j].live) {
 				temp[k].x_coor = preys[j].x_coor;
 				temp[k].y_coor = preys[j].y_coor;
@@ -402,11 +403,11 @@ agent_feats * removePreysOrHunters(int type) {
 				grid_map[preys[j].x_coor][preys[j].y_coor] = EMPTY;
 		}
 		free(preys);
-		numbOfPreys -= deads;
+		prey_number -= deads;
 
-		preys = malloc(sizeof(agent_feats)*numbOfPreys);
+		preys = malloc(sizeof(agent_feats)*prey_number);
 
-		for(j = 0; j < numbOfPreys; j++) {
+		for(j = 0; j < prey_number; j++) {
 			preys[j].x_coor = temp[j].x_coor;
 			preys[j].y_coor = temp[j].y_coor;
 			preys[j].live = temp[j].live;
@@ -417,12 +418,12 @@ agent_feats * removePreysOrHunters(int type) {
 
 	}
 	else {
-		for(j = 0; j < numbOfHunters; j++)
+		for(j = 0; j < hunter_number; j++)
 			if(!hunters[j].live)
 				deads++;
 
-		agent_feats temp[numbOfHunters-deads];
-		for(j = 0, k = 0; j < numbOfHunters; j++) {
+		agent_feats temp[hunter_number-deads];
+		for(j = 0, k = 0; j < hunter_number; j++) {
 			if(hunters[j].live) {
 				temp[k].x_coor = hunters[j].x_coor;
 				temp[k].y_coor = hunters[j].y_coor;
@@ -436,11 +437,11 @@ agent_feats * removePreysOrHunters(int type) {
 		}
 
 		free(hunters);
-		numbOfHunters -= deads;
+		hunter_number -= deads;
 
-		hunters = malloc(sizeof(agent_feats)*numbOfHunters);
+		hunters = malloc(sizeof(agent_feats)*hunter_number);
 
-		for(j = 0; j < numbOfHunters; j++) {
+		for(j = 0; j < hunter_number; j++) {
 			 hunters[j].x_coor = temp[j].x_coor;
 			 hunters[j].y_coor = temp[j].y_coor;
 			 hunters[j].live = temp[j].live;
@@ -454,24 +455,24 @@ agent_feats * removePreysOrHunters(int type) {
 
 agent_feats * runHunterPlan() {
 	int j,k;
-	agent_feats * decisions = malloc(sizeof(agent_feats)*numbOfHunters);
+	agent_feats * decisions = malloc(sizeof(agent_feats)*hunter_number);
 
 	/* the second best decisions are removed due to memoryless constraint in reactive planning
 	// second best decision is the 2nd best action decision that will be used in collision detection
-	// agent_feats * secondBestDecisions = malloc(sizeof(agent_feats)*numbOfHunters);
-	for(j = 0; j < numbOfHunters; j++)
+	// agent_feats * secondBestDecisions = malloc(sizeof(agent_feats)*hunter_number);
+	for(j = 0; j < hunter_number; j++)
 		secondBestDecisions[j].x_coor = -1;	// -1 means this agent has decided its action certainly and does not have second decision
 	*/
 
 	// first, if there are adj/same cell preys eat them
 	// keep the eater hunters and eaten preys, -1 means hunter j eat nothing
 	printf("check for eaten preys\n");
-	int eaters[numbOfHunters];
-	for(j = 0; j < numbOfHunters; j++)
+	int eaters[hunter_number];
+	for(j = 0; j < hunter_number; j++)
 		eaters[j] = -1;
 
-	for(j = 0; j < numbOfHunters; j++) {
-		for(k = 0; k < numbOfPreys; k++) {
+	for(j = 0; j < hunter_number; j++) {
+		for(k = 0; k < prey_number; k++) {
 			int dist = Manhattan(hunters[j],preys[k]);
 			if(dist <= 1) {
 				eaters[j] = k;
@@ -482,9 +483,9 @@ agent_feats * runHunterPlan() {
 
 	// for each eaten kth prey, increment the eaters energy accordingly
 	int anyEaten = 0;
-	for(k = 0; k < numbOfPreys; k++) {
+	for(k = 0; k < prey_number; k++) {
 		int numbOfEaters = 0;
-		for(j = 0; j < numbOfHunters; j++) {
+		for(j = 0; j < hunter_number; j++) {
 			if(eaters[j] == k) {
 				numbOfEaters++;
 			}
@@ -498,7 +499,7 @@ agent_feats * runHunterPlan() {
 		}
 
 		// increment the energy
-		for(j = 0; j < numbOfHunters; j++) {
+		for(j = 0; j < hunter_number; j++) {
 			if(eaters[j] == k) {
 				hunters[j].energy += (R/numbOfEaters);
 				printf("the hunter at %d,%d has eaten the prey at %d,%d and its energy is incremented by %f, becomes %f\n"
@@ -511,12 +512,12 @@ agent_feats * runHunterPlan() {
 		preys = removePreysOrHunters(PREY);
 	else
 		printf("there is no eaten prey in this time step\n");
-	printf("the number of remaining preys is %d\n",numbOfPreys);
+	printf("the number of remaining preys is %d\n",prey_number);
 
 	// check for no energy hunters
 	printf("check for dead hunters\n");
 	int anyDead = 0;
-	for(j = 0; j < numbOfHunters; j++) {
+	for(j = 0; j < hunter_number; j++) {
 		if(hunters[j].energy < T) {
 			printf("the hunter at %d,%d has energy below the threshold, %f, so it will be removed from the environment\n"
 																				,hunters[j].x_coor,hunters[j].y_coor,hunters[j].energy);
@@ -528,10 +529,10 @@ agent_feats * runHunterPlan() {
 		hunters = removePreysOrHunters(HUNTER);
 	else
 		printf("there is no dead hunter in this time step\n");
-	printf("the number of remaining hunters is %d\n",numbOfHunters);
+	printf("the number of remaining hunters is %d\n",hunter_number);
 
 	// main decision loop, for each hunter dikkat (kadir)
-	for(j = 0; j < numbOfHunters; j++) {
+	for(j = 0; j < hunter_number; j++) {
 		printf("------- main decision loop for hunter %d,%d  -----------------------------------\n",hunters[j].x_coor,hunters[j].y_coor);
 		hunters[j].close_to_prey = false;   // once etrafinda prey var bilgisini silelim
 
@@ -545,13 +546,13 @@ agent_feats * runHunterPlan() {
 		}
 
 		// check the preys in the observable area
-		int preyDists[numbOfPreys];
-		for(k = 0; k < numbOfPreys; k++)
+		int preyDists[prey_number];
+		for(k = 0; k < prey_number; k++)
 			preyDists[k] = 2*n+1;
 
 		int numbOfFoundPreys = 0;
 
-		for(k = 0; k < numbOfPreys; k++) {
+		for(k = 0; k < prey_number; k++) {
 			if(preys[k].x_coor <= hunters[j].x_coor+d && preys[k].x_coor >= hunters[j].x_coor-d &&
 							preys[k].y_coor <= hunters[j].y_coor+d && preys[k].y_coor >= hunters[j].y_coor-d) {
 				preyDists[k] = Manhattan(preys[k],hunters[j]);
@@ -566,7 +567,7 @@ agent_feats * runHunterPlan() {
 			// find the nearest prey in the observable area
 			int minDist = preyDists[0];
 			int ind = 0;
-			for(k = 0; k < numbOfPreys; k++) {
+			for(k = 0; k < prey_number; k++) {
 				if(preyDists[k] < minDist) {
 					ind = k;
 					minDist = preyDists[k];
@@ -589,12 +590,12 @@ agent_feats * runHunterPlan() {
 			else {
 				printf("the hunter at %d,%d does not see any preys in its observable area, it will check the number of hunters in its observable area\n",hunters[j].x_coor,hunters[j].y_coor);
 				// find the nearest hunter in the observable area.
-				int hunterDists[numbOfHunters];
-				for(k = 0; k < numbOfHunters; k++)
+				int hunterDists[hunter_number];
+				for(k = 0; k < hunter_number; k++)
 					hunterDists[k] = 2*n+1;
 
 				int numbOfFoundHunters = 0;
-				for(k = 0; k < numbOfHunters; k++) {
+				for(k = 0; k < hunter_number; k++) {
 					if(k != j)
 						if(hunters[k].x_coor <= hunters[j].x_coor+d && hunters[k].x_coor >= hunters[j].x_coor-d &&
 										hunters[k].y_coor <= hunters[j].y_coor+d && hunters[k].y_coor >= hunters[j].y_coor-d) {
@@ -609,7 +610,7 @@ agent_feats * runHunterPlan() {
 					printf("the hunter at %d,%d sees %d many hunters in its observable area, since %d is below the threshold %d, it will try to get close to the nearest one\n",hunters[j].x_coor,hunters[j].y_coor,numbOfFoundHunters,numbOfFoundHunters,d);
 					int minDist = hunterDists[0];
 					int ind = 0;
-					for(k = 0; k < numbOfHunters; k++) {
+					for(k = 0; k < hunter_number; k++) {
 						if(hunterDists[k] < minDist) {
 							ind = k;
 							minDist = hunterDists[k];
@@ -670,7 +671,7 @@ agent_feats * runHunterPlan() {
 
 void runReactiveMultiAgentPlan() {
 	int j,k;
-	while(numbOfHunters > 0 && numbOfPreys > 0) {
+	while(hunter_number > 0 && prey_number > 0) {
 		// each decides what to do first, then it is applied together.
 		// as a special condition eating a prey will be done instantenously.
 		agent_feats * decisionHunters = runHunterPlan(); // hunters decisions changes
@@ -684,10 +685,10 @@ void runReactiveMultiAgentPlan() {
 
 		printf("PREY DECISIONS\n");
 		// collision cases
-		if(numbOfPreys <= 0)
+		if(prey_number <= 0)
 			printf("There is no remaining prey so the plan will end at the next time step\n");
-		for(j = 0; j < numbOfPreys; j++) {
-			for(k = 0; k < numbOfPreys; k++) {
+		for(j = 0; j < prey_number; j++) {
+			for(k = 0; k < prey_number; k++) {
 				if(j != k && decisionPreys[j].x_coor == decisionPreys[k].x_coor && decisionPreys[j].y_coor == decisionPreys[k].y_coor) {
 					printf("COLLISION: the prey at %d,%d has collided with the prey at %d,%d while moving to %d,%d and they will spill out randomly\n"
 									,preys[j].x_coor,preys[j].y_coor,preys[k].x_coor,preys[k].y_coor,decisionPreys[j].x_coor,decisionPreys[j].y_coor);
@@ -843,12 +844,12 @@ void runReactiveMultiAgentPlan() {
 		// apply decisions for hunters
 
 		printf("HUNTER DECISIONS\n");
-		if(numbOfHunters <= 0)
+		if(hunter_number <= 0)
 			printf("There is no remaining hunter so the plan will end at the next time step\n");
 
 		// collision cases
-		for(j = 0; j < numbOfHunters; j++) {
-			for(k = 0; k < numbOfHunters; k++) {
+		for(j = 0; j < hunter_number; j++) {
+			for(k = 0; k < hunter_number; k++) {
 				if(j != k && decisionHunters[j].x_coor == decisionHunters[k].x_coor && decisionHunters[j].y_coor == decisionHunters[k].y_coor) {
 					printf("COLLISION: the hunter at %d,%d has collided with the hunter at %d,%d while moving to %d,%d. their energy is decremented by 1, becomes %f and they will spill out randomly\n",hunters[j].x_coor,hunters[j].y_coor,hunters[k].x_coor,hunters[k].y_coor,decisionHunters[j].x_coor,decisionHunters[j].y_coor,hunters[j].energy);
 					// after a collision it moves randomly, note that it looses energy both for collision and random move
@@ -1055,11 +1056,11 @@ int main(void) {
 		fgetc(input_file);
 		if(object == 'h') {
 			grid_map[x_coor-1][y_coor-1] = HUNTER;
-			numbOfHunters++;
+			hunter_number++;
 		}
 		else if(object == 'p') {
 			grid_map[x_coor-1][y_coor-1] = PREY;
-			numbOfPreys++;
+			prey_number++;
 		}
 		else if(object == 'o')
 			grid_map[x_coor-1][y_coor-1] = OBSTACLE;
@@ -1067,8 +1068,8 @@ int main(void) {
 			printf("ERROR while reading objects from input, obstacle: ----%c----\n",object);
 	}
 	// save hunters and preys in a separate array
-	hunters = malloc(sizeof(agent_feats)*numbOfHunters);
-	preys = malloc(sizeof(agent_feats)*numbOfPreys);
+	hunters = malloc(sizeof(agent_feats)*hunter_number);
+	preys = malloc(sizeof(agent_feats)*prey_number);
 	int huntInd = 0;
 	int preyInd = 0;
 	for(j = 0; j < n; j++) {

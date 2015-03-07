@@ -1,4 +1,4 @@
-11:34:56 **** Incremental Build of configuration Debug for project HW1 ****
+11:39:04 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
 Building file: ../src/HW1.c
 Invoking: GCC C Compiler
@@ -10,36 +10,6 @@ Invoking: GCC C Linker
 gcc  -o "HW1"  ./src/HW1.o   
 Finished building target: HW1
  
-11:34:57 **** Incremental Build of configuration Debug for project HW1 ****
+11:39:08 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
 make: Nothing to be done for `all'.
-11:35:14 **** Incremental Build of configuration Debug for project HW1 ****
-make all 
-make: Nothing to be done for `all'.
-11:35:44 **** Incremental Build of configuration Debug for project HW1 ****
-make all 
-make: Nothing to be done for `all'.
-11:35:56 **** Incremental Build of configuration Debug for project HW1 ****
-make all 
-Building file: ../src/HW1.c
-Invoking: GCC C Compiler
-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW1.d" -MT"src/HW1.d" -o "src/HW1.o" "../src/HW1.c"
-Finished building: ../src/HW1.c
- 
-Building target: HW1
-Invoking: GCC C Linker
-gcc  -o "HW1"  ./src/HW1.o   
-Finished building target: HW1
- 
-11:36:18 **** Incremental Build of configuration Debug for project HW1 ****
-make all 
-Building file: ../src/HW1.c
-Invoking: GCC C Compiler
-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW1.d" -MT"src/HW1.d" -o "src/HW1.o" "../src/HW1.c"
-Finished building: ../src/HW1.c
- 
-Building target: HW1
-Invoking: GCC C Linker
-gcc  -o "HW1"  ./src/HW1.o   
-Finished building target: HW1
- 

@@ -1,3 +1,12 @@
-15:47:27 **** Incremental Build of configuration Debug for project HW1 ****
+09:18:06 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
-make: Nothing to be done for `all'.
+Building file: ../src/HW1.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW1.d" -MT"src/HW1.d" -o "src/HW1.o" "../src/HW1.c"
+Finished building: ../src/HW1.c
+ 
+Building target: HW1
+Invoking: GCC C Linker
+gcc  -o "HW1"  ./src/HW1.o   
+Finished building target: HW1
+ 

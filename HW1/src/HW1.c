@@ -50,8 +50,9 @@ void Reaktif_Davranislar(void);
 //===================================================================================//
 
 int main(void) {
+	printf("Girdi dosyasi okunuyor\n");
 	FILE * input_file = fopen(
-			"/home/kadir/workspace/ma_systems/HW1/environment.inp", "r");
+			"environment.inp", "r");
 	int j, k;
 
 	fscanf(input_file, "%d %d %f %f %f", &n, &d, &e, &R, &T); //girdileri okuyalim

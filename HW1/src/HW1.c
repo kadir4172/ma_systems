@@ -50,10 +50,14 @@ void Reaktif_Davranislar(void);
 //===================================================================================//
 
 int main(void) {
+	int j, k;
 	printf("Girdi dosyasi okunuyor\n");
 	FILE * input_file = fopen(
 			"environment.inp", "r");
-	int j, k;
+	if (!input_file)
+			printf("Dosya Okunamadi.");
+
+
 
 	fscanf(input_file, "%d %d %f %f %f", &n, &d, &e, &R, &T); //girdileri okuyalim
 	fgetc(input_file);   				                 //yeni satiri okuyalim

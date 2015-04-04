@@ -1,4 +1,4 @@
-09:18:06 **** Incremental Build of configuration Debug for project HW1 ****
+10:50:49 **** Incremental Build of configuration Debug for project HW1 ****
 make all 
 Building file: ../src/HW1.c
 Invoking: GCC C Compiler
@@ -11,5 +11,5 @@ gcc  -o "HW1"  ./src/HW1.o
 Finished building target: HW1
  
 
-09:18:06 Build Finished (took 210ms)
+10:50:49 Build Finished (took 259ms)
 

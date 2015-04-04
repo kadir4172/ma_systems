@@ -1,0 +1,985 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define BOS      0
+#define AVCI     1
+#define AV       2
+#define ENGEL    3
+
+//Agentlar icin kullanilacak yapi
+typedef struct {
+	int x_coor;
+	int y_coor;
+	bool live;
+	float energy;
+	bool close_to_prey;
+	int agent_index;
+} agent_feats;
+
+//Step Sayisi
+int time = 1;
+
+// Simulasyon Girdileri
+int n, d;
+float e, R, T;
+// Simulasyon Girdileri
+
+//Harita
+int ** grid_map;
+
+//Avcilar, avlar ve sayilari
+agent_feats * hunters;
+agent_feats * preys;
+
+int hunter_number = 0;
+int prey_number = 0;
+
+//function prototypes
+void Ortami_Bas(void);
+void Bekle(void);
+int Manhattan(agent_feats, agent_feats);
+agent_feats * Av_Kararlari(void);
+agent_feats * Avci_Kararlari(void);
+void Uzaga_Git(agent_feats, agent_feats, agent_feats *, int);
+void Yakina_Gel(agent_feats, agent_feats, agent_feats *, int);
+agent_feats * Olenleri_Kaldir(int);
+void Reaktif_Davranislar(void);
+//function prototypes
+
+//===================================================================================//
+
+int main(void) {
+	int j, k;
+	printf("Girdi dosyasi okunuyor\n");
+	FILE * input_file = fopen(
+			"environment.inp", "r");
+	if (!input_file)
+			printf("Dosya Okunamadi.");.
+
+
+
+	fscanf(input_file, "%d %d %f %f %f", &n, &d, &e, &R, &T); //girdileri okuyalim
+	fgetc(input_file);   				                 //yeni satiri okuyalim
+
+	grid_map = malloc(sizeof(int *) * n);
+
+	for (j = 0; j < n; j++)
+		grid_map[j] = malloc(sizeof(int) * n);
+
+	for (j = 0; j < n; j++)
+		for (k = 0; k < n; k++)
+			grid_map[j][k] = BOS;
+
+	// girdilere bakarak ilk ortami olusturalim
+	char nesne;
+	int x_coor, y_coor;
+	while ((fscanf(input_file, "%c %d %d", &nesne, &x_coor, &y_coor)) != EOF) {
+		if (nesne == '\n') {
+			fgetc(input_file);
+			continue;
+		}
+		fgetc(input_file);
+		if (nesne == 'h') {
+			grid_map[x_coor - 1][y_coor - 1] = AVCI;
+			hunter_number++;
+		} else if (nesne == 'p') {
+			grid_map[x_coor - 1][y_coor - 1] = AV;
+			prey_number++;
+		} else if (nesne == 'o')
+			grid_map[x_coor - 1][y_coor - 1] = ENGEL;
+		else
+			printf(
+					"Girdi dosyasinda bilinmeyen karakterle (%c) karsilasildi!\n",
+					nesne);
+	}
+
+	hunters = malloc(sizeof(agent_feats) * hunter_number);
+	preys = malloc(sizeof(agent_feats) * prey_number);
+	int avci_ind = 0;
+	int av_ind = 0;
+
+	for (j = 0; j < n; j++) {
+		for (k = 0; k < n; k++) {
+			if (grid_map[j][k] == AVCI) {
+				hunters[avci_ind].x_coor = j;
+				hunters[avci_ind].y_coor = k;
+				hunters[avci_ind].live = true;
+				hunters[avci_ind].energy = e;
+				hunters[avci_ind].agent_index = avci_ind;
+				avci_ind++;
+			} else if (grid_map[j][k] == AV) {
+				preys[av_ind].x_coor = j;
+				preys[av_ind].y_coor = k;
+				preys[av_ind].live = true;
+				preys[av_ind].agent_index = av_ind;
+				av_ind++;
+			}
+		}
+	}
+
+	printf("Girdi dosyasindan okunan cevre asagidaki gibidir,\n");
+	Ortami_Bas();
+
+	printf("Simulasyonu baslatmak icin Enter a basiniz\n");
+	Bekle();  // Simulasyonu baslatmak icin 'Enter' i bekle
+	Reaktif_Davranislar();
+
+	return 0;
+}
+
+//===================================================================================//
+
+agent_feats * Av_Kararlari() {
+	int j, k;
+	agent_feats * secilen_hamle;
+	secilen_hamle = malloc(sizeof(agent_feats) * prey_number);
+
+	agent_feats hamle;
+	int left_move, down_move, right_move, up_move, hold_nomove;
+
+	//en yakin hunter i bulalim
+	for (j = 0; j < prey_number; j++) {
+		//olabilecek maksimum uzaklik
+		int min_dist = 2 * n + 1;
+		int nearest_hunt1 = 0;
+		for (k = 0; k < hunter_number; k++) {
+			int dist = Manhattan(preys[j], hunters[k]);
+			if (dist < min_dist) {
+				min_dist = dist;
+				nearest_hunt1 = k;
+			}
+		}
+
+		// varsa en yakin ikinci hunter i bulalim
+		int nearest_hunt2 = 0;
+		if (hunter_number > 1) {
+			min_dist = 2 * n + 1;
+			for (k = 0; k < hunter_number; k++) {
+				int dist = Manhattan(preys[j], hunters[k]);
+				if (k != nearest_hunt1 && dist < min_dist) {
+					min_dist = dist;
+					nearest_hunt2 = k;
+				}
+			}
+		}
+
+		// Hamle yapmazsak en yakin iki hunter dan uzakligimiz ne olur
+		hamle.x_coor = preys[j].x_coor;
+		hamle.y_coor = preys[j].y_coor;
+		if (hunter_number > 1)
+			hold_nomove = Manhattan(hamle, hunters[nearest_hunt1])
+					+ Manhattan(hamle, hunters[nearest_hunt2]);
+		else
+			hold_nomove = Manhattan(hamle, hunters[nearest_hunt1]);
+
+		// asagi hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
+		if (preys[j].y_coor - 1
+				>= 0&& grid_map[preys[j].x_coor][preys[j].y_coor-1] != ENGEL && grid_map[preys[j].x_coor][preys[j].y_coor-1] != AVCI
+				&& grid_map[preys[j].x_coor][preys[j].y_coor-1] != AV) {
+			hamle.x_coor = preys[j].x_coor;
+			hamle.y_coor = preys[j].y_coor - 1;
+			if (hunter_number > 1)
+				down_move = Manhattan(hamle, hunters[nearest_hunt1])
+						+ Manhattan(hamle, hunters[nearest_hunt2]);
+			else
+				down_move = Manhattan(hamle, hunters[nearest_hunt1]);
+		} else
+			//Sinir, engel, av ya da avci var
+			down_move = -1;
+
+		// sola hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
+		if (preys[j].x_coor - 1
+				>= 0&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor-1][preys[j].y_coor] != AVCI
+				&& grid_map[preys[j].x_coor-1][preys[j].y_coor] != AV) {
+			hamle.x_coor = preys[j].x_coor - 1;
+			hamle.y_coor = preys[j].y_coor;
+			if (hunter_number > 1)
+				left_move = Manhattan(hamle, hunters[nearest_hunt1])
+						+ Manhattan(hamle, hunters[nearest_hunt2]);
+			else
+				left_move = Manhattan(hamle, hunters[nearest_hunt1]);
+		} else
+			//Sinir, engel, av ya da avci var
+			left_move = -1;
+
+		// yukari hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
+		if (preys[j].y_coor + 1
+				< n&& grid_map[preys[j].x_coor][preys[j].y_coor+1] != ENGEL && grid_map[preys[j].x_coor][preys[j].y_coor+1] != AVCI
+				&& grid_map[preys[j].x_coor][preys[j].y_coor+1] != AV) {
+			hamle.x_coor = preys[j].x_coor;
+			hamle.y_coor = preys[j].y_coor + 1;
+			if (hunter_number > 1)
+				up_move = Manhattan(hamle, hunters[nearest_hunt1])
+						+ Manhattan(hamle, hunters[nearest_hunt2]);
+			else
+				up_move = Manhattan(hamle, hunters[nearest_hunt1]);
+		} else
+			//Sinir, engel, av ya da avci var
+			up_move = -1;
+
+		// saga hamle yaparsak en yakin iki hunter dan uzakligimiz ne olur
+		if (preys[j].x_coor + 1
+				< n&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != ENGEL && grid_map[preys[j].x_coor+1][preys[j].y_coor] != AVCI
+				&& grid_map[preys[j].x_coor+1][preys[j].y_coor] != AV) {
+			hamle.x_coor = preys[j].x_coor + 1;
+			hamle.y_coor = preys[j].y_coor;
+			if (hunter_number > 1)
+				right_move = Manhattan(hamle, hunters[nearest_hunt1])
+						+ Manhattan(hamle, hunters[nearest_hunt2]);
+			else
+				right_move = Manhattan(hamle, hunters[nearest_hunt1]);
+		} else
+			//Sinir, engel, av ya da avci var
+			right_move = -1;
+
+		if (left_move >= down_move && left_move >= right_move
+				&& left_move >= up_move && left_move >= hold_nomove) { // sola hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor - 1;
+			secilen_hamle[j].y_coor = preys[j].y_coor;
+		} else if (down_move >= left_move && down_move >= right_move
+				&& down_move >= up_move && down_move >= hold_nomove) { // asagi hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor;
+			secilen_hamle[j].y_coor = preys[j].y_coor - 1;
+		} else if (right_move >= left_move && right_move >= down_move
+				&& right_move >= up_move && right_move >= hold_nomove) { //saga hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor + 1;
+			secilen_hamle[j].y_coor = preys[j].y_coor;
+		} else if (up_move >= left_move && up_move >= down_move
+				&& up_move >= right_move && up_move >= hold_nomove) { // yukari hamle en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor;
+			secilen_hamle[j].y_coor = preys[j].y_coor + 1;
+		} else if (hold_nomove >= left_move && hold_nomove >= down_move
+				&& hold_nomove >= right_move && hold_nomove >= up_move) { // durmak en karlisiysa
+			secilen_hamle[j].x_coor = preys[j].x_coor;
+			secilen_hamle[j].y_coor = preys[j].y_coor;
+		}
+
+	}
+
+	return secilen_hamle;
+}
+
+//===================================================================================//
+
+agent_feats * Avci_Kararlari() {
+	int j, k;
+	agent_feats * decision_to_move = malloc(
+			sizeof(agent_feats) * hunter_number);
+
+	int eaters[hunter_number];
+	for (j = 0; j < hunter_number; j++)
+		eaters[j] = -1;
+
+	for (j = 0; j < hunter_number; j++) {
+		for (k = 0; k < prey_number; k++) {
+			int dist = Manhattan(hunters[j], preys[k]);
+			if (dist <= 1) {
+				eaters[j] = k;
+				break;                 //her hunter ayni anda bir prey yiyebilir
+			}
+		}
+	}
+
+	int yem_oldu = 0;
+	for (k = 0; k < prey_number; k++) {
+		int yiyici_sayisi = 0;
+		for (j = 0; j < hunter_number; j++) {
+			if (eaters[j] == k) {
+				yiyici_sayisi++;
+			}
+		}
+
+		//yem olan avi oldu olarak isaretleyelim
+		if (yiyici_sayisi > 0) {
+
+			preys[k].live = false;
+			yem_oldu = 1;
+		}
+
+		//yiyenlerin enerjilerini arttiralim
+		int total_energy_of_eaters = 0;
+		for (j = 0; j < hunter_number; j++) {
+			if (eaters[j] == k) {
+				total_energy_of_eaters += hunters[j].energy;
+			}
+		}
+		for (j = 0; j < hunter_number; j++) {
+			if (eaters[j] == k) {
+				hunters[j].energy += (R * hunters[j].energy)
+						/ total_energy_of_eaters;
+			}
+		}
+	}
+	//olenleri kaldiralim
+	if (yem_oldu)
+		preys = Olenleri_Kaldir(AV);
+
+	// enerjisi biten hunter lari bulalim
+	int olen_var = 0;
+	for (j = 0; j < hunter_number; j++) {
+		if (hunters[j].energy < T) {
+			hunters[j].live = false;
+			olen_var = 1;
+		}
+	}
+	if (olen_var)
+		hunters = Olenleri_Kaldir(AVCI);
+
+	// eger yiyebilcekleri bir prey yoksa ve olmedilerse hunterlar asagidaki rutinlere gore hareket ederler
+	for (j = 0; j < hunter_number; j++) {
+		hunters[j].close_to_prey = false; // once etrafinda prey var bilgisini silelim
+
+		//yeteri kadar enerjin yoksa, vision da prey varsa bile raporlama, close to prey false kalsin basklari gelmesin
+		if (hunters[j].energy <= T + 1) {
+			decision_to_move[j].x_coor = hunters[j].x_coor;
+			decision_to_move[j].y_coor = hunters[j].y_coor;
+			continue;
+		}
+
+		// yeteri kadar enerjin varsa hareketini belirlemek icin etrafindak avlari gozlemle
+		int av_mesafesi[prey_number];
+		for (k = 0; k < prey_number; k++)
+			av_mesafesi[k] = 2 * n + 1;
+
+		int yakin_av_sayisi = 0;
+
+		for (k = 0; k < prey_number; k++) {
+			if (preys[k].x_coor <= hunters[j].x_coor + d
+					&& preys[k].x_coor >= hunters[j].x_coor - d
+					&& preys[k].y_coor <= hunters[j].y_coor + d
+					&& preys[k].y_coor >= hunters[j].y_coor - d) {
+				av_mesafesi[k] = Manhattan(preys[k], hunters[j]);
+				yakin_av_sayisi++;
+				hunters[j].close_to_prey = true;
+			}
+		}
+
+		if (yakin_av_sayisi > 0) {
+
+			// birden fazla yakin av varsa en yakini bul
+			int en_yakin_mesafe = av_mesafesi[0];
+			int ind = 0;
+			for (k = 0; k < prey_number; k++) {
+				if (av_mesafesi[k] < en_yakin_mesafe) {
+					ind = k;
+					en_yakin_mesafe = av_mesafesi[k];
+				}
+			}
+			Yakina_Gel(hunters[j], preys[ind], decision_to_move, j); // j hunter i icin en yakin av a en yakin hamleyi bulalim
+		} else {
+			//gorunurde av yok, az enerjin varsa bekle birsey yapma
+			if (hunters[j].energy <= T + 2) {
+				decision_to_move[j].x_coor = hunters[j].x_coor;
+				decision_to_move[j].y_coor = hunters[j].y_coor;
+			}
+			//gorunurde av yok ama hunterin enerjisi var
+			else {
+				//en yakin avciyi bulalim
+				int avci_mesafeleri[hunter_number];
+				for (k = 0; k < hunter_number; k++)
+					avci_mesafeleri[k] = 2 * n + 1;
+
+				int bulunan_avci_sayisi = 0;
+				for (k = 0; k < hunter_number; k++) {
+					if (k != j)
+						if (hunters[k].x_coor <= hunters[j].x_coor + d
+								&& hunters[k].x_coor >= hunters[j].x_coor - d
+								&& hunters[k].y_coor <= hunters[j].y_coor + d
+								&& hunters[k].y_coor >= hunters[j].y_coor - d) {
+							avci_mesafeleri[k] = Manhattan(hunters[k],
+									hunters[j]);
+							bulunan_avci_sayisi++;
+						}
+				}
+
+				//observable alanda hunter varsa
+				if (bulunan_avci_sayisi > 0) {
+					int en_yakin_mesafe = avci_mesafeleri[0];
+					int ind = 0;
+					for (k = 0; k < hunter_number; k++) {
+						if (avci_mesafeleri[k] < en_yakin_mesafe) {
+							ind = k;
+							en_yakin_mesafe = avci_mesafeleri[k];
+						}
+					}
+
+					if (hunters[ind].close_to_prey)
+						Yakina_Gel(hunters[j], hunters[ind], decision_to_move,
+								j); //eger en yakindaki avcinin hedefinde bir prey varsa ona yaklasalim
+					else
+						Uzaga_Git(hunters[j], hunters[ind], decision_to_move,
+								j); //eger en yakindaki avcinin da hedefinde prey yoksa ondan uzaklasalim
+				} else {
+					//gorunurde avci da yok, rastgele dolasalim , boundarylere ve engellere carpmadan random gezinelim
+					int random_action;
+					TRY_RANDOM_AGAIN: random_action = rand() % 5;
+					if (random_action == 0) {
+						if (hunters[j].x_coor - 1 >= 0)
+							decision_to_move[j].x_coor = hunters[j].x_coor - 1;
+						else
+							decision_to_move[j].x_coor = hunters[j].x_coor + 1;
+						decision_to_move[j].y_coor = hunters[j].y_coor;
+					} else if (random_action == 1) {
+						decision_to_move[j].x_coor = hunters[j].x_coor;
+						if (hunters[j].y_coor - 1 >= 0)
+							decision_to_move[j].y_coor = hunters[j].y_coor - 1;
+						else
+							decision_to_move[j].y_coor = hunters[j].y_coor + 1;
+					} else if (random_action == 2) {
+						if (hunters[j].x_coor + 1 < n)
+							decision_to_move[j].x_coor = hunters[j].x_coor + 1;
+						else
+							decision_to_move[j].x_coor = hunters[j].x_coor - 1;
+						decision_to_move[j].y_coor = hunters[j].y_coor;
+					} else if (random_action == 3) {
+						decision_to_move[j].x_coor = hunters[j].x_coor;
+						if (hunters[j].y_coor + 1 < n)
+							decision_to_move[j].y_coor = hunters[j].y_coor + 1;
+						else
+							decision_to_move[j].y_coor = hunters[j].y_coor - 1;
+					} else if (random_action == 4) {
+						decision_to_move[j].x_coor = hunters[j].x_coor;
+						decision_to_move[j].y_coor = hunters[j].y_coor;
+					}
+
+					if (grid_map[decision_to_move[j].x_coor][decision_to_move[j].y_coor]
+							== ENGEL) {
+						goto TRY_RANDOM_AGAIN;
+					}
+				}
+			}
+		}
+	}
+
+	return decision_to_move;
+}
+
+//===================================================================================//
+
+void Reaktif_Davranislar() {
+	int j, k, l;
+	while (hunter_number > 0 && prey_number > 0) {
+
+		agent_feats * decision_hunters = Avci_Kararlari(); //o anki duruma gore avcilarin kararlarini belirleyelim
+
+		agent_feats * decision_preys = Av_Kararlari(); //o anki duruma gore avlarin kararlarini belirleyelim
+
+		//Tum kararlar ayni anda alindi, carpisma durumlarini burada handle edelim
+		if (prey_number <= 0)
+			printf(
+					"Ortamda av kalmadi, simulasyon bir sonraki adimda sonlandirilacaktir.\n");
+		for (j = 0; j < prey_number; j++) {
+			for (k = 0; k < prey_number; k++) {
+
+				//preyler arasinda carpisma varsa
+				if (j != k
+						&& decision_preys[j].x_coor == decision_preys[k].x_coor
+						&& decision_preys[j].y_coor
+								== decision_preys[k].y_coor) {
+					TRY_PREY: printf("Prey carpismasi var,split ediliyorlar\n");
+					int random_action = rand() % 5;
+					if (random_action == 0) {
+						if (preys[j].x_coor - 1 >= 0)
+							decision_preys[j].x_coor = preys[j].x_coor - 1;
+						else
+							decision_preys[j].x_coor = preys[j].x_coor + 1;
+						decision_preys[j].y_coor = preys[j].y_coor;
+					} else if (random_action == 1) {
+						decision_preys[j].x_coor = preys[j].x_coor;
+						if (preys[j].y_coor - 1 >= 0)
+							decision_preys[j].y_coor = preys[j].y_coor - 1;
+						else
+							decision_preys[j].y_coor = preys[j].y_coor + 1;
+					} else if (random_action == 2) {
+						if (preys[j].x_coor + 1 < n)
+							decision_preys[j].x_coor = preys[j].x_coor + 1;
+						else
+							decision_preys[j].x_coor = preys[j].x_coor - 1;
+						decision_preys[j].y_coor = preys[j].y_coor;
+					} else if (random_action == 3) {
+						decision_preys[j].x_coor = preys[j].x_coor;
+						if (preys[j].y_coor + 1 < n)
+							decision_preys[j].y_coor = preys[j].y_coor + 1;
+						else
+							decision_preys[j].y_coor = preys[j].y_coor - 1;
+					} else if (random_action == 4) {
+						decision_preys[j].x_coor = preys[j].x_coor;
+						decision_preys[j].y_coor = preys[j].y_coor;
+					}
+
+					break;
+				}
+			}
+			if (grid_map[decision_preys[j].x_coor][decision_preys[j].y_coor]
+					== ENGEL) {
+				TRY_OBSTACLE_PREY: printf(
+						"Prey engele carpti split ediliyor\n");
+				int random_action = rand() % 5;
+				if (random_action == 0) {
+					if (preys[j].x_coor - 1 >= 0)
+						decision_preys[j].x_coor = preys[j].x_coor - 1;
+					else
+						decision_preys[j].x_coor = preys[j].x_coor + 1;
+					decision_preys[j].y_coor = preys[j].y_coor;
+				} else if (random_action == 1) {
+					decision_preys[j].x_coor = preys[j].x_coor;
+					if (preys[j].y_coor - 1 >= 0)
+						decision_preys[j].y_coor = preys[j].y_coor - 1;
+					else
+						decision_preys[j].y_coor = preys[j].y_coor + 1;
+				} else if (random_action == 2) {
+					if (preys[j].x_coor + 1 < n)
+						decision_preys[j].x_coor = preys[j].x_coor + 1;
+					else
+						decision_preys[j].x_coor = preys[j].x_coor - 1;
+					decision_preys[j].y_coor = preys[j].y_coor;
+				} else if (random_action == 3) {
+					decision_preys[j].x_coor = preys[j].x_coor;
+					if (preys[j].y_coor + 1 < n)
+						decision_preys[j].y_coor = preys[j].y_coor + 1;
+					else
+						decision_preys[j].y_coor = preys[j].y_coor - 1;
+				} else if (random_action == 4) {
+					decision_preys[j].x_coor = preys[j].x_coor;
+					decision_preys[j].y_coor = preys[j].y_coor;
+				}
+
+				if (grid_map[decision_preys[j].x_coor][decision_preys[j].y_coor]
+						== ENGEL) { //yine obstacle denk geliyorsa tekrar dene
+					goto TRY_OBSTACLE_PREY;
+				}
+			}
+
+			for (l = 0; l < prey_number; l++) {
+				if (j != l
+						&& decision_preys[j].x_coor == decision_preys[l].x_coor
+						&& decision_preys[j].y_coor
+								== decision_preys[l].y_coor) {
+					k = l;
+					goto TRY_PREY;
+					//herhangi bir prey ile cakisma var tekrar split edelim
+				}
+			}
+
+			grid_map[preys[j].x_coor][preys[j].y_coor] = BOS;
+			grid_map[decision_preys[j].x_coor][decision_preys[j].y_coor] = AV;
+			preys[j].x_coor = decision_preys[j].x_coor;
+			preys[j].y_coor = decision_preys[j].y_coor;
+		}
+
+		// hunterlarin kararlarindan sonra carpisma durumuna bakalim
+		if (hunter_number <= 0)
+			printf(
+					"Ortamda avci kalmadi, simulasyon bir sonraki adimda sonlandirilacaktir.\n");
+
+		for (j = 0; j < hunter_number; j++) {
+			for (k = 0; k < hunter_number; k++) {
+				if (j != k
+						&& decision_hunters[j].x_coor
+								== decision_hunters[k].x_coor
+						&& decision_hunters[j].y_coor
+								== decision_hunters[k].y_coor) {
+					TRY_HUNTER: printf(
+							"Hunter carpismasi var,enerjileri dusuruluyor ve random split ediliyorlar\n");
+					int random_action = rand() % 5;
+					if (random_action == 0) {
+						if (hunters[j].x_coor - 1 >= 0)
+							decision_hunters[j].x_coor = hunters[j].x_coor - 1;
+						else
+							decision_hunters[j].x_coor = hunters[j].x_coor + 1;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
+					} else if (random_action == 1) {
+						decision_hunters[j].x_coor = hunters[j].x_coor;
+						if (hunters[j].y_coor - 1 >= 0)
+							decision_hunters[j].y_coor = hunters[j].y_coor - 1;
+						else
+							decision_hunters[j].y_coor = hunters[j].y_coor + 1;
+					} else if (random_action == 2) {
+						if (hunters[j].x_coor + 1 < n)
+							decision_hunters[j].x_coor = hunters[j].x_coor + 1;
+						else
+							decision_hunters[j].x_coor = hunters[j].x_coor - 1;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
+					} else if (random_action == 3) {
+						decision_hunters[j].x_coor = hunters[j].x_coor;
+						if (hunters[j].y_coor + 1 < n)
+							decision_hunters[j].y_coor = hunters[j].y_coor + 1;
+						else
+							decision_hunters[j].y_coor = hunters[j].y_coor - 1;
+					} else if (random_action == 4) {
+						decision_hunters[j].x_coor = hunters[j].x_coor;
+						decision_hunters[j].y_coor = hunters[j].y_coor;
+					}
+					hunters[j].energy -= 1;
+					hunters[k].energy -= 1;
+					break;
+				}
+			}
+			if (grid_map[decision_hunters[j].x_coor][decision_hunters[j].y_coor]
+					== ENGEL) {
+				TRY_OBSTACLE_HUNTER: printf(
+						"Hunter%d engele carpti split ediliyor\n", j);
+				int random_action = rand() % 5;
+				if (random_action == 0) {
+					if (hunters[j].x_coor - 1 >= 0)
+						decision_hunters[j].x_coor = hunters[j].x_coor - 1;
+					else
+						decision_hunters[j].x_coor = hunters[j].x_coor + 1;
+					decision_hunters[j].y_coor = hunters[j].y_coor;
+				} else if (random_action == 1) {
+					decision_hunters[j].x_coor = hunters[j].x_coor;
+					if (hunters[j].y_coor - 1 >= 0)
+						decision_hunters[j].y_coor = hunters[j].y_coor - 1;
+					else
+						decision_hunters[j].y_coor = hunters[j].y_coor + 1;
+				} else if (random_action == 2) {
+					if (hunters[j].x_coor + 1 < n)
+						decision_hunters[j].x_coor = hunters[j].x_coor + 1;
+					else
+						decision_hunters[j].x_coor = hunters[j].x_coor - 1;
+					decision_hunters[j].y_coor = hunters[j].y_coor;
+				} else if (random_action == 3) {
+					decision_hunters[j].x_coor = hunters[j].x_coor;
+					if (hunters[j].y_coor + 1 < n)
+						decision_hunters[j].y_coor = hunters[j].y_coor + 1;
+					else
+						decision_hunters[j].y_coor = hunters[j].y_coor - 1;
+				} else if (random_action == 4) {
+					decision_hunters[j].x_coor = hunters[j].x_coor;
+					decision_hunters[j].y_coor = hunters[j].y_coor;
+				}
+
+				if (grid_map[decision_hunters[j].x_coor][decision_hunters[j].y_coor]
+						== ENGEL) { // yine engel denk geliyorsa tekrar split edelim
+					goto TRY_OBSTACLE_HUNTER;
+				}
+			}
+
+			for (l = 0; l < hunter_number; l++) {
+				if (j != l
+						&& decision_hunters[j].x_coor
+								== decision_hunters[l].x_coor
+						&& decision_hunters[j].y_coor
+								== decision_hunters[l].y_coor) {
+					k = l;
+					goto TRY_HUNTER;
+					//herhangi bir hunter ile cakisma var tekrar split edelim
+				}
+			}
+
+			if (hunters[j].x_coor == decision_hunters[j].x_coor
+					&& hunters[j].y_coor == decision_hunters[j].y_coor) {
+				hunters[j].energy -= 0.2;
+			} else if (hunters[j].x_coor - 1 == decision_hunters[j].x_coor
+					&& hunters[j].y_coor == decision_hunters[j].y_coor) {
+				hunters[j].energy -= 1.0;
+			} else if (hunters[j].x_coor + 1 == decision_hunters[j].x_coor
+					&& hunters[j].y_coor == decision_hunters[j].y_coor) {
+				hunters[j].energy -= 1.0;
+			} else if (hunters[j].x_coor == decision_hunters[j].x_coor
+					&& hunters[j].y_coor - 1 == decision_hunters[j].y_coor) {
+				hunters[j].energy -= 1.0;
+			} else if (hunters[j].x_coor == decision_hunters[j].x_coor
+					&& hunters[j].y_coor + 1 == decision_hunters[j].y_coor) {
+				hunters[j].energy -= 1.0;
+			}
+			grid_map[hunters[j].x_coor][hunters[j].y_coor] = BOS;
+			grid_map[decision_hunters[j].x_coor][decision_hunters[j].y_coor] =
+					AVCI;
+			hunters[j].x_coor = decision_hunters[j].x_coor;
+			hunters[j].y_coor = decision_hunters[j].y_coor;
+		}
+
+		Ortami_Bas();
+		printf(
+				"%d no lu adim tamamlandi, devam etmek icin 'Enter' a basiniz.\n",
+				time);
+		time++;
+		Bekle();
+	}
+
+	return;
+}
+
+//===================================================================================//
+void Ortami_Bas() {
+	int j, k, l;
+
+	for (j = 0; j < n; j++) {
+		for (k = 0; k < n; k++) {
+			if (grid_map[j][k] == BOS)
+				printf("- ");
+			else if (grid_map[j][k] == ENGEL)
+				printf("O ");
+			else if (grid_map[j][k] == AV) {
+				for (l = 0; l < prey_number; l++) {
+					if (preys[l].x_coor == j && preys[l].y_coor == k)
+						printf("P%d", l);
+				}
+			} else {
+				for (l = 0; l < hunter_number; l++) {
+					if (hunters[l].x_coor == j && hunters[l].y_coor == k)
+						printf("H%d", l);
+				}
+			}
+		}
+		printf("\n");
+	}
+	for (j = 0; j < (prey_number); j++) {
+		printf("P%d ", preys[j].agent_index);
+
+	}
+
+	for (j = 0; j < (hunter_number); j++) {
+		printf("H%d=%.2f ", hunters[j].agent_index, hunters[j].energy);
+	}
+	printf("\n");
+}
+
+//===================================================================================//
+
+void Bekle() {
+	int c;
+	while (c != EOF && (c = getchar()) != '\n')
+		;
+}
+
+//===================================================================================//
+
+int Manhattan(agent_feats t1, agent_feats t2) {
+	return abs(t1.x_coor - t2.x_coor) + abs(t1.y_coor - t2.y_coor);
+}
+
+//===================================================================================//
+
+void Uzaga_Git(agent_feats hunter, agent_feats prey,
+		agent_feats * secilen_hamle, int ind) {
+
+	agent_feats hamle;
+	int left_move, down_move, right_move, up_move, hold_nomove;
+
+	// left
+	if (hunter.x_coor - 1
+			>= 0&& grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
+			&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
+		hamle.x_coor = hunter.x_coor - 1;
+		hamle.y_coor = hunter.y_coor;
+		left_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		left_move = -1;
+
+	// down
+	if (hunter.y_coor - 1
+			>= 0&& grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
+			&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor - 1;
+		down_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		down_move = -1;
+
+	// right
+	if (hunter.x_coor + 1
+			< n&& grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
+			&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
+		hamle.x_coor = hunter.x_coor + 1;
+		hamle.y_coor = hunter.y_coor;
+		right_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		right_move = -1;
+
+	// up
+	if (hunter.y_coor + 1
+			< n&& grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
+			&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor + 1;
+		up_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		up_move = -1;
+
+	// yerimizde durursak ne olur
+	hamle.x_coor = hunter.x_coor;
+	hamle.y_coor = hunter.y_coor;
+	hold_nomove = Manhattan(hamle, prey);
+
+	if (left_move >= down_move && left_move >= right_move
+			&& left_move >= up_move && left_move >= hold_nomove) { // left
+		secilen_hamle[ind].x_coor = hunter.x_coor - 1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
+	} else if (down_move >= left_move && down_move >= right_move
+			&& down_move >= up_move && down_move >= hold_nomove) { // down
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor - 1;
+	} else if (right_move >= left_move && right_move >= down_move
+			&& right_move >= up_move && right_move >= hold_nomove) { // right
+		secilen_hamle[ind].x_coor = hunter.x_coor + 1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
+	} else if (up_move >= left_move && up_move >= down_move
+			&& up_move >= right_move && up_move >= hold_nomove) { // up
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor + 1;
+	} else if (hold_nomove >= left_move && hold_nomove >= down_move
+			&& hold_nomove >= right_move && hold_nomove >= up_move) { // stay still
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
+	}
+	return;
+}
+
+//===================================================================================//
+
+void Yakina_Gel(agent_feats hunter, agent_feats prey,
+		agent_feats * secilen_hamle, int ind) {
+
+	agent_feats hamle;
+	int left_move, down_move, right_move, up_move, hold_nomove;
+
+	// left
+	if (hunter.x_coor - 1
+			>= 0&& grid_map[hunter.x_coor-1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor-1][hunter.y_coor] != AVCI
+			&& grid_map[hunter.x_coor-1][hunter.y_coor] != AV) {
+		hamle.x_coor = hunter.x_coor - 1;
+		hamle.y_coor = hunter.y_coor;
+		left_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		left_move = 2 * n + 1;
+
+	// down
+	if (hunter.y_coor - 1
+			>= 0&& grid_map[hunter.x_coor][hunter.y_coor-1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor-1] != AVCI
+			&& grid_map[hunter.x_coor][hunter.y_coor-1] != AV) {
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor - 1;
+		down_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		down_move = 2 * n + 1;
+
+	// right
+	if (hunter.x_coor + 1
+			< n&& grid_map[hunter.x_coor+1][hunter.y_coor] != ENGEL && grid_map[hunter.x_coor+1][hunter.y_coor] != AVCI
+			&& grid_map[hunter.x_coor+1][hunter.y_coor] != AV) {
+		hamle.x_coor = hunter.x_coor + 1;
+		hamle.y_coor = hunter.y_coor;
+		right_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		right_move = 2 * n + 1;
+
+	// up
+	if (hunter.y_coor + 1
+			< n&& grid_map[hunter.x_coor][hunter.y_coor+1] != ENGEL && grid_map[hunter.x_coor][hunter.y_coor+1] != AVCI
+			&& grid_map[hunter.x_coor][hunter.y_coor+1] != AV) {
+		hamle.x_coor = hunter.x_coor;
+		hamle.y_coor = hunter.y_coor + 1;
+		up_move = Manhattan(hamle, prey);
+	} else
+		// engel,sinir,av ya da avci var
+		up_move = 2 * n + 1;
+
+	// yerimizde durursak ne olur
+	hamle.x_coor = hunter.x_coor;
+	hamle.y_coor = hunter.y_coor;
+	hold_nomove = Manhattan(hamle, prey);
+
+	if (left_move <= down_move && left_move <= right_move
+			&& left_move <= up_move && left_move <= hold_nomove) { // left
+		secilen_hamle[ind].x_coor = hunter.x_coor - 1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
+	} else if (down_move <= left_move && down_move <= right_move
+			&& down_move <= up_move && down_move <= hold_nomove) { // down
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor - 1;
+	} else if (right_move <= left_move && right_move <= down_move
+			&& right_move <= up_move && right_move <= hold_nomove) { // right
+		secilen_hamle[ind].x_coor = hunter.x_coor + 1;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
+	} else if (up_move <= left_move && up_move <= down_move
+			&& up_move <= right_move && up_move <= hold_nomove) { // up
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor + 1;
+	} else if (hold_nomove <= left_move && hold_nomove <= down_move
+			&& hold_nomove <= hold_nomove && hold_nomove <= up_move) { // dur
+		secilen_hamle[ind].x_coor = hunter.x_coor;
+		secilen_hamle[ind].y_coor = hunter.y_coor;
+	}
+	return;
+}
+
+//===================================================================================//
+
+agent_feats * Olenleri_Kaldir(int type) {
+	int j, k;
+	int olu_counter = 0;
+
+	if (type == AV) {
+		for (j = 0; j < prey_number; j++) {
+			if (!preys[j].live)
+				olu_counter++;
+		}
+		agent_feats temp[prey_number - olu_counter]; // kalan prey sayisi kadar gecici bellek acalim
+		for (j = 0, k = 0; j < prey_number; j++) {
+			if (preys[j].live) { // canlilari gecici bellege alalim
+				temp[k].live = preys[j].live;
+				temp[k].energy = preys[j].energy;
+				temp[k].x_coor = preys[j].x_coor;
+				temp[k].y_coor = preys[j].y_coor;
+				temp[k].agent_index = preys[j].agent_index;
+				k++;
+			} else
+				grid_map[preys[j].x_coor][preys[j].y_coor] = BOS;
+		}
+		free(preys);   //butun preyleri kaldiralim
+		prey_number -= olu_counter;  // yeni prey sayisini hesaplayalim
+
+		preys = malloc(sizeof(agent_feats) * prey_number); // yeni prey sayisi kadar memory acalim
+
+		for (j = 0; j < prey_number; j++) {
+			preys[j].x_coor = temp[j].x_coor;
+			preys[j].y_coor = temp[j].y_coor;
+			preys[j].live = temp[j].live;
+			preys[j].energy = temp[j].energy;
+			preys[j].agent_index = temp[j].agent_index;
+		}
+		return preys;
+
+	} else {
+		for (j = 0; j < hunter_number; j++) {
+			if (!hunters[j].live)
+				olu_counter++;
+		}
+		agent_feats temp[hunter_number - olu_counter]; //yeni hunter sayisi kadar gecici bellek
+		for (j = 0, k = 0; j < hunter_number; j++) {
+			if (hunters[j].live) {
+				temp[k].live = hunters[j].live;
+				temp[k].energy = hunters[j].energy;
+				temp[k].x_coor = hunters[j].x_coor;
+				temp[k].y_coor = hunters[j].y_coor;
+				temp[k].agent_index = hunters[j].agent_index;
+				k++;
+			} else
+				grid_map[hunters[j].x_coor][hunters[j].y_coor] = BOS;
+		}
+
+		free(hunters);  //tum hunterlari temizle
+		hunter_number -= olu_counter;  // yeni hunter sayisini hesapla
+
+		hunters = malloc(sizeof(agent_feats) * hunter_number); //yeni hunter sayisi kadar bellek acalim
+
+		for (j = 0; j < hunter_number; j++) {
+			hunters[j].x_coor = temp[j].x_coor;
+			hunters[j].y_coor = temp[j].y_coor;
+			hunters[j].live = temp[j].live;
+			hunters[j].energy = temp[j].energy;
+			hunters[j].agent_index = temp[j].agent_index;
+		}
+		return hunters;
+	}
+}

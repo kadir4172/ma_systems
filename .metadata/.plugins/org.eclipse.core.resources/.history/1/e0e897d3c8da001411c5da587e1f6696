@@ -230,8 +230,8 @@ int get_hg(state s) {
 		}
 	}
 
-	//return calculate_manhattan_distance(s,goalState);
-	return 0;
+	return calculate_manhattan_distance(s,goalState);
+	//return 0;
 }
 
 void set_state(state * agentState, state s) {
@@ -389,12 +389,14 @@ void multi_agent_search() {
 
 			children = expand_current_state(agentStates[agentId]);
 
+			int len = number_of_children(children);
+			//printf("%d. agent has %d children, ",agentId+1,len);
 
 			int goalId = next_to_final_state(children);
 
 			if(goalId != -1) {
 				set_state(agentStates + agentId,children[goalId]);
-				printf("Agent %d chilren state lerinden birisi final state dir \n Iterasyon durduruluyor,gorev tamamlandi.\n", agentId+1);
+				printf("Agent %d has the final state in one of its children\nThe search will be ended.\n", agentId+1);
 
 				printf("Son Durum:\n");
 				print_map_to_console(agentStates[agentId]);
@@ -513,7 +515,7 @@ int initialization() {
 	printf("d=%d\n",d);
 	printf("o=%d\n",o);
 
-        size_of_map = n;
+    size_of_map = n;
 	grid_map = malloc(sizeof(int *) * n);
 	visited_states = malloc(sizeof(state *) *d);
 	numberOfLocalStatesVisited = malloc(sizeof(int) * d);
@@ -530,9 +532,10 @@ int initialization() {
 
 	for(i = 0 ; i < o ; i++) {
 		fscanf(input_file, "%d %d", &x_coor, &y_coor);
+		printf("Girdi dosyasi okundu\n");
 		grid_map[x_coor - 1][y_coor - 1] = ENGEL;
 	}
-      fclose(input_file);
+   fclose(input_file);
 
 
    numberOfAgents = d;
@@ -594,9 +597,8 @@ int main() {
 	printf("If you want to use continuous time mode, please press 2 and press enter (logs all info, and prints total # of runs and CPU time at the end)\n");
 */
 
-	printf("Tum iterasyonlari gormek icin 1'e ve Enter a basin ve her iterasyon sonunda Enter a basin\n");
-	printf("Tum iterasyonlari gormek istemiyorsaniz 2'ye ve Enter a basin\n");
-
+	printf("Tum iterasyonlari gormek icin 1'e basin her ve iterasyon sonunda Enter a basin\n");
+	printf("Tum iterasyonlari gormek istemiyorsaniz 2'ye basin\n");
 
 	char c;
 	scanf("%c",&c);
@@ -604,7 +606,6 @@ int main() {
 		iterationMode = 1;
 	else
 		iterationMode = 0;
-	WaitForEnter();
 
 	numberOfGlobalStatesVisited = 0;
 	iterationNumber = 1;
@@ -633,8 +634,20 @@ int main() {
 
 
 	printf("\n******************************************\n");
-	printf("%d agent ile Toplam Iterasyon Sayisi : %d\n",numberOfAgents,totalRun);
-	printf("%d agent ile Toplam CPU Zamani : %f\n",numberOfAgents,cpu_time_used);
+	printf("TOTAL # of RUNS for %d AGENTs RUN: %d\n",numberOfAgents,totalRun);
+	printf("CPU TIME of RUNS for 2 AGENTs RUN: %f\n",cpu_time_used);
+
+	//printf("TOTAL # of RUNS for 4 AGENTs RUN: %d\n",totalRun2);
+	//printf("CPU TIME of RUNS for 4 AGENTs RUN: %f\n",cpu_time_used2);
+	//printf("******************************************\n\n");
+
+	fprintf(out,"\n******************************************\n");
+	fprintf(out,"TOTAL # of RUNS for 2 AGENTs RUN: %d\n",totalRun);
+	fprintf(out,"CPU TIME of RUNS for 2 AGENTs RUN: %f\n",cpu_time_used);
+
+	//fprintf(out,"TOTAL # of RUNS for 4 AGENTs RUN: %d\n",totalRun2);
+	//fprintf(out,"CPU TIME of RUNS for 4 AGENTs RUN: %f\n",cpu_time_used2);
+	//fprintf(out,"******************************************\n\n");
 
 	fclose(out);
 return 0;

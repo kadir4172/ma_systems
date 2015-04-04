@@ -230,8 +230,8 @@ int get_hg(state s) {
 		}
 	}
 
-	//return calculate_manhattan_distance(s,goalState);
-	return 0;
+	return calculate_manhattan_distance(s,goalState);
+	//return 0;
 }
 
 void set_state(state * agentState, state s) {
@@ -389,12 +389,14 @@ void multi_agent_search() {
 
 			children = expand_current_state(agentStates[agentId]);
 
+			int len = number_of_children(children);
+			//printf("%d. agent has %d children, ",agentId+1,len);
 
 			int goalId = next_to_final_state(children);
 
 			if(goalId != -1) {
 				set_state(agentStates + agentId,children[goalId]);
-				printf("Agent %d chilren state lerinden birisi final state dir \n Iterasyon durduruluyor,gorev tamamlandi.\n", agentId+1);
+				printf("Agent %d has the final state in one of its children\nThe search will be ended.\n", agentId+1);
 
 				printf("Son Durum:\n");
 				print_map_to_console(agentStates[agentId]);

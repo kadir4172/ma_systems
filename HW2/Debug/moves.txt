@@ -1,5 +1,4 @@
-Agent1:Right
-State(Final):
+Son Durum:
 x x x x o x x x x x 
 x x x o o x x x x x 
 o x x x x x x x x x 
@@ -10,9 +9,9 @@ x x x x x x x x x x
 x x o x x x x x x x 
 x x x x x x x x x x 
 x x x x x x x x x A 
-Total number of moves at this run(including this): 18
-CPU Time is: 0.004550
+Toplam Iterasyon Sayisi: 18
+CPU Time is: 0.005642
 
 ******************************************
 TOTAL # of RUNS for 2 AGENTs RUN: 18
-CPU TIME of RUNS for 2 AGENTs RUN: 0.004550
+CPU TIME of RUNS for 2 AGENTs RUN: 0.005642

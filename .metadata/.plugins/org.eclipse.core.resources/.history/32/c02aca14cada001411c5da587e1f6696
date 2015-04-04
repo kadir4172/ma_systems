@@ -389,6 +389,8 @@ void multi_agent_search() {
 
 			children = expand_current_state(agentStates[agentId]);
 
+			int len = number_of_children(children);
+			//printf("%d. agent has %d children, ",agentId+1,len);
 
 			int goalId = next_to_final_state(children);
 

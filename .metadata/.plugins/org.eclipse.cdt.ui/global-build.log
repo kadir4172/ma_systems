@@ -671,3 +671,151 @@ Invoking: Cross GCC Linker
 gcc  -o "HW2"  ./src/HW2.o   
 Finished building target: HW2
  
+15:30:14 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:32:46 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:36:23 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:48:09 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+../src/HW2.c: In function ‘main’:
+../src/HW2.c:638:2: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘double’ [-Wformat=]
+  printf("%d agent ile Toplam CPU Zamani : %d\n",numberOfAgents,cpu_time_used);
+  ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:48:35 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:49:28 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:51:11 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:51:45 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+15:56:10 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘multi_agent_search’:
+../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
+    int len = number_of_children(children);
+        ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 

@@ -1,4 +1,4 @@
-Agent4:Right
+Agent1:Right
 State(Final):
 x x x x o x x x x x 
 x x x o o x x x x x 
@@ -11,8 +11,8 @@ x x o x x x x x x x
 x x x x x x x x x x 
 x x x x x x x x x A 
 Total number of moves at this run(including this): 18
-CPU Time is: 0.011200
+CPU Time is: 0.004656
 
 ******************************************
 TOTAL # of RUNS for 2 AGENTs RUN: 18
-CPU TIME of RUNS for 2 AGENTs RUN: 0.011200
+CPU TIME of RUNS for 2 AGENTs RUN: 0.004656

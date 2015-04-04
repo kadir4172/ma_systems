@@ -9,52 +9,42 @@ int size_of_map;
 #define ENGEL    3
 
 typedef struct state {
-	int posx; // position of empty cell
-	int posy;
-	int index;
+	int pos_x;
+	int pos_y;
 	int hvalue;
 } state;
 
-state * currentStates;
-
-state finalState;
+state * agentStates;
+state goalState;
 
 state ** visitedStates;
-int* numberOfVisitedStates;
+int* numberOfLocalStatesVisited;
 
-state * visitedStatesG; // globally visited states and their heuristic values
+state * visitedStatesG;
 
 
-int numberOfVisitedStatesG;
-
+int numberOfGlobalStatesVisited;
 int numberOfAgents;
 
-int episodMode;
-int episodNumber = 1;
+int iterationMode;
+int iterationNumber = 1;
 
 
 FILE * out;
 
 clock_t start, end;
-double cpu_time_used1;
-double cpu_time_used2;
-int totalRun1;
-int totalRun2;
+double cpu_time_used;
+int totalRun;
 
-void WaitForEnter() {
-	int c;
-	while((c = getchar()) != '\n' && c != EOF)
-		;
-}
 
-void fprintState(state s) {
+void print_map_to_file(state s) {
 
 	int i,j;
 	for(i = 0; i < size_of_map; i++) {
 		for(j = 0; j < size_of_map; j++){
 			if(grid_map[i][j] == ENGEL)
 			  fprintf(out,"o ");
-			else if(s.posx == i && s.posy == j)
+			else if(s.pos_x == i && s.pos_y == j)
 			  fprintf(out,"A ");
 		    else
 		      fprintf(out,"x ");
@@ -63,13 +53,13 @@ void fprintState(state s) {
 	}
 }
 
-void printState(state s) {
+void print_map_to_console(state s) {
 	int i,j;
 	for(i = 0; i < size_of_map; i++) {
 		for(j = 0; j < size_of_map; j++){
 			if(grid_map[i][j] == ENGEL)
 				printf("o ");
-			else if(s.posx == i && s.posy == j)
+			else if(s.pos_x == i && s.pos_y == j)
 			  printf("A ");
 		    else
 		      printf("x ");
@@ -78,115 +68,106 @@ void printState(state s) {
 	}
 }
 
-state * expandState(state currentState) {
+state * expand_current_state(state agentState) {
 
 	state * children = malloc(sizeof(state)*4);
 
-
 	//ASAGI
-	if((currentState.posy-1 >= 0)){
-	  if(grid_map[currentState.posx][currentState.posy-1] != ENGEL) {
-
-			children[0] = currentState;
-			children[0].posx = currentState.posx;
-		    children[0].posy = currentState.posy-1;
+	if((agentState.pos_y-1 >= 0)){
+	  if(grid_map[agentState.pos_x][agentState.pos_y-1] != ENGEL) {
+			children[0] = agentState;
+			children[0].pos_x = agentState.pos_x;
+		    children[0].pos_y = agentState.pos_y-1;
 			}
-
-
 		else {
-			children[0] = currentState; // means no child !
-			children[0].posx = -100;
-			children[0].posy = -100;
+			children[0] = agentState;
+			children[0].pos_x = -100;
+			children[0].pos_y = -100;
 		}
 	}
 	else {
-			children[0] = currentState; // means no child !
-			children[0].posx = -100;
-			children[0].posy = -100;
-		}
+			children[0] = agentState;
+			children[0].pos_x = -100;
+			children[0].pos_y = -100;
+	}
 
 	// YUKARI
-	if(currentState.posy+1 < size_of_map) {
-	  if(grid_map[currentState.posx][currentState.posy+1] != ENGEL ) {
-
-		    children[1] = currentState;
-			children[1].posx = currentState.posx;
-		    children[1].posy = currentState.posy+1;
-
-
-
-			}
-
+	if(agentState.pos_y+1 < size_of_map) {
+	  if(grid_map[agentState.pos_x][agentState.pos_y+1] != ENGEL ) {
+		    children[1] = agentState;
+			children[1].pos_x = agentState.pos_x;
+		    children[1].pos_y = agentState.pos_y+1;
+		}
+	  	  else {
+	  		children[1] = agentState;
+	  		children[1].pos_x = -100;
+	  		children[1].pos_y = -100;
+	   }
+	 }
 	else {
-		children[1] = currentState; // means no child !
-		children[1].posx = -100;
-		children[1].posy = -100;
-	}
-	}
-	else {
-		children[1] = currentState; // means no child !
-		children[1].posx = -100;
-		children[1].posy = -100;
+		children[1] = agentState;
+		children[1].pos_x = -100;
+		children[1].pos_y = -100;
 	}
 
 	//SOL
+	if((agentState.pos_x-1 >= 0)){
+	  if(grid_map[agentState.pos_x-1][agentState.pos_y] != ENGEL ) {
 
-	if((currentState.posx-1 >= 0)){
-	  if(grid_map[currentState.posx-1][currentState.posy] != ENGEL ) {
-
-		    children[2] = currentState;
-			children[2].posx = currentState.posx -1;
-		    children[2].posy = currentState.posy;
-
-
-
-			 }
-
-	else {
-		children[2] = currentState; // means no child !
-		children[2].posx = -100;
-		children[2].posy = -100;
-	}
-	}
-	else {
-		children[2] = currentState; // means no child !
-		children[2].posx = -100;
-		children[2].posy = -100;
-	}
+		children[2] = agentState;
+		children[2].pos_x = agentState.pos_x -1;
+		children[2].pos_y = agentState.pos_y;
+	 }
+	  else {
+		children[2] = agentState;
+		children[2].pos_x = -100;
+		children[2].pos_y = -100;
+         	}
+	  }
+	   else {
+		children[2] = agentState;
+		children[2].pos_x = -100;
+		children[2].pos_y = -100;
+	   }
 
 	//SAG
+	if(agentState.pos_x+1 <size_of_map){
+	  if(grid_map[agentState.pos_x+1][agentState.pos_y] != ENGEL ) {
 
-	if(currentState.posx+1 <size_of_map){
-	  if(grid_map[currentState.posx+1][currentState.posy] != ENGEL ) {
-
-	    children[3] = currentState;
-		children[3].posx = currentState.posx +1;
-	    children[3].posy = currentState.posy;
+	        children[3] = agentState;
+		children[3].pos_x = agentState.pos_x +1;
+	        children[3].pos_y = agentState.pos_y;
 
 
 		}
 
 	else {
-		children[3] = currentState; // means no child !
-		children[3].posx = -100;
-		children[3].posy = -100;
+		children[3] = agentState;
+		children[3].pos_x = -100;
+		children[3].pos_y = -100;
 	}
 	}
 	else {
-		children[3] = currentState; // means no child !
-		children[3].posx = -100;
-		children[3].posy = -100;
+		children[3] = agentState;
+		children[3].pos_x = -100;
+		children[3].pos_y = -100;
 	}
 
 	return children;
 }
 
-int isThereGoal(state * children) {
+void WaitForEnter() {
+	int c;
+	while((c = getchar()) != '\n' && c != EOF)
+		;
+}
+
+int next_to_final_state(state * children) {
 	int i;
 	int isGoal = 0;
 	int id = -1;
 	for(i = 0; i < 4; i++) {
-		if(children[i].posx == finalState.posx && children[i].posy == finalState.posy) {
+		if(children[i].pos_x == goalState.pos_x && children[i].pos_y == goalState.pos_y) {
 			isGoal = 1;
 		}
 		if(isGoal) {
@@ -198,11 +179,11 @@ int isThereGoal(state * children) {
 	return id;
 }
 
-int numberOfChildren(state * children) {
+int number_of_children(state * children) {
 	int i;
 	int number = 0;
 	for(i = 0; i < 4; i++) {
-		if(children[i].posx != -100 && children[i].posy != -100) {
+		if(children[i].pos_x != -100 && children[i].pos_y != -100) {
 			number++;
 		}
 	}
@@ -213,7 +194,7 @@ int numberOfChildren(state * children) {
 int isEqual(state s1, state s2) {
 
 	int ret = 0;
-	if(s1.posx == s2.posx && s1.posy == s2.posy) {
+	if(s1.pos_x == s2.pos_x && s1.pos_y == s2.pos_y) {
 		ret = 1;
 	}
 
@@ -225,7 +206,7 @@ int visitedStateId = -1;
 int isVisited(int agent, state child) {
 	int i;
 
-		for(i = 0; i < numberOfVisitedStates[agent]; i++) {
+		for(i = 0; i < numberOfLocalStatesVisited[agent]; i++) {
 			if(isEqual(visitedStates[agent][i],child)) {
 				visitedStateId = i;
 				return 1;
@@ -244,7 +225,7 @@ int getLocalHeuristicValue(int agentId, state children) {
 }
 
 int calculateHeuristicValue(state s1, state s2) {
-	int hval = abs(s1.posx-s2.posx) + abs(s1.posy-s2.posy);
+	int hval = abs(s1.pos_x-s2.pos_x) + abs(s1.pos_y-s2.pos_y);
 	return hval;
 }
 
@@ -252,21 +233,21 @@ int getGlobalHeuristicValue(state s) {
 	int i;
 
 
-	for(i = 0; i < numberOfVisitedStatesG; i++) {
+	for(i = 0; i < numberOfGlobalStatesVisited; i++) {
 		if(isEqual(visitedStatesG[i],s)) {
 			return visitedStatesG[i].hvalue;
 		}
 	}
 
-	return calculateHeuristicValue(s,finalState);
+	return calculateHeuristicValue(s,goalState);
 	//return 0;
 }
 
-void setCurrentState(state * currentState, state s) {
+void setCurrentState(state * agentState, state s) {
 
-	(*currentState).posx = s.posx;
-	(*currentState).posy = s.posy;
-	(*currentState).hvalue = s.hvalue;
+	(*agentState).pos_x = s.pos_x;
+	(*agentState).pos_y = s.pos_y;
+	(*agentState).hvalue = s.hvalue;
 
 
 }
@@ -276,7 +257,7 @@ int calculateIsolation(int agent, state candidate) {
 	int min = 10000;
 	for(i = 0; i < numberOfAgents; i++) {
 		if(i != agent) {
-			int temp = calculateHeuristicValue(candidate, currentStates[i]);
+			int temp = calculateHeuristicValue(candidate, agentStates[i]);
 			if(temp < min)
 				min = temp;
 		}
@@ -305,7 +286,7 @@ void updateGlobalHeuristicValue(state s, int hval) {
 	int i;
 
 
-	for(i = 0; i < numberOfVisitedStatesG; i++) {
+	for(i = 0; i < numberOfGlobalStatesVisited; i++) {
 		if(isEqual(visitedStatesG[i],s)) {
 			visitedStatesG[i].hvalue = hval;
 			return;
@@ -314,27 +295,27 @@ void updateGlobalHeuristicValue(state s, int hval) {
 
 
 
-	state * temp = malloc(sizeof(state)*(numberOfVisitedStatesG+1));
-	for(i = 0; i < numberOfVisitedStatesG; i++) {
-		temp[i].posx = visitedStatesG[i].posx;
-		temp[i].posy = visitedStatesG[i].posy;
+	state * temp = malloc(sizeof(state)*(numberOfGlobalStatesVisited+1));
+	for(i = 0; i < numberOfGlobalStatesVisited; i++) {
+		temp[i].pos_x = visitedStatesG[i].pos_x;
+		temp[i].pos_y = visitedStatesG[i].pos_y;
 		temp[i].hvalue = visitedStatesG[i].hvalue;
 
 	}
 
 	s.hvalue = hval;
 
-	temp[i].posx = s.posx;
-	temp[i].posy = s.posy;
+	temp[i].pos_x = s.pos_x;
+	temp[i].pos_y = s.pos_y;
 	temp[i].hvalue = s.hvalue;
 
 
 	free(visitedStatesG);
-	numberOfVisitedStatesG++;
-	visitedStatesG = malloc(sizeof(state)*(numberOfVisitedStatesG));
-	for(i = 0; i < numberOfVisitedStatesG; i++) {
-		visitedStatesG[i].posx = temp[i].posx;
-		visitedStatesG[i].posy = temp[i].posy;
+	numberOfGlobalStatesVisited++;
+	visitedStatesG = malloc(sizeof(state)*(numberOfGlobalStatesVisited));
+	for(i = 0; i < numberOfGlobalStatesVisited; i++) {
+		visitedStatesG[i].pos_x = temp[i].pos_x;
+		visitedStatesG[i].pos_y = temp[i].pos_y;
 		visitedStatesG[i].hvalue = temp[i].hvalue;
 
 	}
@@ -345,7 +326,7 @@ void updateGlobalHeuristicValue(state s, int hval) {
 void updateLocalHeuristicValue(int agent, state s, int hval) {
 	int i;
 
-		for(i = 0; i < numberOfVisitedStates[agent]; i++) {
+		for(i = 0; i < numberOfLocalStatesVisited[agent]; i++) {
 			if(isEqual(visitedStates[agent][i],s)) {
 				visitedStates[agent][i].hvalue = hval;
 				return;
@@ -354,27 +335,27 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 
 		//printf("not visited before will be added to the visited ones\n");
 
-		state * temp = malloc(sizeof(state)*(numberOfVisitedStates[agent]+1));
-		for(i = 0; i < numberOfVisitedStates[agent]; i++) {
-			temp[i].posx = visitedStates[agent][i].posx;
-			temp[i].posy = visitedStates[agent][i].posy;
+		state * temp = malloc(sizeof(state)*(numberOfLocalStatesVisited[agent]+1));
+		for(i = 0; i < numberOfLocalStatesVisited[agent]; i++) {
+			temp[i].pos_x = visitedStates[agent][i].pos_x;
+			temp[i].pos_y = visitedStates[agent][i].pos_y;
 			temp[i].hvalue = visitedStates[agent][i].hvalue;
 
 		}
 
 		s.hvalue = hval;
 
-		temp[i].posx = s.posx;
-		temp[i].posy = s.posy;
+		temp[i].pos_x = s.pos_x;
+		temp[i].pos_y = s.pos_y;
 		temp[i].hvalue = s.hvalue;
 
 
 		free(visitedStates[agent]);
-		numberOfVisitedStates[agent]++;
-		visitedStates[agent] = malloc(sizeof(state)*(numberOfVisitedStates[agent]));
-		for(i = 0; i < numberOfVisitedStates[agent]; i++) {
-			visitedStates[agent][i].posx = temp[i].posx;
-			visitedStates[agent][i].posy = temp[i].posy;
+		numberOfLocalStatesVisited[agent]++;
+		visitedStates[agent] = malloc(sizeof(state)*(numberOfLocalStatesVisited[agent]));
+		for(i = 0; i < numberOfLocalStatesVisited[agent]; i++) {
+			visitedStates[agent][i].pos_x = temp[i].pos_x;
+			visitedStates[agent][i].pos_y = temp[i].pos_y;
 			visitedStates[agent][i].hvalue = temp[i].hvalue;
 
 
@@ -402,15 +383,15 @@ void runMARTA() {
 		while(agentId < numberOfAgents) {
 
 			// expand the current state
-			children = expandState(currentStates[agentId]);
+			children = expand_current_state(agentStates[agentId]);
 
-			int len = numberOfChildren(children);
+			int len = number_of_children(children);
 			printf("%d. agent has %d children, ",agentId+1,len);
 			// check if it is the goal state, if yes terminate
-			int goalId = isThereGoal(children);
+			int goalId = next_to_final_state(children);
 
 			if(goalId != -1) {
-				setCurrentState(currentStates + agentId,children[goalId]);
+				setCurrentState(agentStates + agentId,children[goalId]);
 				printf("and has the final state in one of its children\nThe search will be ended.\n");
 				printf("Agent%d:",agentId+1);
 				fprintf(out,"Agent%d:",agentId+1);
@@ -433,13 +414,13 @@ void runMARTA() {
 				else
 					printf("ERROR in decided action selection !\n");
 				printf("State(Final):\n");
-				printState(currentStates[agentId]);
+				print_map_to_console(agentStates[agentId]);
 				fprintf(out,"State(Final):\n");
-				fprintState(currentStates[agentId]);
-				printf("Total number of moves at this run(including this): %d\n",episodNumber);
-				fprintf(out,"Total number of moves at this run(including this): %d\n",episodNumber);
+				print_map_to_file(agentStates[agentId]);
+				printf("Total number of moves at this run(including this): %d\n",iterationNumber);
+				fprintf(out,"Total number of moves at this run(including this): %d\n",iterationNumber);
 				printf("***********************************************************\n");
-				printf("Episod #%d is over for all agents\n",episodNumber);
+				printf("Episod #%d is over for all agents\n",iterationNumber);
 				printf("***********************************************************\n\n");
 				return;
 			}
@@ -452,7 +433,7 @@ void runMARTA() {
 				int min = 10000;			// means inifite
 
 				for(i = 0,j = 0; i < 4; i++) {
-					if(children[i].posx >= 0 && children[i].posy >= 0) {
+					if(children[i].pos_x >= 0 && children[i].pos_y >= 0) {
 						int res = isVisited(agentId,children[i]); // if the state is visited by the ith agent before
 						if(res)
 							f = getLocalHeuristicValue(agentId,children[i]) + 1; // as single move cost is 1
@@ -503,14 +484,14 @@ void runMARTA() {
 				}
 				localUpdateValues[agentId] = secondMin;
 			}
-			updateGlobalHeuristicValue(currentStates[agentId],globalUpdateValues[agentId]);
-            updateLocalHeuristicValue(agentId,currentStates[agentId],localUpdateValues[agentId]);
+			updateGlobalHeuristicValue(agentStates[agentId],globalUpdateValues[agentId]);
+            updateLocalHeuristicValue(agentId,agentStates[agentId],localUpdateValues[agentId]);
 
-			setCurrentState(currentStates + agentId,decidedStates[agentId]);
+			setCurrentState(agentStates + agentId,decidedStates[agentId]);
 
 			printf("current state of Agent %d :\n", agentId+1);
-			printf("Agent Pos: %d % d \n", currentStates[agentId].posx, currentStates[agentId].posy);
-			printState(currentStates[agentId]);
+			printf("Agent Pos: %d % d \n", agentStates[agentId].pos_x, agentStates[agentId].pos_y);
+			print_map_to_console(agentStates[agentId]);
 			printf("-----\n");
 
 
@@ -521,25 +502,27 @@ void runMARTA() {
 
 
 		printf("***********************************************************\n");
-		printf("Episod #%d is over for all agents\n",episodNumber);
+		printf("Episod #%d is over for all agents\n",iterationNumber);
 		printf("***********************************************************\n\n");
 
-		if(episodMode)
+		if(iterationMode)
 				WaitForEnter();
 
-		episodNumber++;
+		iterationNumber++;
 	}
 }
 
-void initialization() {
+int initialization() {
 
 	int n, d, o;
 	int i,j;
 
 	printf("Girdi dosyasi okunuyor\n");
 	FILE * input_file = fopen("environment.inp", "r");
-	if (!input_file)
+	if (!input_file){
 			printf("Dosya Okunamadi.");
+	return 0;
+	}
 
 	printf("Girdi dosyasi okundu\n");
 
@@ -555,14 +538,14 @@ void initialization() {
     size_of_map = n;
 	grid_map = malloc(sizeof(int *) * n);
 	visitedStates = malloc(sizeof(state *) *d);
-	numberOfVisitedStates = malloc(sizeof(int) * d);
+	numberOfLocalStatesVisited = malloc(sizeof(int) * d);
 
 	for (j = 0; j < n; j++)
 		grid_map[j] = malloc(sizeof(int) * n);
 
 	for (j = 0; j < d; j++){
 			visitedStates[j] = malloc(sizeof(state) * (n*n));
-	        numberOfVisitedStates[j] = 0;
+	        numberOfLocalStatesVisited[j] = 0;
 	}
 
 	int x_coor, y_coor;
@@ -576,22 +559,22 @@ void initialization() {
 
 
    numberOfAgents = d;
-   currentStates = malloc(sizeof(state) * d);
+   agentStates = malloc(sizeof(state) * d);
 
 
 
    for (i = 0 ; i < d; i++){
-	   currentStates[i].posx = 0;
-	   currentStates[i].posy = 0;
+	   agentStates[i].pos_x = 0;
+	   agentStates[i].pos_y = 0;
    }
-   finalState.posx = n-1;
-   finalState.posy = n-1;
-
+   goalState.pos_x = n-1;
+   goalState.pos_y = n-1;
+ return 1;
 }
 
 void destroy() {
-	free(currentStates);
-	currentStates = NULL;
+	free(agentStates);
+	agentStates = NULL;
 
 	free(visitedStates);
 
@@ -646,24 +629,27 @@ int main() {
 	char c;
 	scanf("%c",&c);
 	if(c == '1')
-		episodMode = 1;
+		iterationMode = 1;
 	else
-		episodMode = 0;
+		iterationMode = 0;
 	WaitForEnter();
 
-	numberOfVisitedStatesG = 0;
-	episodNumber = 1;
-	initialization();
+	numberOfGlobalStatesVisited = 0;
+	iterationNumber = 1;
+	if(!initialization()){
+		printf("Program Sonlandiriliyor");
+		return 0;
+	}
 
 	printf("System is loaded, initial states are as below:\n");
 	for(i = 0; i < numberOfAgents; i++) {
 		printf("Agent %d:\n",i+1);
-		printState(currentStates[i]);
+		print_map_to_console(agentStates[i]);
 		printf("-----\n");
 	}
 
 	printf("The final state is as below:\n");
-	printState(finalState);
+	print_map_to_console(goalState);
 
 	printf("Press enter to start the MARTA* search\n");
 	WaitForEnter();
@@ -671,9 +657,9 @@ int main() {
 	start = clock();
 	runMARTA();
 	end = clock();
-    cpu_time_used1 = ((double) (end - start)) / CLOCKS_PER_SEC;
-	totalRun1 = episodNumber;
-	fprintf(out,"CPU Time is: %f\n",cpu_time_used1);
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+	totalRun = iterationNumber;
+	fprintf(out,"CPU Time is: %f\n",cpu_time_used);
 
 	printf("*****************************************************************************************\n");
 	printf("The session for 2 agents is over, please press enter to start the session for 4 agents\n");
@@ -684,17 +670,17 @@ int main() {
 	fprintf(out,"The session for 2 agents is over, system is restarted for 4 agents\n");
 	fprintf(out,"******************************************************************\n\n");
 
-	if(episodMode)
+	if(iterationMode)
 		WaitForEnter();
 
 	destroy();
 
-	numberOfVisitedStates1 = 0;
-	numberOfVisitedStates2 = 0;
-	numberOfVisitedStates3 = 0;
-	numberOfVisitedStates4 = 0;
-	numberOfVisitedStatesG = 0;
-	episodNumber = 1;
+	numberOfLocalStatesVisited1 = 0;
+	numberOfLocalStatesVisited2 = 0;
+	numberOfLocalStatesVisited3 = 0;
+	numberOfLocalStatesVisited4 = 0;
+	numberOfGlobalStatesVisited = 0;
+	iterationNumber = 1;
 	numberOfAgents = 4;
 	initialization();
 
@@ -702,21 +688,21 @@ int main() {
 	runMARTA();
 	end = clock();
 	cpu_time_used2 = ((double) (end - start)) / CLOCKS_PER_SEC;
-	totalRun2 = episodNumber;
+	totalRun2 = iterationNumber;
 	*/
 	//fprintf(out,"CPU Time is: %f\n",cpu_time_used2);
 
 	printf("\n******************************************\n");
-	printf("TOTAL # of RUNS for 2 AGENTs RUN: %d\n",totalRun1);
-	printf("CPU TIME of RUNS for 2 AGENTs RUN: %f\n",cpu_time_used1);
+	printf("TOTAL # of RUNS for 2 AGENTs RUN: %d\n",totalRun);
+	printf("CPU TIME of RUNS for 2 AGENTs RUN: %f\n",cpu_time_used);
 
 	//printf("TOTAL # of RUNS for 4 AGENTs RUN: %d\n",totalRun2);
 	//printf("CPU TIME of RUNS for 4 AGENTs RUN: %f\n",cpu_time_used2);
 	//printf("******************************************\n\n");
 
 	fprintf(out,"\n******************************************\n");
-	fprintf(out,"TOTAL # of RUNS for 2 AGENTs RUN: %d\n",totalRun1);
-	fprintf(out,"CPU TIME of RUNS for 2 AGENTs RUN: %f\n",cpu_time_used1);
+	fprintf(out,"TOTAL # of RUNS for 2 AGENTs RUN: %d\n",totalRun);
+	fprintf(out,"CPU TIME of RUNS for 2 AGENTs RUN: %f\n",cpu_time_used);
 
 	//fprintf(out,"TOTAL # of RUNS for 4 AGENTs RUN: %d\n",totalRun2);
 	//fprintf(out,"CPU TIME of RUNS for 4 AGENTs RUN: %f\n",cpu_time_used2);

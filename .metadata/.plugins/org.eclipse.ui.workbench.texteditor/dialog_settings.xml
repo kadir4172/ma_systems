@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
-		<item value="289" key="DIALOG_WIDTH"/>
-		<item value="333" key="DIALOG_Y_ORIGIN"/>
-		<item value="480" key="DIALOG_HEIGHT"/>
-		<item value="1391" key="DIALOG_X_ORIGIN"/>
+		<item value="287" key="DIALOG_WIDTH"/>
+		<item value="480" key="DIALOG_Y_ORIGIN"/>
+		<item value="1335" key="DIALOG_X_ORIGIN"/>
+		<item value="479" key="DIALOG_HEIGHT"/>
 		<item value="1|Cantarell|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
-		<item value="true" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="false" key="wholeword"/>
-		<item value="getGlobalHeuristicValue" key="selection"/>
+		<item value="episodMode" key="selection"/>
 		<list key="findhistory">
-			<item value="getGlobalHeuristicValue"/>
-			<item value="getLocalHeuristicValue"/>
-			<item value="printState"/>
-			<item value="setCurrentState"/>
-			<item value="finalState"/>
-			<item value="localUpdateValues"/>
-			<item value="updateLocalHeuristicValue"/>
-			<item value="update"/>
+			<item value="episodMode"/>
+			<item value="4"/>
+			<item value="decidedStates"/>
+			<item value="3"/>
+			<item value="numberOfVisitedStates"/>
+			<item value="visitedStates"/>
+			<item value="isVisited"/>
+			<item value="numberOfAgents"/>
 		</list>
 		<list key="replacehistory">
 			<item value="decision_preys"/>

@@ -1,4 +1,4 @@
-14:23:16 **** Incremental Build of configuration Debug for project HW2 ****
+15:10:18 **** Incremental Build of configuration Debug for project HW2 ****
 make all 
 Building file: ../src/HW2.c
 Invoking: Cross GCC Compiler
@@ -11,5 +11,5 @@ gcc  -o "HW2"  ./src/HW2.o
 Finished building target: HW2
  
 
-14:23:16 Build Finished (took 163ms)
+15:10:18 Build Finished (took 159ms)
 

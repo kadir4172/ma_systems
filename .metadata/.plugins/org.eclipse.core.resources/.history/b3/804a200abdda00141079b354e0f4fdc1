@@ -258,8 +258,8 @@ int getGlobalHeuristicValue(state s) {
 		}
 	}
 
-	return calculateHeuristicValue(s,finalState);
-	//return 0;
+	//return calculateHeuristicValue(s,finalState);
+	return 0;
 }
 
 void setCurrentState(state * currentState, state s) {
@@ -291,7 +291,9 @@ int getFarthestStateFromCandidates(int agent, state * children, int * candidates
 	int maxId = 0;
 	for(i = 0; i < numbOfCand; i++) {
 		int temp = calculateIsolation(agent,children[candidates[i]]);
-
+		//printf("%d. candidate is: \n",candidates[i]);
+		//printState(children[candidates[i]]);
+		//printf("its isolation is %d, min: %d\n",temp,min);
 		if(temp >= max) {
 			maxId = candidates[i];
 			max = temp;

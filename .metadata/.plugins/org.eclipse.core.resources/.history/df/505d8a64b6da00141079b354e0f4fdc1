@@ -182,7 +182,7 @@ state * expandState(state currentState) {
 }
 
 int isThereGoal(state * children) {
-	int i;
+	int i,j,k;
 	int isGoal = 0;
 	int id = -1;
 	for(i = 0; i < 4; i++) {
@@ -249,7 +249,7 @@ int calculateHeuristicValue(state s1, state s2) {
 }
 
 int getGlobalHeuristicValue(state s) {
-	int i;
+	int i,j,k;
 
 
 	for(i = 0; i < numberOfVisitedStatesG; i++) {
@@ -291,7 +291,9 @@ int getFarthestStateFromCandidates(int agent, state * children, int * candidates
 	int maxId = 0;
 	for(i = 0; i < numbOfCand; i++) {
 		int temp = calculateIsolation(agent,children[candidates[i]]);
-
+		//printf("%d. candidate is: \n",candidates[i]);
+		//printState(children[candidates[i]]);
+		//printf("its isolation is %d, min: %d\n",temp,min);
 		if(temp >= max) {
 			maxId = candidates[i];
 			max = temp;
@@ -312,7 +314,7 @@ void updateGlobalHeuristicValue(state s, int hval) {
 		}
 	}
 
-
+	//printf("not visited before will be added to the visited ones\n");
 
 	state * temp = malloc(sizeof(state)*(numberOfVisitedStatesG+1));
 	for(i = 0; i < numberOfVisitedStatesG; i++) {
@@ -337,6 +339,10 @@ void updateGlobalHeuristicValue(state s, int hval) {
 		visitedStatesG[i].posy = temp[i].posy;
 		visitedStatesG[i].hvalue = temp[i].hvalue;
 
+		//printf("added state %d:\n",i);
+		//printState(visitedStatesG[i]);
+		//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+		//printf("-------\n");
 	}
 
 	return;
@@ -345,6 +351,7 @@ void updateGlobalHeuristicValue(state s, int hval) {
 void updateLocalHeuristicValue(int agent, state s, int hval) {
 	int i;
 
+	if(agent == 0) {
 		for(i = 0; i < numberOfVisitedStates[agent]; i++) {
 			if(isEqual(visitedStates[agent][i],s)) {
 				visitedStates[agent][i].hvalue = hval;
@@ -354,11 +361,11 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 
 		//printf("not visited before will be added to the visited ones\n");
 
-		state * temp = malloc(sizeof(state)*(numberOfVisitedStates[agent]+1));
-		for(i = 0; i < numberOfVisitedStates[agent]; i++) {
-			temp[i].posx = visitedStates[agent][i].posx;
-			temp[i].posy = visitedStates[agent][i].posy;
-			temp[i].hvalue = visitedStates[agent][i].hvalue;
+		state * temp = malloc(sizeof(state)*(numberOfVisitedStates1+1));
+		for(i = 0; i < numberOfVisitedStates1; i++) {
+			temp[i].posx = visitedStates1[i].posx;
+			temp[i].posy = visitedStates1[i].posy;
+			temp[i].hvalue = visitedStates1[i].hvalue;
 
 		}
 
@@ -369,18 +376,129 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].hvalue = s.hvalue;
 
 
-		free(visitedStates[agent]);
-		numberOfVisitedStates[agent]++;
-		visitedStates[agent] = malloc(sizeof(state)*(numberOfVisitedStates[agent]));
-		for(i = 0; i < numberOfVisitedStates[agent]; i++) {
-			visitedStates[agent][i].posx = temp[i].posx;
-			visitedStates[agent][i].posy = temp[i].posy;
-			visitedStates[agent][i].hvalue = temp[i].hvalue;
+		free(visitedStates1);
+		numberOfVisitedStates1++;
+		visitedStates1 = malloc(sizeof(state)*(numberOfVisitedStates1));
+		for(i = 0; i < numberOfVisitedStates1; i++) {
+			visitedStates1[i].posx = temp[i].posx;
+			visitedStates1[i].posy = temp[i].posy;
+			visitedStates1[i].hvalue = temp[i].hvalue;
 
+			//printf("added state %d:\n",i);
+			//printState(visitedStatesG[i]);
+			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+			//printf("-------\n");
+		}
+
+	}
+	else if(agent == 1) {
+		for(i = 0; i < numberOfVisitedStates2; i++) {
+			if(isEqual(visitedStates2[i],s)) {
+				visitedStates2[i].hvalue = hval;
+				return;
+			}
+		}
+
+		//printf("not visited before will be added to the visited ones\n");
+
+		state * temp = malloc(sizeof(state)*(numberOfVisitedStates2+1));
+		for(i = 0; i < numberOfVisitedStates2; i++) {
+			temp[i].posx = visitedStates2[i].posx;
+			temp[i].posy = visitedStates2[i].posy;
+			temp[i].hvalue = visitedStates2[i].hvalue;
 
 		}
 
+		s.hvalue = hval;
 
+		temp[i].posx = s.posx;
+		temp[i].posy = s.posy;
+		temp[i].hvalue = s.hvalue;
+
+
+		free(visitedStates2);
+		numberOfVisitedStates2++;
+		visitedStates2 = malloc(sizeof(state)*(numberOfVisitedStates2));
+		for(i = 0; i < numberOfVisitedStates2; i++) {
+			visitedStates2[i].posx = temp[i].posx;
+			visitedStates2[i].posy = temp[i].posy;
+			visitedStates2[i].hvalue = temp[i].hvalue;
+
+		}
+	}
+	else if(agent == 2) {
+		for(i = 0; i < numberOfVisitedStates3; i++) {
+			if(isEqual(visitedStates3[i],s)) {
+				visitedStates3[i].hvalue = hval;
+				return;
+			}
+		}
+
+		//printf("not visited before will be added to the visited ones\n");
+
+		state * temp = malloc(sizeof(state)*(numberOfVisitedStates3+1));
+		for(i = 0; i < numberOfVisitedStates3; i++) {
+			temp[i].posx = visitedStates3[i].posx;
+			temp[i].posy = visitedStates3[i].posy;
+			temp[i].hvalue = visitedStates3[i].hvalue;
+
+		}
+
+		s.hvalue = hval;
+
+		temp[i].posx = s.posx;
+		temp[i].posy = s.posy;
+		temp[i].hvalue = s.hvalue;
+
+
+		free(visitedStates3);
+		numberOfVisitedStates3++;
+		visitedStates3 = malloc(sizeof(state)*(numberOfVisitedStates3));
+		for(i = 0; i < numberOfVisitedStates3; i++) {
+			visitedStates3[i].posx = temp[i].posx;
+			visitedStates3[i].posy = temp[i].posy;
+			visitedStates3[i].hvalue = temp[i].hvalue;
+
+		}
+	}
+	else if(agent == 3) {
+		for(i = 0; i < numberOfVisitedStates4; i++) {
+			if(isEqual(visitedStates4[i],s)) {
+				visitedStates4[i].hvalue = hval;
+				return;
+			}
+		}
+
+		//printf("not visited before will be added to the visited ones\n");
+
+		state * temp = malloc(sizeof(state)*(numberOfVisitedStates4+1));
+		for(i = 0; i < numberOfVisitedStates4; i++) {
+			temp[i].posx = visitedStates4[i].posx;
+			temp[i].posy = visitedStates4[i].posy;
+			temp[i].hvalue = visitedStates4[i].hvalue;
+
+		}
+
+		s.hvalue = hval;
+
+		temp[i].posx = s.posx;
+		temp[i].posy = s.posy;
+		temp[i].hvalue = s.hvalue;
+
+
+		free(visitedStates4);
+		numberOfVisitedStates4++;
+		visitedStates4 = malloc(sizeof(state)*(numberOfVisitedStates4));
+		for(i = 0; i < numberOfVisitedStates4; i++) {
+			visitedStates4[i].posx = temp[i].posx;
+			visitedStates4[i].posy = temp[i].posy;
+			visitedStates4[i].hvalue = temp[i].hvalue;
+
+
+		}
+	}
+	else
+		printf("ERROR in updateLocalHeuristicValue() function 1!\n");
 
 	return;
 }
@@ -394,10 +512,10 @@ void runMARTA() {
 	while(1) {
 		// each loop is one episod for all agents
 		agentId = 0;
-		state decidedStates[numberOfAgents];
+		state decidedStates[4];
 
-		int globalUpdateValues[numberOfAgents];
-		int localUpdateValues[numberOfAgents];
+		int globalUpdateValues[4];
+		int localUpdateValues[4];
 
 		while(agentId < numberOfAgents) {
 
@@ -411,7 +529,7 @@ void runMARTA() {
 
 			if(goalId != -1) {
 				setCurrentState(currentStates + agentId,children[goalId]);
-				printf("and has the final state in one of its children\nThe search will be ended.\n");
+				printf("and has the final state in one of its children\nThe search will be ended.\n",agentId+1);
 				printf("Agent%d:",agentId+1);
 				fprintf(out,"Agent%d:",agentId+1);
 				if(goalId == 0) {
@@ -560,10 +678,9 @@ void initialization() {
 	for (j = 0; j < n; j++)
 		grid_map[j] = malloc(sizeof(int) * n);
 
-	for (j = 0; j < d; j++){
+	for (j = 0; j < d; j++)
 			visitedStates[j] = malloc(sizeof(state) * (n*n));
-	        numberOfVisitedStates[j] = 0;
-	}
+
 
 	int x_coor, y_coor;
 
@@ -574,7 +691,7 @@ void initialization() {
 	}
    fclose(input_file);
 
-
+   d = 4;
    numberOfAgents = d;
    currentStates = malloc(sizeof(state) * d);
 
@@ -593,9 +710,16 @@ void destroy() {
 	free(currentStates);
 	currentStates = NULL;
 
-	free(visitedStates);
+	free(visitedStates1);
+	free(visitedStates2);
+	free(visitedStates3);
+	free(visitedStates4);
 
-	visitedStates = NULL;
+	visitedStates1 = NULL;
+	visitedStates2 = NULL;
+	visitedStates3 = NULL;
+	visitedStates4 = NULL;
+
 	free(visitedStatesG);
 	visitedStatesG = NULL;
 }
@@ -651,12 +775,14 @@ int main() {
 		episodMode = 0;
 	WaitForEnter();
 
+	numberOfVisitedStates1 = 0;
+	numberOfVisitedStates2 = 0;
 	numberOfVisitedStatesG = 0;
 	episodNumber = 1;
 	initialization();
 
 	printf("System is loaded, initial states are as below:\n");
-	for(i = 0; i < numberOfAgents; i++) {
+	for(i = 0; i < 4; i++) {
 		printf("Agent %d:\n",i+1);
 		printState(currentStates[i]);
 		printf("-----\n");
@@ -723,5 +849,5 @@ int main() {
 	//fprintf(out,"******************************************\n\n");
 
 	fclose(out);
-return 0;
+
 }

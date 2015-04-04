@@ -314,3 +314,106 @@ Invoking: Cross GCC Linker
 gcc  -o "HW2"  ./src/HW2.o   
 Finished building target: HW2
  
+13:41:55 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘runMARTA’:
+../src/HW2.c:420:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("and has the final state in one of its children\nThe search will be ended.\n",agentId+1);
+     ^
+../src/HW2.c: In function ‘main’:
+../src/HW2.c:733:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+13:42:22 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘main’:
+../src/HW2.c:733:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+13:42:41 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+14:15:37 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+14:15:43 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘runMARTA’:
+../src/HW2.c:516:1: error: unknown type name ‘s’
+ s
+ ^
+../src/HW2.c:517:11: error: expected declaration specifiers or ‘...’ before string constant
+    printf("current state of Agent %d :\n", agentId+1);
+           ^
+../src/HW2.c:517:44: error: expected declaration specifiers or ‘...’ before ‘agentId’
+    printf("current state of Agent %d :\n", agentId+1);
+                                            ^
+make: *** [src/HW2.o] Error 1
+14:15:49 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+14:16:04 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+make: Nothing to be done for `all'.
+14:23:16 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 

@@ -286,7 +286,7 @@ int choose_candidate_with_max_dist_to_agents(int agent, state * children, int * 
 	return maxId;
 }
 
-void update_hg(state s, int hval) {
+void updateGlobalHeuristicValue(state s, int hval) {
 	int i;
 
 
@@ -327,7 +327,7 @@ void update_hg(state s, int hval) {
 	return;
 }
 
-void update_hl(int agent, state s, int hval) {
+void updateLocalHeuristicValue(int agent, state s, int hval) {
 	int i;
 
 		for(i = 0; i < numberOfLocalStatesVisited[agent]; i++) {
@@ -488,8 +488,8 @@ void runMARTA() {
 				}
 				localUpdateValues[agentId] = secondMin;
 			}
-			update_hg(agentStates[agentId],globalUpdateValues[agentId]);
-            update_hl(agentId,agentStates[agentId],localUpdateValues[agentId]);
+			updateGlobalHeuristicValue(agentStates[agentId],globalUpdateValues[agentId]);
+            updateLocalHeuristicValue(agentId,agentStates[agentId],localUpdateValues[agentId]);
 
 			set_state(agentStates + agentId,decidedStates[agentId]);
 

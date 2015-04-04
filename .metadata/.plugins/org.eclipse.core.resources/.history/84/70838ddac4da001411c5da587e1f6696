@@ -206,10 +206,6 @@ int is_same(state s1, state s2) {
 
 
 
-int calculate_manhattan_distance(state s1, state s2) {
-	int hval = abs(s1.pos_x-s2.pos_x) + abs(s1.pos_y-s2.pos_y);
-	return hval;
-}
 
 
 int get_hl(int agentId, state children) {
@@ -218,7 +214,10 @@ int get_hl(int agentId, state children) {
 
 }
 
-
+int calculate_manhattan_distance(state s1, state s2) {
+	int hval = abs(s1.pos_x-s2.pos_x) + abs(s1.pos_y-s2.pos_y);
+	return hval;
+}
 
 int get_hg(state s) {
 	int i;
@@ -234,7 +233,7 @@ int get_hg(state s) {
 	//return 0;
 }
 
-void set_state(state * agentState, state s) {
+void setCurrentState(state * agentState, state s) {
 
 	(*agentState).pos_x = s.pos_x;
 	(*agentState).pos_y = s.pos_y;
@@ -256,7 +255,7 @@ int is_visited(int agent, state child) {
 	return 0;
 }
 
-int get_closest_agent_to_candidates(int agent, state candidate) {
+int calculateIsolation(int agent, state candidate) {
 	int i;
 	int min = 10000;
 	for(i = 0; i < numberOfAgents; i++) {
@@ -270,12 +269,12 @@ int get_closest_agent_to_candidates(int agent, state candidate) {
 	return min;
 }
 
-int choose_candidate_with_max_dist_to_agents(int agent, state * children, int * candidates, int numbOfCand) {
+int getFarthestStateFromCandidates(int agent, state * children, int * candidates, int numbOfCand) {
 	int i;
 	int max = 0;
 	int maxId = 0;
 	for(i = 0; i < numbOfCand; i++) {
-		int temp = get_closest_agent_to_candidates(agent,children[candidates[i]]);
+		int temp = calculateIsolation(agent,children[candidates[i]]);
 
 		if(temp >= max) {
 			maxId = candidates[i];
@@ -286,7 +285,7 @@ int choose_candidate_with_max_dist_to_agents(int agent, state * children, int * 
 	return maxId;
 }
 
-void update_hg(state s, int hval) {
+void updateGlobalHeuristicValue(state s, int hval) {
 	int i;
 
 
@@ -327,7 +326,7 @@ void update_hg(state s, int hval) {
 	return;
 }
 
-void update_hl(int agent, state s, int hval) {
+void updateLocalHeuristicValue(int agent, state s, int hval) {
 	int i;
 
 		for(i = 0; i < numberOfLocalStatesVisited[agent]; i++) {
@@ -395,7 +394,7 @@ void runMARTA() {
 			int goalId = next_to_final_state(children);
 
 			if(goalId != -1) {
-				set_state(agentStates + agentId,children[goalId]);
+				setCurrentState(agentStates + agentId,children[goalId]);
 				printf("and has the final state in one of its children\nThe search will be ended.\n");
 				printf("Agent%d:",agentId+1);
 				fprintf(out,"Agent%d:",agentId+1);
@@ -474,7 +473,7 @@ void runMARTA() {
 						}
 					}
 
-					decided_index = choose_candidate_with_max_dist_to_agents(agentId,children,candidates,numberOfCandidates);
+					decided_index = getFarthestStateFromCandidates(agentId,children,candidates,numberOfCandidates);
 				}
 
 
@@ -488,10 +487,10 @@ void runMARTA() {
 				}
 				localUpdateValues[agentId] = secondMin;
 			}
-			update_hg(agentStates[agentId],globalUpdateValues[agentId]);
-            update_hl(agentId,agentStates[agentId],localUpdateValues[agentId]);
+			updateGlobalHeuristicValue(agentStates[agentId],globalUpdateValues[agentId]);
+            updateLocalHeuristicValue(agentId,agentStates[agentId],localUpdateValues[agentId]);
 
-			set_state(agentStates + agentId,decidedStates[agentId]);
+			setCurrentState(agentStates + agentId,decidedStates[agentId]);
 
 			printf("current state of Agent %d :\n", agentId+1);
 			printf("Agent Pos: %d % d \n", agentStates[agentId].pos_x, agentStates[agentId].pos_y);

@@ -623,7 +623,9 @@ void runMARTA() {
 							f = getGlobalHeuristicValue(children[i]) + 1; // as single move cost is 1
 
 						fValues[i] = f;
-
+						//printf("%d. children and its f-value is:\n",++j);
+						//printState(children[i]);
+						//printf("f value: %d\n",f);
 						if(f < min) {
 							min = f;
 							minChildId = i;
@@ -655,7 +657,7 @@ void runMARTA() {
 					decidedStateId = getFarthestStateFromCandidates(agentId,children,candidates,numberOfCandidates);
 				}
 
-
+				//decidedActions[agentId] = decidedStateId;
 				decidedStates[agentId] = children[decidedStateId];
 				globalUpdateValues[agentId] = min;
 

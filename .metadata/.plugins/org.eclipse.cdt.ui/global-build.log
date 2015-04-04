@@ -140,3 +140,177 @@ Finished building target: HW2
 13:05:31 **** Incremental Build of configuration Debug for project HW2 ****
 make all 
 make: Nothing to be done for `all'.
+13:12:41 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘isThereGoal’:
+../src/HW2.c:191:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:191:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘getLocalHeuristicValue’:
+../src/HW2.c:273:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:273:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c:273:6: warning: unused variable ‘i’ [-Wunused-variable]
+  int i,j,k;
+      ^
+../src/HW2.c: In function ‘getGlobalHeuristicValue’:
+../src/HW2.c:298:6: warning: unused variable ‘visited’ [-Wunused-variable]
+  int visited = 0;
+      ^
+../src/HW2.c:297:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:297:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘setCurrentState’:
+../src/HW2.c:311:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j;
+        ^
+../src/HW2.c:311:6: warning: unused variable ‘i’ [-Wunused-variable]
+  int i,j;
+      ^
+../src/HW2.c: In function ‘updateGlobalHeuristicValue’:
+../src/HW2.c:353:6: warning: unused variable ‘visited’ [-Wunused-variable]
+  int visited = 0;
+      ^
+../src/HW2.c:352:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:352:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘updateLocalHeuristicValue’:
+../src/HW2.c:401:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:401:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘runMARTA’:
+../src/HW2.c:581:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("and has the final state in one of its children\nThe search will be ended.\n",agentId+1);
+     ^
+../src/HW2.c:565:7: warning: variable ‘decidedActions’ set but not used [-Wunused-but-set-variable]
+   int decidedActions[4];
+       ^
+../src/HW2.c: In function ‘getLocalHeuristicValue’:
+../src/HW2.c:289:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/HW2.c: In function ‘main’:
+../src/HW2.c:893:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+13:16:49 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘isThereGoal’:
+../src/HW2.c:191:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:191:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘getLocalHeuristicValue’:
+../src/HW2.c:273:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:273:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c:273:6: warning: unused variable ‘i’ [-Wunused-variable]
+  int i,j,k;
+      ^
+../src/HW2.c: In function ‘getGlobalHeuristicValue’:
+../src/HW2.c:297:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:297:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘runMARTA’:
+../src/HW2.c:577:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("and has the final state in one of its children\nThe search will be ended.\n",agentId+1);
+     ^
+../src/HW2.c: In function ‘getLocalHeuristicValue’:
+../src/HW2.c:289:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/HW2.c: In function ‘main’:
+../src/HW2.c:889:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 
+13:17:27 **** Incremental Build of configuration Debug for project HW2 ****
+make all 
+Building file: ../src/HW2.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
+../src/HW2.c: In function ‘isThereGoal’:
+../src/HW2.c:191:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:191:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘getLocalHeuristicValue’:
+../src/HW2.c:273:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:273:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c:273:6: warning: unused variable ‘i’ [-Wunused-variable]
+  int i,j,k;
+      ^
+../src/HW2.c: In function ‘getGlobalHeuristicValue’:
+../src/HW2.c:297:10: warning: unused variable ‘k’ [-Wunused-variable]
+  int i,j,k;
+          ^
+../src/HW2.c:297:8: warning: unused variable ‘j’ [-Wunused-variable]
+  int i,j,k;
+        ^
+../src/HW2.c: In function ‘runMARTA’:
+../src/HW2.c:577:5: warning: too many arguments for format [-Wformat-extra-args]
+     printf("and has the final state in one of its children\nThe search will be ended.\n",agentId+1);
+     ^
+../src/HW2.c: In function ‘getLocalHeuristicValue’:
+../src/HW2.c:289:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+../src/HW2.c: In function ‘main’:
+../src/HW2.c:887:1: warning: control reaches end of non-void function [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/HW2.c
+ 
+Building target: HW2
+Invoking: Cross GCC Linker
+gcc  -o "HW2"  ./src/HW2.o   
+Finished building target: HW2
+ 

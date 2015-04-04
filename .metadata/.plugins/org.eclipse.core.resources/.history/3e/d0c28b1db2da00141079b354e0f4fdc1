@@ -9,6 +9,7 @@ int size_of_map;
 #define ENGEL    3
 
 typedef struct state {
+	//int cstate[4][2];
 	int posx; // position of empty cell
 	int posy;
 	int index;
@@ -363,7 +364,9 @@ void setCurrentState(state * currentState, state s) {
 	(*currentState).posx = s.posx;
 	(*currentState).posy = s.posy;
 	(*currentState).hvalue = s.hvalue;
-
+	for(i = 0; i < 4; i++)
+		for(j = 0; j < 2; j++)
+			(*currentState).cstate[i][j] = s.cstate[i][j];
 
 }
 
@@ -421,7 +424,9 @@ void updateGlobalHeuristicValue(state s, int hval) {
 		temp[i].posx = visitedStatesG[i].posx;
 		temp[i].posy = visitedStatesG[i].posy;
 		temp[i].hvalue = visitedStatesG[i].hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = visitedStatesG[i].cstate[j][k];
 	}
 
 	s.hvalue = hval;
@@ -429,7 +434,9 @@ void updateGlobalHeuristicValue(state s, int hval) {
 	temp[i].posx = s.posx;
 	temp[i].posy = s.posy;
 	temp[i].hvalue = s.hvalue;
-
+	for(j = 0; j < 4; j++)
+		for(k = 0; k < 2; k++)
+			temp[i].cstate[j][k] = s.cstate[j][k];
 
 	free(visitedStatesG);
 	numberOfVisitedStatesG++;
@@ -438,7 +445,9 @@ void updateGlobalHeuristicValue(state s, int hval) {
 		visitedStatesG[i].posx = temp[i].posx;
 		visitedStatesG[i].posy = temp[i].posy;
 		visitedStatesG[i].hvalue = temp[i].hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				visitedStatesG[i].cstate[j][k] = temp[i].cstate[j][k];
 		//printf("added state %d:\n",i);
 		//printState(visitedStatesG[i]);
 		//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
@@ -466,7 +475,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates1[i].posx;
 			temp[i].posy = visitedStates1[i].posy;
 			temp[i].hvalue = visitedStates1[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates1[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -474,7 +485,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates1);
 		numberOfVisitedStates1++;
@@ -483,7 +496,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates1[i].posx = temp[i].posx;
 			visitedStates1[i].posy = temp[i].posy;
 			visitedStates1[i].hvalue = temp[i].hvalue;
-
+			for(j = 0; j < 4 ;j++)
+				for(k = 0; k < 2; k++)
+					visitedStates1[i].cstate[j][k] = temp[i].cstate[j][k];
 			//printf("added state %d:\n",i);
 			//printState(visitedStatesG[i]);
 			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
@@ -506,7 +521,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates2[i].posx;
 			temp[i].posy = visitedStates2[i].posy;
 			temp[i].hvalue = visitedStates2[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates2[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -514,7 +531,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates2);
 		numberOfVisitedStates2++;
@@ -523,7 +542,13 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates2[i].posx = temp[i].posx;
 			visitedStates2[i].posy = temp[i].posy;
 			visitedStates2[i].hvalue = temp[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					visitedStates2[i].cstate[j][k] = temp[i].cstate[j][k];
+			//printf("added state %d:\n",i);
+			//printState(visitedStatesG[i]);
+			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+			//printf("-------\n");
 		}
 	}
 	else if(agent == 2) {
@@ -541,7 +566,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates3[i].posx;
 			temp[i].posy = visitedStates3[i].posy;
 			temp[i].hvalue = visitedStates3[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates3[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -549,7 +576,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates3);
 		numberOfVisitedStates3++;
@@ -558,7 +587,13 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates3[i].posx = temp[i].posx;
 			visitedStates3[i].posy = temp[i].posy;
 			visitedStates3[i].hvalue = temp[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					visitedStates3[i].cstate[j][k] = temp[i].cstate[j][k];
+			//printf("added state %d:\n",i);
+			//printState(visitedStatesG[i]);
+			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+			//printf("-------\n");
 		}
 	}
 	else if(agent == 3) {
@@ -576,7 +611,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates4[i].posx;
 			temp[i].posy = visitedStates4[i].posy;
 			temp[i].hvalue = visitedStates4[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates4[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -584,7 +621,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates4);
 		numberOfVisitedStates4++;
@@ -593,8 +632,13 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates4[i].posx = temp[i].posx;
 			visitedStates4[i].posy = temp[i].posy;
 			visitedStates4[i].hvalue = temp[i].hvalue;
-
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					visitedStates4[i].cstate[j][k] = temp[i].cstate[j][k];
+			//printf("added state %d:\n",i);
+			//printState(visitedStatesG[i]);
+			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+			//printf("-------\n");
 		}
 	}
 	else
@@ -738,7 +782,44 @@ void runMARTA() {
 			agentId++;
 		}
 
+		// for each agent apply decisions concurrently
+		//printf("\nThe decided actions and states for this episod is as below:\n");
+		/*
+		for(i = 0; i < numberOfAgents; i++) {
+			printf("Agent%d:",i+1);
+			fprintf(out,"Agent%d:",i+1);
+			if(decidedActions[i] == 0) {
+				printf("Left\n");
+				fprintf(out,"Left\n");
+			}
+			else if(decidedActions[i] == 1) {
+				printf("Right\n");
+				fprintf(out,"Right\n");
+			}
+			else if(decidedActions[i] == 2) {
+				printf("Up\n");
+				fprintf(out,"Up\n");
+			}
+			else if(decidedActions[i] == 3) {
+				printf("Down\n");
+				fprintf(out,"Down\n");
+			}
+			else
+				printf("ERROR in decided action selection !\n");
 
+			fprintf(out,"State:\n");
+			fprintState(decidedStates[i]);
+			fprintf(out,"--------\n");
+
+			// estimation update
+			updateGlobalHeuristicValue(currentStates[i],globalUpdateValues[i]);
+			updateLocalHeuristicValue(i,currentStates[i],localUpdateValues[i]);
+
+			setCurrentState(currentStates + i,decidedStates[i]);
+			printf("current state is:\n");
+			printState(currentStates[i]);
+		}
+		*/
 
 		printf("***********************************************************\n");
 		printf("Episod #%d is over for all agents\n",episodNumber);
@@ -766,7 +847,9 @@ void initialization() {
 
 
 	fscanf(input_file, "%d %d %d", &n, &d, &o); //girdileri okuyalim
+	//fscanf(input_file, "%d", &n); //girdileri okuyalim
 
+	//fgetc(input_file);   				                 //yeni satiri okuyalim
 
 	printf("n=%d\n",n);
 	printf("d=%d\n",d);
@@ -796,7 +879,68 @@ void initialization() {
    }
    finalState.posx = n-1;
    finalState.posy = n-1;
+/*
 
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[0].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[0].posx = i;
+				currentStates[0].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[1].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[1].posx = i;
+				currentStates[1].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[2].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[2].posx = i;
+				currentStates[2].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[3].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[3].posx = i;
+				currentStates[3].posy = j;
+			}
+		}
+
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			finalState.cstate[i][j] = temp;
+
+			if(temp == 0) {
+				finalState.posx = i;
+				finalState.posy = j;
+
+			}
+		}
+
+	fclose(inp);
+	*/
 }
 
 void destroy() {

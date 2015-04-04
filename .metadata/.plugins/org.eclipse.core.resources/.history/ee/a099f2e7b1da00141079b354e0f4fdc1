@@ -9,6 +9,7 @@ int size_of_map;
 #define ENGEL    3
 
 typedef struct state {
+	//int cstate[4][2];
 	int posx; // position of empty cell
 	int posy;
 	int index;
@@ -134,9 +135,42 @@ state * expandState(state currentState) {
 		    children[1].posy = currentState.posy+1;
 
 		    //ASAGI
-
+			children[1].cstate[1][0] = currentState.posx;
+			children[1].cstate[1][1] = currentState.posy;
+			//YUKARI
+			if(children[1].posy+1 < size_of_map){
+			if(grid_map[children[1].posx][children[1].posy+1] != ENGEL ){
+			  children[1].cstate[0][0] = children[1].posx;
+			  children[1].cstate[0][1] = children[1].posy + 1;
 			}
-
+			else{
+			  children[1].cstate[0][0] = -100;
+			  children[1].cstate[0][1] = -100;
+			}
+			}
+			//SAG
+			if(children[1].posx+1 < size_of_map){
+			  if(grid_map[children[1].posx+1][children[1].posy] != ENGEL  ){
+			  children[1].cstate[2][0] = children[1].posx + 1;
+			  children[1].cstate[2][1] = children[1].posy;
+			  }
+			  else{
+			   children[1].cstate[2][0] = -100;
+		       children[1].cstate[2][1] = -100;
+			  }
+			}
+			//SOL
+			if (children[1].posx-1 >= 0) {
+			if(grid_map[children[1].posx-1][children[1].posy] != ENGEL ){
+			  children[1].cstate[3][0] = children[1].posx - 1;
+			  children[1].cstate[3][1] = children[1].posy;
+			}
+			else{
+			  children[1].cstate[3][0] = -100;
+			  children[1].cstate[3][1] = -100;
+			}
+			}
+	}
 	else {
 		children[1] = currentState; // means no child !
 		children[1].posx = -100;
@@ -159,9 +193,42 @@ state * expandState(state currentState) {
 		    children[2].posy = currentState.posy;
 
 		    //SAG
-
+			children[2].cstate[2][0] = currentState.posx;
+			children[2].cstate[2][1] = currentState.posy;
+			//YUKARI
+			if(children[2].posy+1 < size_of_map){
+			if(grid_map[children[2].posx][children[2].posy+1] != ENGEL ){
+			  children[2].cstate[0][0] = children[2].posx;
+			  children[2].cstate[0][1] = children[2].posy + 1;
+			}
+			else{
+			  children[2].cstate[0][0] = -100;
+			  children[2].cstate[0][1] = -100;
+			}
+			}
+			//ASAGI
+			if(children[2].posy-1 >= 0){
+			if(grid_map[children[2].posx][children[2].posy-1] != ENGEL  ){
+			  children[2].cstate[1][0] = children[2].posx;
+			  children[2].cstate[1][1] = children[2].posy - 1;
+			}
+			else{
+			  children[2].cstate[1][0] = -100;
+		      children[2].cstate[1][1] = -100;
+			}
+			}
+			//SOL
+			 if(children[2].posx-1 >= 0){
+			if(grid_map[children[2].posx-1][children[2].posy] != ENGEL ){
+			  children[2].cstate[3][0] = children[2].posx - 1;
+			  children[2].cstate[3][1] = children[2].posy ;
+			}
+			else{
+			  children[2].cstate[3][0] = -100;
+			  children[2].cstate[3][1] = -100;
+			}
 			 }
-
+	}
 	else {
 		children[2] = currentState; // means no child !
 		children[2].posx = -100;
@@ -183,9 +250,43 @@ state * expandState(state currentState) {
 		children[3].posx = currentState.posx +1;
 	    children[3].posy = currentState.posy;
 
-
+	    //SOL
+		children[3].cstate[3][0] = currentState.posx;
+		children[3].cstate[3][1] = currentState.posy;
+		//YUKARI
+		if (children[3].posy+1 < size_of_map){
+		if(grid_map[children[3].posx][children[3].posy+1] != ENGEL  ){
+		  children[3].cstate[0][0] = children[3].posx;
+		  children[3].cstate[0][1] = children[3].posy + 1;
 		}
-
+		else{
+		  children[3].cstate[0][0] = -100;
+		  children[3].cstate[0][1] = -100;
+		}
+		}
+		//ASAGI
+		if(children[3].posy-1 >= 0){
+		if(grid_map[children[3].posx][children[3].posy-1] != ENGEL  ){
+		  children[3].cstate[1][0] = children[3].posx;
+		  children[3].cstate[1][1] = children[3].posy - 1;
+		}
+		else{
+		  children[3].cstate[1][0] = -100;
+	      children[3].cstate[1][1] = -100;
+		}
+		}
+		//SAG
+		if (children[3].posx+1 < size_of_map){
+		if(grid_map[children[3].posx+1][children[3].posy] != ENGEL  ){
+		  children[3].cstate[2][0] = children[3].posx + 1;
+		  children[3].cstate[2][1] = children[3].posy ;
+		}
+		else{
+		  children[3].cstate[2][0] = -100;
+		  children[3].cstate[2][1] = -100;
+		}
+		}
+	}
 	else {
 		children[3] = currentState; // means no child !
 		children[3].posx = -100;
@@ -197,6 +298,12 @@ state * expandState(state currentState) {
 		children[3].posx = -100;
 		children[3].posy = -100;
 	}
+	//printf("children are:\n");
+	//for(i = 0; i < 4; i++) {
+	//	printState(children[i]);
+	//	printf("%d %d\n",children[i].posx,children[i].posy);
+	//	printf("-------\n");
+	//}
 
 	return children;
 }
@@ -363,7 +470,9 @@ void setCurrentState(state * currentState, state s) {
 	(*currentState).posx = s.posx;
 	(*currentState).posy = s.posy;
 	(*currentState).hvalue = s.hvalue;
-
+	for(i = 0; i < 4; i++)
+		for(j = 0; j < 2; j++)
+			(*currentState).cstate[i][j] = s.cstate[i][j];
 
 }
 
@@ -421,7 +530,9 @@ void updateGlobalHeuristicValue(state s, int hval) {
 		temp[i].posx = visitedStatesG[i].posx;
 		temp[i].posy = visitedStatesG[i].posy;
 		temp[i].hvalue = visitedStatesG[i].hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = visitedStatesG[i].cstate[j][k];
 	}
 
 	s.hvalue = hval;
@@ -429,7 +540,9 @@ void updateGlobalHeuristicValue(state s, int hval) {
 	temp[i].posx = s.posx;
 	temp[i].posy = s.posy;
 	temp[i].hvalue = s.hvalue;
-
+	for(j = 0; j < 4; j++)
+		for(k = 0; k < 2; k++)
+			temp[i].cstate[j][k] = s.cstate[j][k];
 
 	free(visitedStatesG);
 	numberOfVisitedStatesG++;
@@ -438,7 +551,9 @@ void updateGlobalHeuristicValue(state s, int hval) {
 		visitedStatesG[i].posx = temp[i].posx;
 		visitedStatesG[i].posy = temp[i].posy;
 		visitedStatesG[i].hvalue = temp[i].hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				visitedStatesG[i].cstate[j][k] = temp[i].cstate[j][k];
 		//printf("added state %d:\n",i);
 		//printState(visitedStatesG[i]);
 		//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
@@ -466,7 +581,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates1[i].posx;
 			temp[i].posy = visitedStates1[i].posy;
 			temp[i].hvalue = visitedStates1[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates1[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -474,7 +591,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates1);
 		numberOfVisitedStates1++;
@@ -483,7 +602,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates1[i].posx = temp[i].posx;
 			visitedStates1[i].posy = temp[i].posy;
 			visitedStates1[i].hvalue = temp[i].hvalue;
-
+			for(j = 0; j < 4 ;j++)
+				for(k = 0; k < 2; k++)
+					visitedStates1[i].cstate[j][k] = temp[i].cstate[j][k];
 			//printf("added state %d:\n",i);
 			//printState(visitedStatesG[i]);
 			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
@@ -506,7 +627,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates2[i].posx;
 			temp[i].posy = visitedStates2[i].posy;
 			temp[i].hvalue = visitedStates2[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates2[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -514,7 +637,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates2);
 		numberOfVisitedStates2++;
@@ -523,7 +648,13 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates2[i].posx = temp[i].posx;
 			visitedStates2[i].posy = temp[i].posy;
 			visitedStates2[i].hvalue = temp[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					visitedStates2[i].cstate[j][k] = temp[i].cstate[j][k];
+			//printf("added state %d:\n",i);
+			//printState(visitedStatesG[i]);
+			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+			//printf("-------\n");
 		}
 	}
 	else if(agent == 2) {
@@ -541,7 +672,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates3[i].posx;
 			temp[i].posy = visitedStates3[i].posy;
 			temp[i].hvalue = visitedStates3[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates3[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -549,7 +682,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates3);
 		numberOfVisitedStates3++;
@@ -558,7 +693,13 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates3[i].posx = temp[i].posx;
 			visitedStates3[i].posy = temp[i].posy;
 			visitedStates3[i].hvalue = temp[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					visitedStates3[i].cstate[j][k] = temp[i].cstate[j][k];
+			//printf("added state %d:\n",i);
+			//printState(visitedStatesG[i]);
+			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+			//printf("-------\n");
 		}
 	}
 	else if(agent == 3) {
@@ -576,7 +717,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			temp[i].posx = visitedStates4[i].posx;
 			temp[i].posy = visitedStates4[i].posy;
 			temp[i].hvalue = visitedStates4[i].hvalue;
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					temp[i].cstate[j][k] = visitedStates4[i].cstate[j][k];
 		}
 
 		s.hvalue = hval;
@@ -584,7 +727,9 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 		temp[i].posx = s.posx;
 		temp[i].posy = s.posy;
 		temp[i].hvalue = s.hvalue;
-
+		for(j = 0; j < 4; j++)
+			for(k = 0; k < 2; k++)
+				temp[i].cstate[j][k] = s.cstate[j][k];
 
 		free(visitedStates4);
 		numberOfVisitedStates4++;
@@ -593,8 +738,13 @@ void updateLocalHeuristicValue(int agent, state s, int hval) {
 			visitedStates4[i].posx = temp[i].posx;
 			visitedStates4[i].posy = temp[i].posy;
 			visitedStates4[i].hvalue = temp[i].hvalue;
-
-
+			for(j = 0; j < 4; j++)
+				for(k = 0; k < 2; k++)
+					visitedStates4[i].cstate[j][k] = temp[i].cstate[j][k];
+			//printf("added state %d:\n",i);
+			//printState(visitedStatesG[i]);
+			//printf("%d %d\n",visitedStatesG[i].posx,visitedStatesG[i].posy);
+			//printf("-------\n");
 		}
 	}
 	else
@@ -738,7 +888,44 @@ void runMARTA() {
 			agentId++;
 		}
 
+		// for each agent apply decisions concurrently
+		//printf("\nThe decided actions and states for this episod is as below:\n");
+		/*
+		for(i = 0; i < numberOfAgents; i++) {
+			printf("Agent%d:",i+1);
+			fprintf(out,"Agent%d:",i+1);
+			if(decidedActions[i] == 0) {
+				printf("Left\n");
+				fprintf(out,"Left\n");
+			}
+			else if(decidedActions[i] == 1) {
+				printf("Right\n");
+				fprintf(out,"Right\n");
+			}
+			else if(decidedActions[i] == 2) {
+				printf("Up\n");
+				fprintf(out,"Up\n");
+			}
+			else if(decidedActions[i] == 3) {
+				printf("Down\n");
+				fprintf(out,"Down\n");
+			}
+			else
+				printf("ERROR in decided action selection !\n");
 
+			fprintf(out,"State:\n");
+			fprintState(decidedStates[i]);
+			fprintf(out,"--------\n");
+
+			// estimation update
+			updateGlobalHeuristicValue(currentStates[i],globalUpdateValues[i]);
+			updateLocalHeuristicValue(i,currentStates[i],localUpdateValues[i]);
+
+			setCurrentState(currentStates + i,decidedStates[i]);
+			printf("current state is:\n");
+			printState(currentStates[i]);
+		}
+		*/
 
 		printf("***********************************************************\n");
 		printf("Episod #%d is over for all agents\n",episodNumber);
@@ -766,7 +953,9 @@ void initialization() {
 
 
 	fscanf(input_file, "%d %d %d", &n, &d, &o); //girdileri okuyalim
+	//fscanf(input_file, "%d", &n); //girdileri okuyalim
 
+	//fgetc(input_file);   				                 //yeni satiri okuyalim
 
 	printf("n=%d\n",n);
 	printf("d=%d\n",d);
@@ -796,7 +985,68 @@ void initialization() {
    }
    finalState.posx = n-1;
    finalState.posy = n-1;
+/*
 
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[0].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[0].posx = i;
+				currentStates[0].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[1].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[1].posx = i;
+				currentStates[1].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[2].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[2].posx = i;
+				currentStates[2].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[3].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[3].posx = i;
+				currentStates[3].posy = j;
+			}
+		}
+
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			finalState.cstate[i][j] = temp;
+
+			if(temp == 0) {
+				finalState.posx = i;
+				finalState.posy = j;
+
+			}
+		}
+
+	fclose(inp);
+	*/
 }
 
 void destroy() {

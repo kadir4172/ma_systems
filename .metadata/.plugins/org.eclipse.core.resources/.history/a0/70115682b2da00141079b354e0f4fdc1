@@ -9,6 +9,7 @@ int size_of_map;
 #define ENGEL    3
 
 typedef struct state {
+	//int cstate[4][2];
 	int posx; // position of empty cell
 	int posy;
 	int index;
@@ -766,7 +767,9 @@ void initialization() {
 
 
 	fscanf(input_file, "%d %d %d", &n, &d, &o); //girdileri okuyalim
+	//fscanf(input_file, "%d", &n); //girdileri okuyalim
 
+	//fgetc(input_file);   				                 //yeni satiri okuyalim
 
 	printf("n=%d\n",n);
 	printf("d=%d\n",d);
@@ -796,7 +799,68 @@ void initialization() {
    }
    finalState.posx = n-1;
    finalState.posy = n-1;
+/*
 
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[0].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[0].posx = i;
+				currentStates[0].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[1].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[1].posx = i;
+				currentStates[1].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[2].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[2].posx = i;
+				currentStates[2].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[3].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[3].posx = i;
+				currentStates[3].posy = j;
+			}
+		}
+
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			finalState.cstate[i][j] = temp;
+
+			if(temp == 0) {
+				finalState.posx = i;
+				finalState.posy = j;
+
+			}
+		}
+
+	fclose(inp);
+	*/
 }
 
 void destroy() {

@@ -9,6 +9,7 @@ int size_of_map;
 #define ENGEL    3
 
 typedef struct state {
+	//int cstate[4][2];
 	int posx; // position of empty cell
 	int posy;
 	int index;
@@ -738,7 +739,44 @@ void runMARTA() {
 			agentId++;
 		}
 
+		// for each agent apply decisions concurrently
+		//printf("\nThe decided actions and states for this episod is as below:\n");
+		/*
+		for(i = 0; i < numberOfAgents; i++) {
+			printf("Agent%d:",i+1);
+			fprintf(out,"Agent%d:",i+1);
+			if(decidedActions[i] == 0) {
+				printf("Left\n");
+				fprintf(out,"Left\n");
+			}
+			else if(decidedActions[i] == 1) {
+				printf("Right\n");
+				fprintf(out,"Right\n");
+			}
+			else if(decidedActions[i] == 2) {
+				printf("Up\n");
+				fprintf(out,"Up\n");
+			}
+			else if(decidedActions[i] == 3) {
+				printf("Down\n");
+				fprintf(out,"Down\n");
+			}
+			else
+				printf("ERROR in decided action selection !\n");
 
+			fprintf(out,"State:\n");
+			fprintState(decidedStates[i]);
+			fprintf(out,"--------\n");
+
+			// estimation update
+			updateGlobalHeuristicValue(currentStates[i],globalUpdateValues[i]);
+			updateLocalHeuristicValue(i,currentStates[i],localUpdateValues[i]);
+
+			setCurrentState(currentStates + i,decidedStates[i]);
+			printf("current state is:\n");
+			printState(currentStates[i]);
+		}
+		*/
 
 		printf("***********************************************************\n");
 		printf("Episod #%d is over for all agents\n",episodNumber);
@@ -766,7 +804,9 @@ void initialization() {
 
 
 	fscanf(input_file, "%d %d %d", &n, &d, &o); //girdileri okuyalim
+	//fscanf(input_file, "%d", &n); //girdileri okuyalim
 
+	//fgetc(input_file);   				                 //yeni satiri okuyalim
 
 	printf("n=%d\n",n);
 	printf("d=%d\n",d);
@@ -796,7 +836,68 @@ void initialization() {
    }
    finalState.posx = n-1;
    finalState.posy = n-1;
+/*
 
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[0].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[0].posx = i;
+				currentStates[0].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[1].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[1].posx = i;
+				currentStates[1].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[2].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[2].posx = i;
+				currentStates[2].posy = j;
+			}
+		}
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			currentStates[3].cstate[i][j] = temp;
+			if(temp == 0) {
+				currentStates[3].posx = i;
+				currentStates[3].posy = j;
+			}
+		}
+
+
+	for(i = 0; i < 3; i++)
+		for(j = 0; j < 3; j++) {
+			int temp;
+			fscanf(inp,"%d",&temp);
+			finalState.cstate[i][j] = temp;
+
+			if(temp == 0) {
+				finalState.posx = i;
+				finalState.posy = j;
+
+			}
+		}
+
+	fclose(inp);
+	*/
 }
 
 void destroy() {

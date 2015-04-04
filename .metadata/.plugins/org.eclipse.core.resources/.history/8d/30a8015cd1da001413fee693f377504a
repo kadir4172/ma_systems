@@ -438,11 +438,6 @@ void multi_agent_search() {
 						numberOfCandidates++;
 				}
 
-				if(numberOfCandidates == 0 | min == 10000){
-				  printf("No Movement Option for the Agent, Simulation will be stopped");
-
-				  return;
-				}
 				if(numberOfCandidates == 1)
 					decided_index = child_with_min_cost;
 				else {
@@ -555,13 +550,49 @@ int initialization() {
 }
 
 
+/*
+
+ASSUMPTIONS
+
+- manhattan distance heuristic is used
+- assume attraction range is zero, i.e., agents always see each other and moves to the closer
+- single move is assumed as single cost as in the kitamura's paper
+- lookahead search depth is assumed to be 1, as in the kitamura's paper
+- all agents starts from different initial state is assumed.
+- input.txt has two lines, all lines except last one are the initial states for the agents and last line is the final state.
+  They are ordered from right to left and top to bottow, i.e., first number is 0,0 th value in the 8-tile
+  and last number is 3,3 th value in 8-tile
+  Assume 4 agent's initial states are given in the file, but first two is used for first run of 2 agents, and
+  all is used for the second run of 4 agents.
+- check moves.txt for the actions and states taken at each step.
+
+*/
 
 
 int main() {
 	int i;
 
 	out = fopen("output.txt","w");
+/*
+	printf("**********************************************  ASSUMPTIONS  ******************************************************************\n\n");
 
+	printf("- Manhattan distance heuristic is used\n");
+	printf("- Assume attraction range is zero, i.e., agents always see each other and moves to the closer\n");
+	printf("- Single move is assumed as single cost as in the kitamura's paper\n");
+	printf("- Lookahead search depth is assumed to be 1, as in the kitamura's paper\n");
+	printf("- All agents starts from different initial state is assumed.\n");
+	printf("- input.txt has five lines, all lines except last one are the initial states for the agents and last line is the final state.\n");
+	printf("  They are ordered from right to left and top to bottom, i.e., first number is 0,0 th value in the 8-tile\n");
+	printf("  and the last number is 3,3 th value in 8-tile.\n");
+	printf("  Further assume that first two agents are used for the first run of 2 agents, and\n");
+	printf("  all is used for the second run of 4 agents.\n");
+	printf("- Check moves.txt for the actions and states taken at each step.\n");
+
+	printf("\n******************************************************************************************************************************\n\n");
+
+	printf("If you want to use discrete time mode, please press 1 and press enter (stops at each episod by logging info)\n");
+	printf("If you want to use continuous time mode, please press 2 and press enter (logs all info, and prints total # of runs and CPU time at the end)\n");
+*/
 
 	printf("Tum iterasyonlari gormek icin 1'e ve Enter a basin ve her iterasyon sonunda Enter a basin\n");
 	printf("Tum iterasyonlari gormek istemiyorsaniz 2'ye ve Enter a basin\n");

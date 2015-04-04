@@ -1,19 +1,6 @@
-15:56:10 **** Incremental Build of configuration Debug for project HW2 ****
+17:04:36 **** Incremental Build of configuration Debug for project HW2 ****
 make all 
-Building file: ../src/HW2.c
-Invoking: Cross GCC Compiler
-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
-../src/HW2.c: In function ‘multi_agent_search’:
-../src/HW2.c:392:8: warning: unused variable ‘len’ [-Wunused-variable]
-    int len = number_of_children(children);
-        ^
-Finished building: ../src/HW2.c
- 
-Building target: HW2
-Invoking: Cross GCC Linker
-gcc  -o "HW2"  ./src/HW2.o   
-Finished building target: HW2
- 
+make: Nothing to be done for `all'.
 
-15:56:10 Build Finished (took 157ms)
+17:04:36 Build Finished (took 61ms)
 

@@ -438,11 +438,6 @@ void multi_agent_search() {
 						numberOfCandidates++;
 				}
 
-				if(numberOfCandidates == 0 | min == 10000){
-				  printf("No Movement Option for the Agent, Simulation will be stopped");
-
-				  return;
-				}
 				if(numberOfCandidates == 1)
 					decided_index = child_with_min_cost;
 				else {
@@ -555,6 +550,23 @@ int initialization() {
 }
 
 
+/*
+
+ASSUMPTIONS
+
+- manhattan distance heuristic is used
+- assume attraction range is zero, i.e., agents always see each other and moves to the closer
+- single move is assumed as single cost as in the kitamura's paper
+- lookahead search depth is assumed to be 1, as in the kitamura's paper
+- all agents starts from different initial state is assumed.
+- input.txt has two lines, all lines except last one are the initial states for the agents and last line is the final state.
+  They are ordered from right to left and top to bottow, i.e., first number is 0,0 th value in the 8-tile
+  and last number is 3,3 th value in 8-tile
+  Assume 4 agent's initial states are given in the file, but first two is used for first run of 2 agents, and
+  all is used for the second run of 4 agents.
+- check moves.txt for the actions and states taken at each step.
+
+*/
 
 
 int main() {

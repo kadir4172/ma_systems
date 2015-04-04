@@ -438,10 +438,9 @@ void multi_agent_search() {
 						numberOfCandidates++;
 				}
 
-				if(numberOfCandidates == 0 | min == 10000){
+				if(numberOfCandidates == 0 || min == 10000){
 				  printf("No Movement Option for the Agent, Simulation will be stopped");
-
-				  return;
+				  break;
 				}
 				if(numberOfCandidates == 1)
 					decided_index = child_with_min_cost;

@@ -3,36 +3,36 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="287" key="DIALOG_WIDTH"/>
 		<item value="480" key="DIALOG_Y_ORIGIN"/>
-		<item value="1335" key="DIALOG_X_ORIGIN"/>
 		<item value="479" key="DIALOG_HEIGHT"/>
+		<item value="1335" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Cantarell|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="true" key="casesensitive"/>
 		<item value="false" key="incremental"/>
-		<item value="false" key="wholeword"/>
-		<item value="episodMode" key="selection"/>
+		<item value="true" key="wholeword"/>
+		<item value="print_map_to_file" key="selection"/>
 		<list key="findhistory">
-			<item value="episodMode"/>
-			<item value="4"/>
-			<item value="decidedStates"/>
-			<item value="3"/>
-			<item value="numberOfVisitedStates"/>
-			<item value="visitedStates"/>
-			<item value="isVisited"/>
-			<item value="numberOfAgents"/>
+			<item value="print_map_to_file"/>
+			<item value="destroy"/>
+			<item value="minChildId"/>
+			<item value="fValues"/>
+			<item value="runMARTA"/>
+			<item value="updateLocalHeuristicValue"/>
+			<item value="updateGlobalHeuristicValue"/>
+			<item value="getFarthestStateFromCandidates"/>
 		</list>
 		<list key="replacehistory">
-			<item value="decision_preys"/>
-			<item value="decision_hunters"/>
-			<item value="Reaktif_Davranislar"/>
-			<item value="av_ind"/>
-			<item value="avci_ind"/>
-			<item value="nesne"/>
-			<item value="Ortami_Bas"/>
-			<item value="Av_Kararlari"/>
+			<item value="child_with_min_cost"/>
+			<item value="Costs"/>
+			<item value="multi_agent_search"/>
+			<item value="update_hl"/>
+			<item value="update_hg"/>
+			<item value="choose_candidate_with_max_dist_to_agents"/>
+			<item value=""/>
+			<item value="get_closest_agent_to_candidates"/>
 		</list>
 	</section>
 </section>

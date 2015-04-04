@@ -1,0 +1,41 @@
+Agent4:Right
+State(Final):
+x x x x o x x x x x 
+x x x o o x x x x x 
+o x x x x x x x x x 
+x x x x x o x x o x 
+x x x x x x x x x x 
+x x x x x x x o x x 
+x x x x x x x x x x 
+x x o x x x x x x x 
+x x x x x x x x x x 
+x x x x x x x x x A 
+Total number of moves at this run(including this): 18
+CPU Time is: 0.006247
+
+******************************************************************
+The session for 2 agents is over, system is restarted for 4 agents
+******************************************************************
+
+Agent3:Down
+State(Final):
+x x x x o x x x x x 
+x x x o o x x x x x 
+o x x x o x o x x x 
+x x x x x o x x o x 
+x x x x x x x x x x 
+x x x x x x x o x x 
+x x x x x x x x x x 
+x x o x x x x x x x 
+x x x x x x x x x x 
+x x x x x x x x x A 
+Total number of moves at this run(including this): 26
+CPU Time is: 0.012224
+
+******************************************
+TOTAL # of RUNS for 2 AGENTs RUN: 18
+CPU TIME of RUNS for 2 AGENTs RUN: 0.006247
+TOTAL # of RUNS for 4 AGENTs RUN: 26
+CPU TIME of RUNS for 4 AGENTs RUN: 0.012224
+******************************************
+

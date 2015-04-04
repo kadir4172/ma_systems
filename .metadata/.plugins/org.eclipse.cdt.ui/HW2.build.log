@@ -1,61 +1,6 @@
-12:03:11 **** Incremental Build of configuration Debug for project HW2 ****
+12:23:39 **** Incremental Build of configuration Debug for project HW2 ****
 make all 
-Building file: ../src/HW2.c
-Invoking: Cross GCC Compiler
-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/HW2.d" -MT"src/HW2.d" -o "src/HW2.o" "../src/HW2.c"
-../src/HW2.c: In function ‘isThereGoal’:
-../src/HW2.c:349:10: warning: unused variable ‘k’ [-Wunused-variable]
-  int i,j,k;
-          ^
-../src/HW2.c:349:8: warning: unused variable ‘j’ [-Wunused-variable]
-  int i,j,k;
-        ^
-../src/HW2.c: In function ‘getLocalHeuristicValue’:
-../src/HW2.c:436:10: warning: unused variable ‘k’ [-Wunused-variable]
-  int i,j,k;
-          ^
-../src/HW2.c:436:8: warning: unused variable ‘j’ [-Wunused-variable]
-  int i,j,k;
-        ^
-../src/HW2.c:436:6: warning: unused variable ‘i’ [-Wunused-variable]
-  int i,j,k;
-      ^
-../src/HW2.c: In function ‘getGlobalHeuristicValue’:
-../src/HW2.c:486:6: warning: unused variable ‘visited’ [-Wunused-variable]
-  int visited = 0;
-      ^
-../src/HW2.c:485:10: warning: unused variable ‘k’ [-Wunused-variable]
-  int i,j,k;
-          ^
-../src/HW2.c:485:8: warning: unused variable ‘j’ [-Wunused-variable]
-  int i,j,k;
-        ^
-../src/HW2.c: In function ‘updateGlobalHeuristicValue’:
-../src/HW2.c:550:6: warning: unused variable ‘visited’ [-Wunused-variable]
-  int visited = 0;
-      ^
-../src/HW2.c: In function ‘runMARTA’:
-../src/HW2.c:819:5: warning: too many arguments for format [-Wformat-extra-args]
-     printf("and has the final state in one of its children\nThe search will be ended.\n",agentId+1);
-     ^
-../src/HW2.c:803:7: warning: variable ‘decidedActions’ set but not used [-Wunused-but-set-variable]
-   int decidedActions[4];
-       ^
-../src/HW2.c: In function ‘getLocalHeuristicValue’:
-../src/HW2.c:452:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
-../src/HW2.c: In function ‘main’:
-../src/HW2.c:1231:1: warning: control reaches end of non-void function [-Wreturn-type]
- }
- ^
-Finished building: ../src/HW2.c
- 
-Building target: HW2
-Invoking: Cross GCC Linker
-gcc  -o "HW2"  ./src/HW2.o   
-Finished building target: HW2
- 
+make: Nothing to be done for `all'.
 
-12:03:11 Build Finished (took 211ms)
+12:23:39 Build Finished (took 62ms)
 
